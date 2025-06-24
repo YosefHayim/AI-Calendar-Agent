@@ -3,4 +3,10 @@ import generateAuthUrl from "../controllers/authController";
 
 const router = express.Router();
 
-router.get("/auth/v1/callback", generateAuthUrl);
+router.get("/", (req, res) => {
+  res.status(200).send("auth route exist");
+});
+
+router.get("/v1/callback", generateAuthUrl);
+
+export default router;
