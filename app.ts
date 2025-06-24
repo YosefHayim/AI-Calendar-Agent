@@ -1,6 +1,8 @@
 import { CONFIG } from "./config/env-config";
 import express from "express";
-import authRouter from "./routes/auth";
+import authRouter from "./routes/auth-route";
+import calendarRoute from "./routes/calendar-route";
+import errorHandler from "./middlewares/error-handler";
 
 const app = express();
 const PORT = CONFIG.port;
@@ -13,5 +15,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/calendar", calendarRoute);
+
+app.use(errorHandler);
 
 app.listen(PORT);

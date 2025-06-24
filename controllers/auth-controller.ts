@@ -1,24 +1,17 @@
-import { google } from "googleapis";
-import { CONFIG } from "../config/env-config";
 import { Request, Response } from "express";
 import fs from "fs";
 import { CREDENTIALS_FILE_PATH } from "../config/paths";
 import CREDENTIALS from "../CREDENTIALS.json";
+import { oauth2Client, SCOPES } from "../config/oauth-config";
 
 const generateAuthUrl = async (req: Request, res: Response): Promise<any> => {
-  const oauth2Client = new google.auth.OAuth2(CONFIG.client_id, CONFIG.client_secret, CONFIG.redirect_url);
-
   const code = req.query.code as string | undefined;
 
   // 1. No code yet: send user to consent screen
   if (!code) {
     const url = oauth2Client.generateAuthUrl({
       access_type: "offline",
-      scope: [
-        "https://www.googleapis.com/auth/calendar.events.owned.readonly",
-        "https://www.googleapis.com/auth/calendar.events.owned",
-        "https://www.googleapis.com/auth/calendar.freebusy",
-      ],
+      scope: SCOPES,
     });
     return res.redirect(url);
   }
