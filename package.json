@@ -18,9 +18,8 @@
   "scripts": {
     "dev": "npx nodemon app.ts",
     "format": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
-    "prepare": "husky",
-    "sort": "npx sort-package-json",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepare": "husky && husky install",
+    "sort": "npx sort-package-json"
   },
   "dependencies": {
     "@googleapis/docs": "^4.0.1",
@@ -33,7 +32,7 @@
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.3",
-    "husky": "^9.1.7",
+    "husky": "^8.0.0",
     "prettier": "3.6.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
