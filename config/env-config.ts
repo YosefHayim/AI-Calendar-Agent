@@ -1,4 +1,5 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
+import { setDefaultOpenAIKey } from '@openai/agents';
 
 dotenv.config();
 
@@ -10,3 +11,5 @@ export const CONFIG = {
   redirect_url: process.env.REDIRECT_URL,
   port: process.env.PORT,
 };
+
+setDefaultOpenAIKey(CONFIG.open_ai_api_key!);

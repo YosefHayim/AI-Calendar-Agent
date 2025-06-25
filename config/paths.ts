@@ -1,3 +1,3 @@
-import path from "path";
+import path from 'path';
 
-export const CREDENTIALS_FILE_PATH = path.resolve(process.cwd(), "CREDENTIALS.JSON");
+export const CREDENTIALS_FILE_PATH = path.resolve(process.cwd(), 'CREDENTIALS.JSON');
