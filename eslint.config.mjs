@@ -6,12 +6,10 @@ import tseslint from 'typescript-eslint';
 export default defineConfig(
   [
     { files: ['**/*.{js,mjs,cjs,ts,mts,cts}'], plugins: { js }, extends: ['js/recommended'] },
-    { files: ['**/*.js'], languageOptions: { sourceType: 'script' } },
     { files: ['**/*.{js,mjs,cjs,ts,mts,cts}'], languageOptions: { globals: globals.browser } },
     tseslint.configs.recommended,
   ],
   {
-    extends: ['js/recommended'],
     rules: {
       'no-unused-vars': 'error',
       'eslint no-unassigned-vars': 'error',

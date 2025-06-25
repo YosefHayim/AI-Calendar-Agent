@@ -3,5 +3,6 @@
   "singleQuote": true,
   "bracketSameLine": true,
   "arrowParens": "always",
-  "jsxSingleQuote": true
+  "jsxSingleQuote": true,
+  "bracketSpacing": true
 }
