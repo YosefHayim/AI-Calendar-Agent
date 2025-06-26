@@ -3,7 +3,7 @@ import { calendar, oauth2Client } from '../config/oauth-config';
 
 import { Response } from 'express';
 
-const requestConfigBase:ConfigBase = {
+const requestConfigBase: ConfigBase = {
   auth: oauth2Client,
   calendarId: 'primary',
   supportsAttachments: true,
