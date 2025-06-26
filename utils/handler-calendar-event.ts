@@ -1,9 +1,9 @@
+import { Action, ConfigBase, eventDataRequest } from '../types';
 import { calendar, oauth2Client } from '../config/oauth-config';
 
 import { Response } from 'express';
-import { calendar_v3 } from 'googleapis';
 
-const requestConfigBase = {
+const requestConfigBase:ConfigBase = {
   auth: oauth2Client,
   calendarId: 'primary',
   supportsAttachments: true,
@@ -12,8 +12,8 @@ const requestConfigBase = {
 
 export const handleCalendarEvent = async (
   res: Response,
-  action: 'insert' | 'update' | 'get',
-  eventData?: calendar_v3.Schema$Event,
+  action: Action,
+  eventData?: eventDataRequest,
 ): Promise<void> => {
   try {
     const calendarEvents = calendar.events;

@@ -1,5 +1,6 @@
 import { calendar, oauth2Client } from '../config/oauth-config';
 
+import { Action } from '../types';
 import CREDENTIALS from '../CREDENTIALS.json';
 import asyncHandler from '../utils/async-handler';
 import { calendar_v3 } from 'googleapis';
@@ -19,7 +20,7 @@ const getAllCalendars = asyncHandler(async (req, res) => {
 });
 
 const getAllEvents = asyncHandler(async (req, res) => {
-  await handleCalendarEvent(res, 'get');
+  await handleCalendarEvent(res, Action.GET);
 });
 
 const createEvent = asyncHandler(async (req, res) => {
@@ -33,7 +34,7 @@ const createEvent = asyncHandler(async (req, res) => {
     });
   }
 
-  handleCalendarEvent(res, 'insert', req.body);
+  handleCalendarEvent(res, Action.INSERT, req.body);
 });
 
 const updateEvent = asyncHandler(async (req, res) => {
@@ -47,7 +48,7 @@ const updateEvent = asyncHandler(async (req, res) => {
     });
   }
 
-  handleCalendarEvent(res, 'update', req.body);
+  handleCalendarEvent(res, Action.UPDATE, req.body);
 });
 
 const calendarController = {
