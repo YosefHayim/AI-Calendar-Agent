@@ -1,15 +1,10 @@
-import { calendar, oauth2Client } from '../config/oauth-config';
-
 import { Action } from '../types';
-import CREDENTIALS from '../CREDENTIALS.json';
 import asyncHandler from '../utils/async-handler';
+import { calendar } from '../config/root-config';
 import { calendar_v3 } from 'googleapis';
 import { handleCalendarEvent } from '../utils/handler-calendar-event';
 import isEventReqValid from '../utils/is-event-request-valid';
 import throwHttpError from '../utils/error-template';
-
-if (!CREDENTIALS.access_token) throwHttpError('No access token. Authenticate first.', 401);
-oauth2Client.setCredentials(CREDENTIALS);
 
 const getAllCalendars = asyncHandler(async (req, res) => {
   const result = await calendar.calendarList.list();
@@ -27,11 +22,7 @@ const createEvent = asyncHandler(async (req, res) => {
   const event: calendar_v3.Schema$Event = req.body?.event;
 
   if (!isEventReqValid(event)) {
-    return res.status(400).json({
-      status: 'Failed',
-      message: 'Bad request, some of the event fields are null or undefined',
-      dataRecieved: event,
-    });
+    throwHttpError('Bad request, some of the event fields are null or undefined', 400);
   }
 
   handleCalendarEvent(res, Action.INSERT, req.body);
@@ -41,11 +32,10 @@ const updateEvent = asyncHandler(async (req, res) => {
   const event: calendar_v3.Schema$Event = req.body?.event;
 
   if (Object.values(event).some((ev) => ev === null || ev === undefined)) {
-    return res.status(404).json({
-      status: 'Failed',
-      message: 'Bad request, some of the event fields are null or undefined',
-      dataRecieved: event,
-    });
+    throwHttpError(
+      'Bad request, some of the event fields are null or undefined in order to update',
+      404,
+    );
   }
 
   handleCalendarEvent(res, Action.UPDATE, req.body);

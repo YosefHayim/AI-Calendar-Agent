@@ -1,7 +1,8 @@
 import { Action, eventDataRequest } from '../types';
-import { calendar, oauth2Client, requestConfigBase } from '../config/oauth-config';
+import { calendar, requestConfigBase } from '../config/root-config';
 
 import { Response } from 'express';
+import throwHttpError from './error-template';
 
 export const handleCalendarEvent = async (
   res: Response,
@@ -40,10 +41,7 @@ export const handleCalendarEvent = async (
         break;
 
       default:
-        res.status(400).json({
-          status: 'error',
-          message: 'Unsupported calendar action',
-        });
+        throwHttpError('Unsupported calendar action', 400);
     }
 
     res.status(200).json({
@@ -52,9 +50,6 @@ export const handleCalendarEvent = async (
       data: result?.data,
     });
   } catch (error: any) {
-    res.status(500).json({
-      status: 'error',
-      message: error.message || 'Something went wrong',
-    });
+    throwHttpError(error.message || 'Internal Server Error', 500);
   }
 };

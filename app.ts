@@ -1,4 +1,5 @@
-import { CONFIG } from './config/env-config';
+import { CONFIG } from './config/root-config';
+import CREDENTIALS from './CREDENTIALS.json';
 import authRouter from './routes/auth-route';
 import calendarRoute from './routes/calendar-route';
 import cors from 'cors';
@@ -15,7 +16,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
-  res.send('Welcome to backend of AI Calendar Agent');
+  if (!CONFIG.open_ai_api_key) {
+    throw new Error('OpenAI API key is not set in the environment variables.');
+  }
+
+  if (!CREDENTIALS.access_token) res.redirect(`${CONFIG.redirect_url}/api/auth/v1/callback`);
+  res.status(200).send('Server is running and everything is established correctly.');
 });
 
 app.use('/api/auth', authRouter);
@@ -23,4 +29,6 @@ app.use('/api/calendar', calendarRoute);
 
 app.use(errorHandler);
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});

@@ -1,8 +1,7 @@
+import { CREDENTIALS_FILE_PATH, SCOPES, oauth2Client } from '../config/root-config';
 import { Request, Response } from 'express';
-import { SCOPES, oauth2Client } from '../config/oauth-config';
 
 import CREDENTIALS from '../CREDENTIALS.json';
-import { CREDENTIALS_FILE_PATH } from '../config/paths';
 import fs from 'fs';
 
 const generateAuthUrl = async (req: Request, res: Response): Promise<any> => {
