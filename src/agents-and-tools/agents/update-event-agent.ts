@@ -2,9 +2,7 @@ import * as z from 'zod';
 
 import { Agent } from '@openai/agents';
 
-const updateEventAgentSchema = {
-  
-};
+const updateEventAgentSchema = {};
 
 export const updateEventAgent = new Agent({
   name: 'Update Event Agent',
