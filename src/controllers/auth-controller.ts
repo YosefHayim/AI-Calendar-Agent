@@ -20,8 +20,7 @@ const generateAuthUrl = async (req: Request, res: Response): Promise<any> => {
   try {
     // 2. Check if existing token is expired
     const now = Date.now();
-    const isExpired =
-      !CREDENTIALS.expiry_date || !CREDENTIALS.access_token || now >= CREDENTIALS.expiry_date;
+    const isExpired = !CREDENTIALS.expiry_date || !CREDENTIALS.access_token || now >= CREDENTIALS.expiry_date;
 
     if (isExpired) {
       console.log('Access token expired or missing. Requesting new token...');

@@ -18,10 +18,7 @@ const calendarAssistant = Agent.create({
 });
 
 (async () => {
-  const result = await run(
-    calendarAssistant,
-    'add an appointment to my calendar for tomorrow at 3 PM',
-  );
+  const result = await run(calendarAssistant, 'add an appointment to my calendar for tomorrow at 3 PM');
 
   console.log(result.finalOutput);
 })();

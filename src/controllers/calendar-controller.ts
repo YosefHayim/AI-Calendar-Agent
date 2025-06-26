@@ -14,9 +14,7 @@ oauth2Client.setCredentials(CREDENTIALS);
 const getAllCalendars = asyncHandler(async (req, res) => {
   const result = await calendar.calendarList.list();
 
-  res
-    .status(200)
-    .json({ status: 'success', message: 'All your current calendars', data: result.data });
+  res.status(200).json({ status: 'success', message: 'All your current calendars', data: result.data });
 });
 
 const getAllEvents = asyncHandler(async (req, res) => {
