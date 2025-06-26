@@ -1,9 +1,10 @@
 import { calendar, oauth2Client } from '../config/oauth-config';
 
 import CREDENTIALS from '../CREDENTIALS.json';
-import { asyncHandler } from '../utils/async-handler';
-import calendarApi from '../utils/calendarApi';
+import asyncHandler from '../utils/async-handler';
 import { calendar_v3 } from 'googleapis';
+import { handleCalendarEvent } from '../utils/handler-calendar-event';
+import isEventReqValid from '../utils/is-event-request-valid';
 import throwHttpError from '../utils/error-template';
 
 if (!CREDENTIALS.access_token) throwHttpError('No access token. Authenticate first.', 401);
@@ -17,8 +18,26 @@ const getAllCalendars = asyncHandler(async (req, res) => {
     .json({ status: 'success', message: 'All your current calendars', data: result.data });
 });
 
+const getAllEvents = asyncHandler(async (req, res) => {
+  await handleCalendarEvent(res, 'get');
+});
+
 const createEvent = asyncHandler(async (req, res) => {
-  const event: calendar_v3.Schema$Event = req.body.event;
+  const event: calendar_v3.Schema$Event = req.body?.event;
+
+  if (!isEventReqValid(event)) {
+    return res.status(400).json({
+      status: 'Failed',
+      message: 'Bad request, some of the event fields are null or undefined',
+      dataRecieved: event,
+    });
+  }
+
+  handleCalendarEvent(res, 'insert', req.body);
+});
+
+const updateEvent = asyncHandler(async (req, res) => {
+  const event: calendar_v3.Schema$Event = req.body?.event;
 
   if (Object.values(event).some((ev) => ev === null || ev === undefined)) {
     return res.status(404).json({
@@ -28,13 +47,12 @@ const createEvent = asyncHandler(async (req, res) => {
     });
   }
 
-  calendarApi(res, event);
+  handleCalendarEvent(res, 'update', req.body);
 });
-
-const updateEvent = asyncHandler(async (req, res) => {});
 
 const calendarController = {
   getAllCalendars,
+  getAllEvents,
   createEvent,
   updateEvent,
 };

@@ -15,6 +15,7 @@ export default defineConfig(
       'eslint no-unassigned-vars': 'error',
       'eslint no-template-curly-in-string': 'error',
       'prefer-const': 'warn',
+      'keyword-spacing': ['error', { before: true, after: true }],
     },
   },
 );
