@@ -3,6 +3,7 @@ import * as z from 'zod/v4';
 import { Agent, tool } from '@openai/agents';
 import { calendar, requestConfigBase } from '../../config/oauth-config';
 
+import { GaxiosPromise } from 'googleapis/build/src/apis/abusiveexperiencereport';
 import { calendar_v3 } from 'googleapis';
 
 const CalendarInsertEventSchema = z.object({
@@ -36,7 +37,7 @@ const CalendarInsertEventSchema = z.object({
   created: z.iso.datetime().optional(),
   creator: z.object({
     displayName: z.string().optional(),
-    email: z.string() && z.email().optional(),
+    email: z.email().optional(),
     id: z.string().optional(),
     self: z.boolean().optional(),
   }),
@@ -114,12 +115,10 @@ const CalendarInsertEventSchema = z.object({
   visibility: z.enum(['default', 'public', 'private', 'confidential']).optional(),
 });
 
-const insertEvent = async (
-  eventData: calendar_v3.Params$Resource$Events$Insert,
-): Promise<calendar_v3.Schema$Event> => {
+const insertEvent = async (eventData: calendar_v3.Params$Resource$Events$Insert): GaxiosPromise => {
   try {
     const response = await calendar.events.insert({ ...requestConfigBase, ...eventData });
-    return response?.data as calendar_v3.Schema$Event;
+    return response;
   } catch (error) {
     console.log('Failed to insert event by agent.:', error);
     throw new Error('Failed to insert event by agent.');
@@ -139,5 +138,11 @@ export const insertEventAgent = new Agent({
 });
 
 const insertEventTool = tool({
-  description: ' Insert an event into the calendar',
+  name: 'insertEvent',
+  description: ' Insert an event into the calendar using the provided event data.',
+  parameters: CalendarInsertEventSchema,
+  execute: async (eventData: unknown) => {
+    const validatedEventData = CalendarInsertEventSchema.parse(eventData);
+    return insertEvent(validatedEventData as calendar_v3.Params$Resource$Events$Insert);
+  },
 });

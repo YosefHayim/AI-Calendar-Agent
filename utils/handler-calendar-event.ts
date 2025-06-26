@@ -14,7 +14,14 @@ export const handleCalendarEvent = async (
 
     switch (action) {
       case 'get':
-        result = await calendarEvents.list(requestConfigBase);
+        const timeMin = new Date();
+        timeMin.setDate(timeMin.getDate() - 10);
+
+        result = await calendarEvents.list({
+          ...requestConfigBase,
+          calendarId: 'primary',
+          timeMin: timeMin.toISOString(),
+        });
         break;
 
       case 'insert':
