@@ -1,14 +1,7 @@
-import { Action, ConfigBase, eventDataRequest } from '../types';
-import { calendar, oauth2Client } from '../config/oauth-config';
+import { Action, eventDataRequest } from '../types';
+import { calendar, oauth2Client, requestConfigBase } from '../config/oauth-config';
 
 import { Response } from 'express';
-
-const requestConfigBase: ConfigBase = {
-  auth: oauth2Client,
-  calendarId: 'primary',
-  supportsAttachments: true,
-  sendNotifications: true,
-};
 
 export const handleCalendarEvent = async (
   res: Response,

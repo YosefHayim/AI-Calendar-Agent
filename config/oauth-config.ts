@@ -16,6 +16,13 @@ oauth2Client.setCredentials({
 
 export const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
+export const requestConfigBase = {
+  auth: oauth2Client,
+  calendarId: 'primary',
+  supportsAttachments: true,
+  sendNotifications: true,
+};
+
 export const SCOPES = [
   'https://www.googleapis.com/auth/calendar.app.created',
   'https://www.googleapis.com/auth/calendar.events',

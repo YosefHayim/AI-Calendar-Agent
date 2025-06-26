@@ -6,6 +6,6 @@ const router = express.Router();
 // get info about all the calendars of user
 router.get('/', calendarController.getAllCalendars);
 
-router.get('/new-event', calendarController.createEvent);
+router.get('/events', calendarController.getAllEvents);
 
 export default router;
