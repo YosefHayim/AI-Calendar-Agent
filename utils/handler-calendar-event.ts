@@ -1,4 +1,4 @@
-import { Action, eventDataRequest } from '../types';
+import { Action, EventDataRequest } from '../types';
 import { calendar, requestConfigBase } from '../config/root-config';
 
 import { Response } from 'express';
@@ -7,7 +7,7 @@ import throwHttpError from './error-template';
 export const handleCalendarEvent = async (
   res: Response,
   action: Action,
-  eventData?: eventDataRequest,
+  eventData?: EventDataRequest,
 ): Promise<void> => {
   try {
     const calendarEvents = calendar.events;

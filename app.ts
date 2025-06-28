@@ -16,10 +16,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
-  if (!CONFIG.open_ai_api_key) {
-    throw new Error('OpenAI API key is not set in the environment variables.');
-  }
-
   if (!CREDENTIALS.access_token) res.redirect(`${CONFIG.redirect_url}/api/auth/v1/callback`);
   res.status(200).send('Server is running and everything is established correctly.');
 });

@@ -6,4 +6,4 @@ export enum Action {
   UPDATE = 'update',
 }
 
-export type eventDataRequest = calendar_v3.Schema$Event;
+export type EventDataRequest = calendar_v3.Schema$Event;

@@ -4,8 +4,7 @@ import { google } from 'googleapis';
 import path from 'path';
 import { setDefaultOpenAIKey } from '@openai/agents';
 
-dotenv.config();
-
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 export const CREDENTIALS_FILE_PATH = path.resolve(process.cwd(), 'CREDENTIALS.JSON');
 
 export const CONFIG = {
@@ -17,14 +16,14 @@ export const CONFIG = {
   port: process.env.PORT,
 };
 
-() => {
+(() => {
   if (!CONFIG.open_ai_api_key) {
     throw new Error('OpenAI API key is not set in the environment variables.');
   } else {
     console.log('OpenAI API key is set.');
   }
   setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
-};
+})();
 
 export const oauth2Client = new google.auth.OAuth2(
   CONFIG.client_id,
@@ -44,8 +43,6 @@ export const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 export const requestConfigBase = {
   auth: oauth2Client,
   calendarId: 'primary',
-  supportsAttachments: true,
-  sendNotifications: true,
 };
 
 export const SCOPES = [

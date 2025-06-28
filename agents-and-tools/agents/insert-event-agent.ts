@@ -1,39 +1,61 @@
 import { Agent, tool } from '@openai/agents';
 import { calendar, requestConfigBase } from '../../config/root-config';
 
+import { CalenderRequestInsertSchema } from '../parameters-storage';
+import { EventDataRequest } from '../../types';
 import { GaxiosPromise } from 'googleapis/build/src/apis/abusiveexperiencereport';
 import { calendar_v3 } from 'googleapis';
-import { calenderRequestSchema } from '../parameters-storage';
+import throwHttpError from '../../utils/error-template';
 
 const insertEvent = tool({
-  name: 'insertEvent',
-  description: ' Insert an event into the calendar using the provided event data.',
-  parameters: calenderRequestSchema,
-  execute: async (input: unknown): GaxiosPromise<calendar_v3.Schema$Event> => {
-    const eventData = input as calendar_v3.Params$Resource$Events$Insert;
-    let r;
+  name: 'insert_event',
+  description: 'Insert an event into the calendar.',
+  strict: true,
+  parameters: CalenderRequestInsertSchema,
+  execute: async (data): Promise<calendar_v3.Schema$Event> => {
+    const eventData = CalenderRequestInsertSchema.parse(data);
 
-    try {
-      r = await calendar.events.insert({ ...requestConfigBase, ...eventData });
-    } catch (error) {
-      console.log('Failed to insert event by agent.:', error);
-      throw new Error('Failed to insert event by agent.');
-    } finally {
+    const response = await calendar.events.insert({
+      ...requestConfigBase,
+      requestBody: eventData,
+    });
+
+    if (!response || !response.data) {
+      throwHttpError('No response received from calendar API.', 500);
     }
-    if (!r) throw new Error('Failed to insert event by agent.');
 
-    return r;
+    return response.data;
   },
 });
 
 export const insertEventAgent = new Agent({
   name: 'Insert Event Agent',
-  model: 'gpt-4',
-  instructions:
-    ' You are an agent that helps users insert events into their calendar. When a user asks to add, insert, or schedule an event, you will handle the request.',
-  handoffDescription:
-    ' If the user asks about adding, inserting, or scheduling an event, you will handle the request. You will not handle requests related to updating or deleting events.',
-  outputType: 'text',
+  model: 'o4-mini-2025-04-16',
+  instructions: `
+  You are a smart calendar assistant.
+  
+  Your job is to schedule events based on what the user asks — no matter how the request is phrased.
+  
+  Always use the "insertEvent" tool to create the event.
+  
+  Extract the following from the user's message:
+  - Title or subject of the event
+  - Start time and date
+  - End time and date (or infer a reasonable duration)
+  - Optional: description or location if mentioned
+  
+  If the user is vague about timing (e.g., "in 2 hours", "tomorrow morning"), interpret it into a proper datetime in ISO format using the current system time as reference.
+  
+  Assume defaults if needed:
+  - If the user doesn't provide a duration, default to 1 hour.
+  - If the user doesn't give a title, use "Untitled Event".
+  
+  Never ignore a request to schedule — always try to insert something.
+  
+  Only rpond with the final output after the event is successfully inserted.
+  `,
+  outputType: CalenderRequestInsertSchema,
+
   toolUseBehavior: 'run_llm_again',
   tools: [insertEvent],
 });
