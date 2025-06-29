@@ -1,42 +1,35 @@
-import { calendar, requestConfigBase } from './config/root-config';
+import { Agent, run, setDefaultOpenAIKey, tool } from '@openai/agents';
+import { CONFIG, calendar, requestConfigBase } from './config/root-config';
 
-import { Agent } from '@openai/agents';
 import { GaxiosPromise } from 'googleapis/build/src/apis/abusiveexperiencereport';
 import { calendar_v3 } from 'googleapis';
 import z from 'zod';
+
+setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 
 const SchemaEvent = z.object({
   summary: z.string(),
   description: z.string().nullable(),
   start: z.object({
-    dateTime: z.string(),
-    timeZone: z.string(),
+    dateTime: z.date().transform((str) => new Date(str).toISOString()),
+    timeZone: z.string().default('Asia/Jerusalem'),
   }),
   end: z.object({
-    dateTime: z.string(),
-    timeZone: z.string(),
+    dateTime: z.date().transform((str) => new Date(str).toISOString()),
+    timeZone: z.string().default('Asia/Jerusalem'),
   }),
   location: z.string().nullable(),
 });
 
-const insertEventTool = async (): GaxiosPromise<calendar_v3.Schema$Event> => {
+const insertEventFn = async (
+  eventData: calendar_v3.Schema$Event,
+): GaxiosPromise<calendar_v3.Schema$Event> => {
   try {
     const r = await calendar.events.insert({
       ...requestConfigBase,
-      requestBody: {
-        summary: 'Sample Event',
-        description: 'This is a sample event description.',
-        start: {
-          dateTime: new Date().toISOString(), // Example date in ISO format
-          timeZone: 'Asia/Jeruslam', // Specify the time zone
-        },
-        end: {
-          dateTime: new Date().toISOString(), // Example end time in ISO format
-          timeZone: 'Asia/Jeruslam', // Specify the time zone
-        },
-      },
+      requestBody: eventData,
     });
-    if (r) console.log(r);
+    if (r) console.log('fn returned: ', r);
     return r;
   } catch (error) {
     console.error('Error inserting event:', error);
@@ -44,13 +37,51 @@ const insertEventTool = async (): GaxiosPromise<calendar_v3.Schema$Event> => {
   }
 };
 
-const insertEventAgent = new Agent({
-  name: 'insert_event',
+const insertEventTool = tool({
+  name: 'insert_event_tool',
+  parameters: SchemaEvent,
+  needsApproval: true,
   description: 'Insert an event into the calendar',
+  execute: async (params) => {
+    const parsedParams = SchemaEvent.parse(params);
+    const eventData: calendar_v3.Schema$Event = {
+      summary: parsedParams.summary,
+      description: parsedParams.description,
+      start: {
+        dateTime: parsedParams.start.dateTime,
+        timeZone: parsedParams.start.timeZone,
+      },
+      end: {
+        dateTime: parsedParams.end.dateTime,
+        timeZone: parsedParams.end.timeZone,
+      },
+      location: parsedParams.location,
+    };
+
+    return insertEventFn(eventData);
+  },
+});
+
+const insertEventFnAgent = new Agent({
+  name: 'insert_event',
   instructions: `You are an agent that inserts events into a calendar.
-You will receive details about the event, such as the title, date, time, and location. Your task is to format this information correctly and call the insertEventTool to add the event to the calendar.
-make sure that the date will be in ISO foramt: YYYY-MM-DDTHOUR:MIN:SECONDS.000Z . for example: 2025-06-28T19:16:14.000Z.
+You will receive details about the event, such as the summary and a date. Your task is to format this information correctly and call the insertEventTool to add the event to the calendar.
+make sure that the date will be in ISO foramt, for example: 2025-06-28T19:16:14.000Z.
 `,
-  outputType: SchemaEvent,
+  outputType: 'text',
   tools: [insertEventTool],
 });
+
+const main = async () => {
+  try {
+    const r = await run(
+      insertEventFnAgent,
+      'add event to my calendar summary eating with my mom use today date june 29 17',
+    );
+    console.log(r.history);
+  } catch (error) {
+    console.error('Error during run of agent: ', error);
+  }
+};
+
+main();
