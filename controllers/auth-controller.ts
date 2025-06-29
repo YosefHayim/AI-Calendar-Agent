@@ -1,28 +1,32 @@
 import { CREDENTIALS_FILE_PATH, SCOPES, oauth2Client } from '../config/root-config';
-import { Request, Response } from 'express';
 
 import CREDENTIALS from '../CREDENTIALS.json';
+import asyncHandler from '../utils/async-handler';
 import fs from 'fs';
 
-const generateAuthUrl = async (req: Request, res: Response): Promise<any> => {
+const generateAuthUrl = asyncHandler(async (req, res) => {
   const code = req.query.code as string | undefined;
+  const postman = req.headers['user-agent'];
+
+  const url = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: SCOPES,
+  });
 
   // 1. No code yet: send user to consent screen
   if (!code) {
-    const url = oauth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: SCOPES,
-    });
+    // If from Postman, just send the URL back instead of redirecting
+    if (postman?.includes('Postman')) {
+      return res.status(200).send({ status: 'success', url });
+    }
     return res.redirect(url);
   }
 
   try {
     // 2. Check if existing token is expired
     const now = Date.now();
-    const isExpired =
-      !CREDENTIALS.expiry_date || !CREDENTIALS.access_token || now >= CREDENTIALS.expiry_date;
 
-    if (isExpired) {
+    if (now >= CREDENTIALS.expiry_date) {
       console.log('Access token expired or missing. Requesting new token...');
 
       const { tokens } = await oauth2Client.getToken(code);
@@ -48,6 +52,6 @@ const generateAuthUrl = async (req: Request, res: Response): Promise<any> => {
     console.error('generateAuthUrl error:', error);
     return res.status(500).json({ error: 'Failed to process OAuth token exchange.' });
   }
-};
+});
 
 export default generateAuthUrl;

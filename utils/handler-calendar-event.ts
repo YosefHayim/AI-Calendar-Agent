@@ -1,55 +1,58 @@
-import { Action, EventDataRequest } from '../types';
+import { Action, SchemaEventProps } from '../types';
 import { calendar, requestConfigBase } from '../config/root-config';
 
 import { Response } from 'express';
-import throwHttpError from './error-template';
+import errorFn from './error-template';
+import sendR from './sendR';
 
-export const handleCalendarEvent = async (
+export const handleEvents = async (
   res: Response,
   action: Action,
-  eventData?: EventDataRequest,
+  eventData?: SchemaEventProps,
 ): Promise<void> => {
   try {
     const calendarEvents = calendar.events;
-    let result;
+    let r;
 
     switch (action) {
-      case 'get':
-        const timeMin = new Date();
-        timeMin.setDate(timeMin.getDate() - 10);
-
-        result = await calendarEvents.list({
+      case Action.GET:
+        r = await calendarEvents.list({
           ...requestConfigBase,
-          calendarId: 'primary',
-          timeMin: timeMin.toISOString(),
+          timeMin: new Date().toISOString(),
         });
         break;
 
-      case 'insert':
-        result = await calendarEvents.insert({
+      case Action.INSERT:
+        r = await calendarEvents.insert({
           ...requestConfigBase,
           requestBody: eventData,
         });
         break;
 
-      case 'update':
-        result = await calendarEvents.update({
+      case Action.UPDATE:
+        r = await calendarEvents.update({
           ...requestConfigBase,
-          eventId: eventData?.id!, // required for update
           requestBody: eventData,
+        });
+        break;
+
+      case Action.DELETE:
+        if (eventData && !eventData.id) {
+          errorFn('Event ID is required for deletion', 400, res);
+          return;
+        }
+        r = await calendarEvents.delete({
+          ...requestConfigBase,
+          eventId: eventData?.id || '',
         });
         break;
 
       default:
-        throwHttpError('Unsupported calendar action', 400);
+        errorFn('Unsupported calendar action', 400);
     }
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Event operation completed successfully',
-      data: result?.data,
-    });
-  } catch (error: any) {
-    throwHttpError(error.message || 'Internal Server Error', 500);
+    sendR(res)(200, 'Event operation completed successfully', r?.data);
+  } catch (error) {
+    errorFn(`Internal Server Error ${error}`, 500);
   }
 };

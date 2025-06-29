@@ -1,44 +1,42 @@
-import { Action } from '../types';
+import { Action, SchemaEventProps } from '../types';
+import { calendar, requestConfigBase } from '../config/root-config';
+
 import asyncHandler from '../utils/async-handler';
-import { calendar } from '../config/root-config';
-import { calendar_v3 } from 'googleapis';
-import { handleCalendarEvent } from '../utils/handler-calendar-event';
-import isEventReqValid from '../utils/is-event-request-valid';
-import throwHttpError from '../utils/error-template';
+import { handleEvents } from '../utils/handler-calendar-event';
+import sendR from '../utils/sendR';
 
 const getAllCalendars = asyncHandler(async (req, res) => {
-  const result = await calendar.calendarList.list();
+  const r = await calendar.calendarList.list();
 
-  res
-    .status(200)
-    .json({ status: 'success', message: 'All your current calendars', data: result.data });
+  const allCalendars = r.data.items?.map((item) => item.summary);
+  sendR(res)(200, 'Successfully recieved your current calendars', allCalendars);
+});
+
+const getSpecificEvent = asyncHandler(async (req, res) => {
+  const eventId = req.params.id;
+  const r = await calendar.events.get({ ...requestConfigBase, eventId });
+  if (r) sendR(res)(200, 'Event retrieved successfully', r.data);
+  else sendR(res)(404, 'Event not found');
 });
 
 const getAllEvents = asyncHandler(async (req, res) => {
-  await handleCalendarEvent(res, Action.GET);
+  await handleEvents(res, Action.GET);
 });
 
 const createEvent = asyncHandler(async (req, res) => {
-  const event: calendar_v3.Params$Resource$Events$Insert = req.body.event;
-
-  if (!isEventReqValid(event)) {
-    throwHttpError('Bad request, some of the event fields are null or undefined', 400);
-  }
-
-  handleCalendarEvent(res, Action.INSERT, req.body);
+  const event: SchemaEventProps = req.body;
+  handleEvents(res, Action.INSERT, event);
 });
 
 const updateEvent = asyncHandler(async (req, res) => {
-  const event: calendar_v3.Schema$Event = req.body?.event;
+  const event: SchemaEventProps = req.body;
+  handleEvents(res, Action.UPDATE, event);
+});
 
-  if (Object.values(event).some((ev) => ev === null || ev === undefined)) {
-    throwHttpError(
-      'Bad request, some of the event fields are null or undefined in order to update',
-      404,
-    );
-  }
+const deleteEvent = asyncHandler(async (req, res) => {
+  const eventId = req.params.id;
 
-  handleCalendarEvent(res, Action.UPDATE, req.body);
+  handleEvents(res, Action.DELETE, { id: eventId });
 });
 
 const calendarController = {
@@ -46,6 +44,8 @@ const calendarController = {
   getAllEvents,
   createEvent,
   updateEvent,
+  deleteEvent,
+  getSpecificEvent,
 };
 
 export default calendarController;

@@ -1,7 +1,17 @@
-const throwHttpError = (message: string, status: number): never => {
-  const error = new Error(message);
-  (error as any).status = status;
-  throw error;
+import { Response } from 'express';
+
+const errorFn = (message: string, status: number, res?: Response): void => {
+  const error = new Error(message, { cause: { status } });
+
+  if (res) {
+    res?.status(status).json({
+      status: 'error',
+      code: status,
+      message: error.message,
+    });
+  }
+
+  throw Error(message, { cause: { status } });
 };
 
-export default throwHttpError;
+export default errorFn;

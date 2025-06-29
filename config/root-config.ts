@@ -40,8 +40,10 @@ oauth2Client.setCredentials({
 export const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
 export const requestConfigBase = {
-  auth: oauth2Client,
   calendarId: 'primary',
+  auth: oauth2Client,
+  sendUpdates: 'all',
+  supportsAttachments: true,
 };
 
 export const SCOPES = [

@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
-  if (CREDENTIALS.expiry_date < Date.now()) {
+  if (CREDENTIALS.expiry_date <= Date.now()) {
     res.redirect(`${CONFIG.redirect_url}`);
   } else {
     res.status(200).send('Server is running and everything is established correctly.');

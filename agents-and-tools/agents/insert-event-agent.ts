@@ -2,16 +2,16 @@ import { Agent, tool } from '@openai/agents';
 import { calendar, requestConfigBase } from '../../config/root-config';
 
 import { CalenderRequestInsertSchema } from '../parameters-storage';
-import { EventDataRequest } from '../../types';
-import { GaxiosPromise } from 'googleapis/build/src/apis/abusiveexperiencereport';
 import { calendar_v3 } from 'googleapis';
-import throwHttpError from '../../utils/error-template';
+import errorFn from '../../utils/error-template';
 
 const insertEvent = tool({
   name: 'insert_event',
-  description: 'Insert an event into the calendar.',
+  description: 'Insert event into the calendar.',
   strict: true,
+  needsApproval: true,
   parameters: CalenderRequestInsertSchema,
+
   execute: async (data): Promise<calendar_v3.Schema$Event> => {
     const eventData = CalenderRequestInsertSchema.parse(data);
 
@@ -20,11 +20,11 @@ const insertEvent = tool({
       requestBody: eventData,
     });
 
-    if (!response || !response.data) {
-      throwHttpError('No response received from calendar API.', 500);
+    if (!response) {
+      errorFn('No response received from calendar API.', 500);
     }
 
-    return response.data;
+    return response?.data;
   },
 });
 
