@@ -4,13 +4,12 @@ import { calendar, requestConfigBase } from '../config/root-config';
 import { Response } from 'express';
 import errorFn from './error-template';
 import formatDate from './formatDate';
-import sendR from './sendR';
 
 export const handleEvents = async (
   res: Response,
   action: Action,
   eventData?: SchemaEventProps,
-): Promise<void> => {
+): Promise<any> => {
   try {
     const calendarEvents = calendar.events;
     let r;
@@ -53,10 +52,6 @@ export const handleEvents = async (
         break;
 
       case Action.DELETE:
-        if (eventData && !eventData.id) {
-          errorFn('Event ID is required for deletion', 400, res);
-          return;
-        }
         r = await calendarEvents.delete({
           ...requestConfigBase,
           eventId: eventData?.id || '',
@@ -67,7 +62,12 @@ export const handleEvents = async (
         errorFn('Unsupported calendar action', 400);
     }
 
-    sendR(res)(200, 'Event operation completed successfully', r);
+    if (!r) {
+      errorFn('No response from calendar API', 500, res);
+      return;
+    }
+
+    return r;
   } catch (error) {
     errorFn(`Internal Server Error ${error}`, 500);
   }

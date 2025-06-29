@@ -12,9 +12,12 @@ router.get('/events', calendarController.getAllEvents);
 // create a new event
 router.post('/', calendarController.createEvent);
 
-router.patch('/', calendarController.updateEvent);
+router.get('/:eventId', calendarController.getSpecificEvent);
+
+// update an existing event
+router.patch('/:eventId', calendarController.updateEvent);
 
 // delete an event from the user calendar
-router.delete('/', calendarController.deleteEvent);
+router.delete('/:eventId', calendarController.deleteEvent);
 
 export default router;
