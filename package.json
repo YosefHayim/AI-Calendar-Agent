@@ -1,7 +1,7 @@
 {
   "name": "ai-calendar-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "AI Calendar assitant via whatsapp account.",
   "keywords": [],
   "homepage": "https://github.com/YosefHayim/AI-Calendar-Server#readme",
   "bugs": {
@@ -17,8 +17,8 @@
   "main": "app.ts",
   "scripts": {
     "dev": "npx nodemon app.ts",
-    "format": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
     "prepare": "husky && husky install",
+    "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
     "sort": "npx sort-package-json"
   },
   "dependencies": {

@@ -8,4 +8,6 @@ router.get('/', calendarController.getAllCalendars);
 
 router.get('/events', calendarController.getAllEvents);
 
+router.post('/', calendarController.createEvent);
+
 export default router;

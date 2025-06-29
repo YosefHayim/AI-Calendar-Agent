@@ -19,7 +19,7 @@ const getAllEvents = asyncHandler(async (req, res) => {
 });
 
 const createEvent = asyncHandler(async (req, res) => {
-  const event: calendar_v3.Schema$Event = req.body?.event;
+  const event: calendar_v3.Params$Resource$Events$Insert = req.body.event;
 
   if (!isEventReqValid(event)) {
     throwHttpError('Bad request, some of the event fields are null or undefined', 400);

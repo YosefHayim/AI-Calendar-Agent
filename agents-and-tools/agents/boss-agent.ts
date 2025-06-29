@@ -39,7 +39,7 @@ const calendarAssistant = Agent.create({
 async function main() {
   const result = await run(
     calendarAssistant,
-    `new event today at 8 pm until 11 pm title eating with mom`,
+    `add to my calendar today at 3pm a meeting with John Doe about the project update`,
   );
   console.log(result.finalOutput);
 }
