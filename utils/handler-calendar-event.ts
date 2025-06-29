@@ -3,6 +3,7 @@ import { calendar, requestConfigBase } from '../config/root-config';
 
 import { Response } from 'express';
 import errorFn from './error-template';
+import formatDate from './formatDate';
 import sendR from './sendR';
 
 export const handleEvents = async (
@@ -16,10 +17,25 @@ export const handleEvents = async (
 
     switch (action) {
       case Action.GET:
-        r = await calendarEvents.list({
+        const events = await calendarEvents.list({
           ...requestConfigBase,
           timeMin: new Date().toISOString(),
         });
+        r = events.data.items
+          ?.map((event) => {
+            return {
+              eventId: event.id,
+              summary: event.summary,
+              start: formatDate(event.start?.date || event.start?.dateTime),
+              end: formatDate(event.end?.date || event.end?.dateTime),
+
+              description: event.description,
+              location: event.location,
+            };
+          })
+          .sort((a, b) => {
+            return new Date(a.start).getTime() - new Date(b.start).getTime();
+          });
         break;
 
       case Action.INSERT:
@@ -51,7 +67,7 @@ export const handleEvents = async (
         errorFn('Unsupported calendar action', 400);
     }
 
-    sendR(res)(200, 'Event operation completed successfully', r?.data);
+    sendR(res)(200, 'Event operation completed successfully', r);
   } catch (error) {
     errorFn(`Internal Server Error ${error}`, 500);
   }

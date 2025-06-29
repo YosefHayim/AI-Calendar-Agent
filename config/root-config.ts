@@ -15,6 +15,11 @@ export const CONFIG = {
   redirect_url: process.env.REDIRECT_URL,
   port: process.env.PORT,
 };
+export const oauth2Client = new google.auth.OAuth2(
+  CONFIG.client_id,
+  CONFIG.client_secret,
+  CONFIG.redirect_url,
+);
 
 (() => {
   if (!CONFIG.open_ai_api_key) {
@@ -25,16 +30,10 @@ export const CONFIG = {
   setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 })();
 
-export const oauth2Client = new google.auth.OAuth2(
-  CONFIG.client_id,
-  CONFIG.client_secret,
-  CONFIG.redirect_url,
-);
-
 oauth2Client.setCredentials({
-  access_token: CREDENTIALS.access_token,
-  token_type: CREDENTIALS.token_type,
-  expiry_date: CREDENTIALS.expiry_date,
+  access_token: CREDENTIALS.access_token || '',
+  token_type: CREDENTIALS.token_type || 'Bearer',
+  expiry_date: CREDENTIALS.expiry_date || 0,
 });
 
 export const calendar = google.calendar({ version: 'v3', auth: oauth2Client });

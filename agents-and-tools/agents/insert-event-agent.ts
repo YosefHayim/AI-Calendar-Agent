@@ -13,11 +13,11 @@ const insertEvent = tool({
   parameters: CalenderRequestInsertSchema,
 
   execute: async (data): Promise<calendar_v3.Schema$Event> => {
-    const eventData = CalenderRequestInsertSchema.parse(data);
+    const event = CalenderRequestInsertSchema.parse(data);
 
     const response = await calendar.events.insert({
       ...requestConfigBase,
-      requestBody: eventData,
+      requestBody: event,
     });
 
     if (!response) {
