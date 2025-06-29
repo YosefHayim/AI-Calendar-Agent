@@ -31,7 +31,7 @@ const createEvent = asyncHandler(async (req, res) => {
   const event: SchemaEventProps = req.body;
   const r = await handleEvents(res, Action.INSERT, event);
 
-  if (r) sendR(res)(201, 'Event created successfully', r);
+  if (r) sendR(res)(201, 'Event created successfully', r.data);
   else sendR(res)(400, 'Failed to create event');
 });
 
@@ -39,14 +39,14 @@ const updateEvent = asyncHandler(async (req, res) => {
   const event: SchemaEventProps = req.body;
   const r = await handleEvents(res, Action.UPDATE, { id: req.params.eventId, ...event });
 
-  if (r) sendR(res)(200, 'Event updated successfully', r);
+  if (r) sendR(res)(200, 'Event updated successfully', r.data);
   else sendR(res)(400, 'Failed to update event');
 });
 
 const deleteEvent = asyncHandler(async (req, res) => {
   const r = await handleEvents(res, Action.DELETE, { id: req.params.eventId });
 
-  if (r) sendR(res)(204, 'Event deleted successfully');
+  if (r) sendR(res)(204, 'Event deleted successfully', r.data);
   else sendR(res)(400, 'Failed to delete event');
 });
 

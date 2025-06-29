@@ -9,10 +9,11 @@ router.get('/', calendarController.getAllCalendars);
 // get all the next events of the user
 router.get('/events', calendarController.getAllEvents);
 
+// get specific event by id
+router.get('/:eventId', calendarController.getSpecificEvent);
+
 // create a new event
 router.post('/', calendarController.createEvent);
-
-router.get('/:eventId', calendarController.getSpecificEvent);
 
 // update an existing event
 router.patch('/:eventId', calendarController.updateEvent);

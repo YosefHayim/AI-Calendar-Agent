@@ -47,6 +47,7 @@ export const handleEvents = async (
       case Action.UPDATE:
         r = await calendarEvents.update({
           ...requestConfigBase,
+          eventId: eventData?.id || '',
           requestBody: eventData,
         });
         break;
