@@ -89,6 +89,7 @@ const insertEventTool = tool({
 
 const insertEventFnAgent = new Agent({
   name: 'insert_event',
+  model: 'gpt-4.1-nano-2025-04-14',
   instructions: `You are a calendar assistant responsible for managing events.Add commentMore actions
   
   Your job is to:
@@ -118,7 +119,7 @@ const main = async () => {
   try {
     r = await run(
       insertEventFnAgent,
-      'Create an event titled "eating with my mom" starting June 29 at 17:00, for one hour, in Asia/Jerusalem timezone.',
+      'Create an event titled "eating with my mom" starting 2025 June 29 at 23:00, for one hour, in Asia/Jerusalem timezone.',
     );
   } catch (error) {
     console.error('Error during run of agent: ', error);

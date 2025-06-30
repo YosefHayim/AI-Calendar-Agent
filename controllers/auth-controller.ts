@@ -27,13 +27,12 @@ const generateAuthUrl = asyncHandler(async (req, res) => {
     const now = Date.now();
 
     if (now >= CREDENTIALS.expiry_date) {
-      console.log('Access token expired or missing. Requesting new token...');
+      console.log('Access token expired or missing. setting new tokens...');
 
       const { tokens } = await oauth2Client.getToken(code);
       oauth2Client.setCredentials(tokens);
 
-      // Save refreshed token
-      fs.writeFileSync(CREDENTIALS_FILE_PATH, JSON.stringify(tokens, null, 2), 'utf8');
+      fs.writeFileSync(CREDENTIALS_FILE_PATH, JSON.stringify(tokens), 'utf8');
 
       return res.status(200).json({
         status: 'success',
