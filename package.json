@@ -17,8 +17,6 @@
   "main": "app.ts",
   "scripts": {
     "dev": "npx nodemon app.ts",
-    "prepare": "husky && husky install",
-    "format": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
     "sort": "npx sort-package-json"
   },
   "dependencies": {
@@ -40,7 +38,6 @@
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.0.3",
     "globals": "^16.2.0",
-    "husky": "^8.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.0",
