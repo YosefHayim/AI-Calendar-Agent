@@ -31,9 +31,10 @@ export const oauth2Client = new google.auth.OAuth2(
 })();
 
 oauth2Client.setCredentials({
-  access_token: CREDENTIALS.access_token || '',
-  token_type: CREDENTIALS.token_type || 'Bearer',
-  expiry_date: CREDENTIALS.expiry_date || 0,
+  access_token: CREDENTIALS?.access_token,
+  token_type: 'Bearer',
+  refresh_token: CREDENTIALS?.refresh_token,
+  expiry_date: CREDENTIALS?.expiry_date,
 });
 
 export const calendar = google.calendar({ version: 'v3', auth: oauth2Client });

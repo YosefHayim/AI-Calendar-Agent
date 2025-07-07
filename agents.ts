@@ -31,11 +31,11 @@ const insertEventTool = tool({
     summary: z.string(),
     description: z.string(),
     start: z.object({
-      dateTime: z.string(), // correct
+      dateTime: z.string(),
       timeZone: z.string().default('Asia/Jerusalem'),
     }),
     end: z.object({
-      dateTime: z.string(), // correct
+      dateTime: z.string(),
       timeZone: z.string().default('Asia/Jerusalem'),
     }),
   }),
@@ -119,12 +119,13 @@ const main = async () => {
   try {
     r = await run(
       insertEventFnAgent,
-      'Create an event titled "eating with my mom" starting 2025 June 29 at 23:00, for one hour, in Asia/Jerusalem timezone.',
+      'Create an event titled "working on ai project" starting 2025 july 7 at 5 pm, for one hour, in Asia/Jerusalem timezone.',
     );
+    console.log(r.finalOutput);
   } catch (error) {
     console.error('Error during run of agent: ', error);
   } finally {
-    console.dir(r?.rawResponses, { depth: null });
+    // console.dir(r?.rawResponses, { depth: null });
   }
 };
 
