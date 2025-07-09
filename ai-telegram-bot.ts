@@ -18,7 +18,7 @@ bot.catch((err) => {
   }
 });
 
-const initAiTelegramBot = async () => {
+export const initAiTelegramBot = async () => {
   bot.on("message", (ctx) => {
     const username = ctx.update.message.from.username;
     const chatType = ctx.update.message.chat.type;

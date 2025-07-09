@@ -31,4 +31,3 @@ export const insertEventFnAgent = new Agent({
   Do not respond directly to the user. Always use a handoff agent to perform the action.`,
   tools: [insertEventTool],
 });
-
