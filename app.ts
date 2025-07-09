@@ -4,7 +4,7 @@ import { CONFIG } from "./config/root-config";
 import CREDENTIALS from "./CREDENTIALS.json";
 import authRouter from "./routes/auth-route";
 import calendarRoute from "./routes/calendar-route";
-import { conversations, type ConversationFlavor } from "@grammyjs/conversations";
+import { Conversation, conversations, createConversation, type ConversationFlavor } from "@grammyjs/conversations";
 import cors from "cors";
 import errorHandler from "./middlewares/error-handler";
 import express from "express";
@@ -14,9 +14,6 @@ import { run } from "@openai/agents";
 
 const app = express();
 const PORT = CONFIG.port;
-
-const bot = new Bot<ConversationFlavor<Context>>(CONFIG.telegram_access_token!);
-bot.use(conversations());
 
 app.use(cors());
 app.use(express.json());
@@ -40,46 +37,37 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-bot.catch((err) => {
-  const ctx = err.ctx;
-  console.error(`Error while handling update ${ctx.update.update_id}:`);
-  const e = err.error;
-  if (e instanceof GrammyError) {
-    console.error("Error in request:", e.description);
-  } else if (e instanceof HttpError) {
-    console.error("Could not contact Telegram:", e);
-  } else {
-    console.error("Unknown error:", e);
-  }
+const bot = new Bot<ConversationFlavor<Context>>(CONFIG.telegram_access_token!);
+bot.use(conversations());
+
+/** Defines the conversation */
+const welcomeMessage = async (conversation: Conversation, ctx: Context) => {
+  await ctx.reply("Hi there! What is your name?");
+  const { message } = await conversation.waitFor("message");
+  await ctx.reply(`Welcome to the chat, ${message.text}!`);
+};
+
+const provideEventDetails = async (conversation: Conversation, ctx: Context) => {
+  await ctx.reply("Please provide the name of the event: ");
+  const { message: messageOne } = await conversation.waitFor("message");
+  await ctx.reply(`Next, Please provide the date of the event.`);
+  const { message: messageTwo } = await conversation.waitFor("message");
+  await ctx.reply(`Great, so the last thing I need from you is what is the duration of that event? you can either provide a time range.`);
+  const { message: messageThree } = await conversation.waitFor("message");
+  await ctx.reply(
+    `So, lets confirm and check that you provide accurate details in order to add them into your calendar:\nEvent name:${messageOne}\nDate of the event: ${messageTwo}\nTime range of the event: ${messageThree}`
+  );
+};
+
+bot.use(createConversation(welcomeMessage));
+bot.use(createConversation(provideEventDetails));
+
+bot.command("start", async (ctx) => {
+  await ctx.conversation.enter("welcomeMessage");
+});
+
+bot.command("insert-event", async (ctx) => {
+  await ctx.conversation.enter("provideEventDetails");
 });
 
 bot.start();
-
-bot.command("start", (ctx) => {
-  ctx.reply(
-    "Hey there I am your AI Assistant Calendar, please provide me the following:\n1.Name of the event:\n2.Date of the event:\n 3.Duration of the event: "
-  );
-});
-
-bot.on("message", async (ctx) => {
-  const username = ctx.update.message.from.username;
-  const chatType = ctx.update.message.chat.type;
-  const message = ctx.update.message.text;
-
-  console.log(`Received on date: ${new Date().toISOString()}`);
-  console.log(`Chat type: ${chatType}`);
-  console.log(`Username: ${username}`);
-  console.log(`Message: ${message}`);
-
-  try {
-    const stream = await run(insertEventFnAgent, message!, { stream: true });
-
-    stream
-      .toTextStream({
-        compatibleWithNodeStreams: true,
-      })
-      .pipe(process.stdout);
-  } catch (error) {
-    console.error("Error ocurred durning running agent globaly: ", error);
-  }
-});
