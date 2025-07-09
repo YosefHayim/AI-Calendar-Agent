@@ -18,7 +18,7 @@ bot.catch((err) => {
   }
 });
 
-const initBot = async () => {
+const initAiTelegramBot = async () => {
   bot.on("message", (ctx) => {
     const username = ctx.update.message.from.username;
     const chatType = ctx.update.message.chat.type;
@@ -33,6 +33,6 @@ const initBot = async () => {
   await bot.start();
 };
 
-initBot().catch((err) => {
+initAiTelegramBot().catch((err) => {
   console.error("Failed to start bot:", err);
 });
