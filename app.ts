@@ -1,18 +1,22 @@
-import { Bot, GrammyError, HttpError } from "grammy";
+import { Bot, GrammyError, HttpError, type Context } from "grammy";
 
 import { CONFIG } from "./config/root-config";
 import CREDENTIALS from "./CREDENTIALS.json";
 import authRouter from "./routes/auth-route";
 import calendarRoute from "./routes/calendar-route";
+import { conversations, type ConversationFlavor } from "@grammyjs/conversations";
 import cors from "cors";
 import errorHandler from "./middlewares/error-handler";
 import express from "express";
+import { insertEventFnAgent } from "./agents";
 import morgan from "morgan";
+import { run } from "@openai/agents";
 
 const app = express();
 const PORT = CONFIG.port;
 
-const bot = new Bot(CONFIG.telegram_access_token!);
+const bot = new Bot<ConversationFlavor<Context>>(CONFIG.telegram_access_token!);
+bot.use(conversations());
 
 app.use(cors());
 app.use(express.json());
@@ -51,7 +55,13 @@ bot.catch((err) => {
 
 bot.start();
 
-bot.on("message", (ctx) => {
+bot.command("start", (ctx) => {
+  ctx.reply(
+    "Hey there I am your AI Assistant Calendar, please provide me the following:\n1.Name of the event:\n2.Date of the event:\n 3.Duration of the event: "
+  );
+});
+
+bot.on("message", async (ctx) => {
   const username = ctx.update.message.from.username;
   const chatType = ctx.update.message.chat.type;
   const message = ctx.update.message.text;
@@ -60,4 +70,16 @@ bot.on("message", (ctx) => {
   console.log(`Chat type: ${chatType}`);
   console.log(`Username: ${username}`);
   console.log(`Message: ${message}`);
+
+  try {
+    const stream = await run(insertEventFnAgent, message!, { stream: true });
+
+    stream
+      .toTextStream({
+        compatibleWithNodeStreams: true,
+      })
+      .pipe(process.stdout);
+  } catch (error) {
+    console.error("Error ocurred durning running agent globaly: ", error);
+  }
 });

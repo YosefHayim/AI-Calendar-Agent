@@ -11,6 +11,9 @@ importers:
       '@googleapis/docs':
         specifier: ^4.0.1
         version: 4.0.1
+      '@grammyjs/conversations':
+        specifier: ^2.1.0
+        version: 2.1.0(grammy@1.37.0)
       '@openai/agents':
         specifier: ^0.0.9
         version: 0.0.9(ws@8.18.2)(zod@3.25.67)
@@ -333,6 +336,12 @@ packages:
   '@googleapis/docs@4.0.1':
     resolution: {integrity: sha512-LKeEDDqyQGzyDJjq/ROT5VQ7XCadrdcVy4WqYht2nk1YgwHDiXrLIVmcVp2HutIwpj9POCpFLOd+AdB0Ik7cTA==}
     engines: {node: '>=12.0.0'}
+
+  '@grammyjs/conversations@2.1.0':
+    resolution: {integrity: sha512-nYoHwFyXcQ2lkQejKReoINknkgFjeIZhyJNMBwHng5UHO/ewHKs1dV2XVaLrKkHTZ1gCZ+dKkjEp26wwHyQeGg==}
+    engines: {node: ^12.20.0 || >=14.13.1}
+    peerDependencies:
+      grammy: ^1.20.1
 
   '@grammyjs/types@3.21.0':
     resolution: {integrity: sha512-IMj0EpmglPCICuyfGRx4ENKPSuzS2xMSoPgSPzHC6FtnWKDEmJLBP/GbPv/h3TAeb27txqxm/BUld+gbJk6ccQ==}
@@ -2031,6 +2040,10 @@ snapshots:
       googleapis-common: 8.0.2-rc.0
     transitivePeerDependencies:
       - supports-color
+
+  '@grammyjs/conversations@2.1.0(grammy@1.37.0)':
+    dependencies:
+      grammy: 1.37.0
 
   '@grammyjs/types@3.21.0': {}
 

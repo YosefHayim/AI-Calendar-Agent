@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@googleapis/docs": "^4.0.1",
+    "@grammyjs/conversations": "^2.1.0",
     "@openai/agents": "^0.0.9",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
