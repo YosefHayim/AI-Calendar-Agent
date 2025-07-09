@@ -13,7 +13,7 @@
   },
   "license": "ISC",
   "author": "",
-  "type": "module",
+  "type": "commonjs",
   "main": "app.ts",
   "scripts": {
     "dev": "npx nodemon app.ts",

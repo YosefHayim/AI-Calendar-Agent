@@ -1,4 +1,4 @@
-import CREDENTIALS from "../CREDENTIALS.json" with { type: 'json' };;
+import CREDENTIALS from "../CREDENTIALS.json";
 import dotenv from "dotenv";
 import { google } from "googleapis";
 import path from "path";
