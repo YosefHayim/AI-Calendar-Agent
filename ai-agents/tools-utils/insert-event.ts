@@ -4,7 +4,7 @@ import { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport
 import { asyncHandler } from "../../utils/async-handler";
 import { calendar_v3 } from "googleapis";
 
-export const insertEventFn = asyncHandler(async (eventData: calendar_v3.Schema$Event): Promise<calendar_v3.Schema$Event> => {
+export const insertEventFn = asyncHandler(async (eventData: calendar_v3.Schema$Event): GaxiosPromise<calendar_v3.Schema$Event> => {
   console.log("Event input received from agent:", eventData);
 
   const r = await calendar.events.insert({
@@ -13,5 +13,5 @@ export const insertEventFn = asyncHandler(async (eventData: calendar_v3.Schema$E
   });
 
   console.log("Event successfully inserted:", r.data);
-  return r.data;
+  return r;
 });
