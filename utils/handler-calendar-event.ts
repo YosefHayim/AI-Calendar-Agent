@@ -1,15 +1,11 @@
-import { Action, SchemaEventProps } from '../types';
-import { calendar, requestConfigBase } from '../config/root-config';
+import { Action, SchemaEventProps } from "../types";
+import { calendar, requestConfigBase } from "../config/root-config";
 
-import { Response } from 'express';
-import errorFn from './error-template';
-import formatDate from './formatDate';
+import { Response } from "express";
+import errorFn from "./error-template";
+import formatDate from "./formatDate";
 
-export const handleEvents = async (
-  res: Response,
-  action: Action,
-  eventData?: SchemaEventProps,
-): Promise<any> => {
+export const handleEvents = async (res: Response, action: Action, eventData?: SchemaEventProps): Promise<any> => {
   try {
     const calendarEvents = calendar.events;
     let r;
@@ -47,7 +43,7 @@ export const handleEvents = async (
       case Action.UPDATE:
         r = await calendarEvents.update({
           ...requestConfigBase,
-          eventId: eventData?.id || '',
+          eventId: eventData?.id || "",
           requestBody: eventData,
         });
         break;
@@ -55,16 +51,16 @@ export const handleEvents = async (
       case Action.DELETE:
         r = await calendarEvents.delete({
           ...requestConfigBase,
-          eventId: eventData?.id || '',
+          eventId: eventData?.id || "",
         });
         break;
 
       default:
-        errorFn('Unsupported calendar action', 400);
+        errorFn("Unsupported calendar action", 400);
     }
 
     if (!r) {
-      errorFn('No response from calendar API', 500, res);
+      errorFn("No response from calendar API", 500, res);
       return;
     }
 

@@ -1,11 +1,11 @@
-import { Response } from 'express';
+import { Response } from "express";
 
 const errorFn = (message: string, status: number, res?: Response): void => {
   const error = new Error(message, { cause: { status } });
 
   if (res) {
     res?.status(status).json({
-      status: 'error',
+      status: "error",
       code: status,
       message: error.message,
     });
