@@ -15,6 +15,7 @@ export const insertEventTool = tool({
   description: insertEventToolDescription,
   parameters: insertEventParameters,
   errorFunction: async (params, error) => {
+    console.log("Params received: ", params);
     console.error(" Tool execution failed:", error);
     return "Failed to insert event. Please check event details or calendar API access.";
   },

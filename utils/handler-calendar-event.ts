@@ -6,7 +6,7 @@ import { asyncHandler } from "./async-handler";
 import errorTemplate from "./error-template";
 import formatDate from "./formatDate";
 
-export const handleEvents = asyncHandler(async (action: Action, eventData?: SchemaEventProps): Promise<any> => {
+export const handleEvents = asyncHandler(async (action: Action, eventData?: SchemaEventProps, extra?: Object): Promise<any> => {
   const calendarEvents = calendar.events;
   let r;
 
@@ -15,6 +15,8 @@ export const handleEvents = asyncHandler(async (action: Action, eventData?: Sche
       const events = await calendarEvents.list({
         ...requestConfigBase,
         timeMin: new Date().toISOString(),
+        prettyPrint: true,
+        ...extra,
       });
       r = events.data.items
         ?.map((event) => {
@@ -58,6 +60,6 @@ export const handleEvents = asyncHandler(async (action: Action, eventData?: Sche
     default:
       errorTemplate("Unsupported calendar action", 400);
   }
-
+  console.log(r);
   return r;
 });

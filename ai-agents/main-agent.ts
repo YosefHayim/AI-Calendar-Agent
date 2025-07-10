@@ -4,8 +4,7 @@ import { Agent } from "@openai/agents";
 
 export const calendarRouterAgent = new Agent({
   name: "calendar_crud_router",
-  model: "gpt-4.1-nano-2025-04-14",
-  instructions: `
+  handoffDescription: `
 You are the router agent for calendar CRUD operations.
 
 Route user requests to the correct tool based on intent:

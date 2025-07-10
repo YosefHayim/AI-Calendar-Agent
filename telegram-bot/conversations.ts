@@ -1,6 +1,6 @@
 import { Context } from "grammy";
 import { Conversation } from "@grammyjs/conversations";
-import { insertEventAgent } from "../ai-agents/sub-agents";
+import { calendarRouterAgent } from "../ai-agents/main-agent";
 import { run } from "@openai/agents";
 
 export const provideEventDetails = async (conversation: Conversation, ctx: Context) => {
@@ -10,14 +10,12 @@ export const provideEventDetails = async (conversation: Conversation, ctx: Conte
   const { message: messageTwo } = await conversation.waitFor("message:text");
   await ctx.reply(`Great, so the last thing I need from you is what is the duration of that event? you can either provide a time range.`);
   const { message: messageThree } = await conversation.waitFor("message:text");
-  await ctx.reply(
-    `So, lets confirm and check that you provide accurate details in order to add them into your calendar:\nEvent name:${messageOne.text}\nDate of the event: ${messageTwo.text}\nTime range of the event: ${messageThree.text}`
-  );
+  await ctx.reply(`Great, I will now proceed to insert the event, please wait...`);
   const r = await run(
-    insertEventAgent,
+    calendarRouterAgent,
     `Insert this event into my calendar:\nEvent name:${messageOne.text}\nDate of the event: ${messageTwo.text}\nTime range of the event: ${messageThree.text}`
   );
-  ctx.reply(r.finalOutput!);
+  await ctx.reply(r.finalOutput!);
 };
 
 export const searchForEventByName = async (conversation: Conversation, ctx: Context) => {

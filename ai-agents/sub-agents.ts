@@ -10,6 +10,7 @@ export const insertEventAgent = new Agent({
   instructions: `You insert a new event into the user's calendar.
   If any required detail is missing, use:
   - Default Summary title: "Untitled Event"
+  - Date : todays date formatted according to RFC3339.
   - Default duration: current time + 1 hour.
   - Omit location if missing.`,
   tools: [insertEventTool],
