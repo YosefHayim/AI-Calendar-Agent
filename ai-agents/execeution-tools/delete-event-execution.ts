@@ -1,7 +1,8 @@
+import { Action } from "../../types";
 import { asyncHandler } from "../../utils/async-handler";
 import { calendar_v3 } from "googleapis";
-import { deleteEventFn } from "../tools-utils/delete-event";
 import errorTemplate from "../../utils/error-template";
+import { handleEvents } from "../../utils/handler-calendar-event";
 
 export const deleteEventExecution = asyncHandler(async (params: any) => {
   console.log("Params received to tool:", params);
@@ -26,5 +27,5 @@ export const deleteEventExecution = asyncHandler(async (params: any) => {
     },
   };
 
-  return deleteEventFn(eventData);
+  return handleEvents(Action.DELETE, eventData);
 });

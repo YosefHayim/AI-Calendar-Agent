@@ -1,4 +1,4 @@
-import { Agent, run, setDefaultOpenAIKey } from "@openai/agents";
+import { Agent, setDefaultOpenAIKey } from "@openai/agents";
 import { deleteEventTool, getEventsTool, insertEventTool, updateEventTool } from "./agents-tools";
 
 import { CONFIG } from "../config/root-config";
@@ -8,11 +8,10 @@ setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 export const insertEventAgent = new Agent({
   name: "insert_event",
   instructions: `You insert a new event into the user's calendar.
-
-If any required detail is missing, use:
-- Default title: "Untitled Event"
-- Default duration: 1 hour
-- Omit location if missing.`,
+  If any required detail is missing, use:
+  - Default Summary title: "Untitled Event"
+  - Default duration: current time + 1 hour.
+  - Omit location if missing.`,
   tools: [insertEventTool],
 });
 
@@ -27,8 +26,8 @@ export const updateEventAgent = new Agent({
   instructions: `You update an existing calendar event.
 
 Handle updates to:
-- Title
-- Time
+- Summary
+- Date
 - Location
 - Duration
 

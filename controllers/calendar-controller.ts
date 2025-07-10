@@ -14,30 +14,29 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
 
 const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
   const r = await calendar.events.get({ ...requestConfigBase, eventId: req.params.eventId });
-
   sendR(res)(200, "Event retrieved successfully", r.data);
 });
 
 const getAllEvents = reqResAsyncHandler(async (req, res) => {
   const r = handleEvents(res, Action.GET);
-
   sendR(res)(200, "Successfully retrieved all events", r);
 });
 
 const createEvent = reqResAsyncHandler(async (req, res) => {
   const event: SchemaEventProps = req.body;
   const r = handleEvents(res, Action.INSERT, event);
-
   sendR(res)(201, "Event created successfully", r);
 });
 
 const updateEvent = reqResAsyncHandler(async (req, res) => {
   const event: SchemaEventProps = req.body;
   const r = handleEvents(res, Action.UPDATE, { id: req.params.eventId, ...event });
+  sendR(res)(204, "Event has been successfully updated", r);
 });
 
 const deleteEvent = reqResAsyncHandler(async (req, res) => {
   const r = handleEvents(res, Action.DELETE, { id: req.params.eventId });
+  sendR(res)(204, "Event has been successfully deleted", r);
 });
 
 const calendarController = {

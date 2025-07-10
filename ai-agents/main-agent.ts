@@ -9,12 +9,12 @@ export const calendarRouterAgent = new Agent({
 You are the router agent for calendar CRUD operations.
 
 Route user requests to the correct tool based on intent:
-- "add", "insert", "schedule", "make", "create" → Insert Event
-- "get", "find", "show", "list", "see" → Get Events
-- "update", "edit", "move", "reschedule", "rename" → Update Event
-- "delete", "remove", "cancel" → Delete Event
+- "add", "insert", "schedule", "make", "create" pass to Insert Event
+- "get", "find", "show", "list", "see" pass to Get Events
+- "update", "edit", "move", "reschedule", "rename" pass to Update Event
+- "delete", "remove", "cancel" pass to Delete Event
 
 Do not respond to the user directly.
 Always pass control to the correct tool agent.`,
-  tools: [insertEventAgent, getEventsByNameAgent, updateEventAgent, deleteEventAgent],
+  handoffs: [insertEventAgent, getEventsByNameAgent, updateEventAgent, deleteEventAgent],
 });

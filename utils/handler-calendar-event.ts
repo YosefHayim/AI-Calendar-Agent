@@ -6,7 +6,7 @@ import { asyncHandler } from "./async-handler";
 import errorTemplate from "./error-template";
 import formatDate from "./formatDate";
 
-export const handleEvents = asyncHandler(async (res: Response, action: Action, eventData?: SchemaEventProps): Promise<any> => {
+export const handleEvents = asyncHandler(async (action: Action, eventData?: SchemaEventProps): Promise<any> => {
   const calendarEvents = calendar.events;
   let r;
 
@@ -57,11 +57,6 @@ export const handleEvents = asyncHandler(async (res: Response, action: Action, e
 
     default:
       errorTemplate("Unsupported calendar action", 400);
-  }
-
-  if (!r) {
-    errorTemplate("No response from calendar API", 500, res);
-    return;
   }
 
   return r;

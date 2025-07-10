@@ -1,7 +1,8 @@
+import { Action } from "../../types";
 import { asyncHandler } from "../../utils/async-handler";
 import { calendar_v3 } from "googleapis";
 import errorTemplate from "../../utils/error-template";
-import { insertEventFn } from "../tools-utils/insert-event";
+import { handleEvents } from "../../utils/handler-calendar-event";
 
 export const insertEventExeuction = asyncHandler(async (params: any) => {
   console.log("Params received to tool:", params);
@@ -26,5 +27,5 @@ export const insertEventExeuction = asyncHandler(async (params: any) => {
     },
   };
 
-  return insertEventFn(eventData);
+  return handleEvents(Action.INSERT, eventData);
 });
