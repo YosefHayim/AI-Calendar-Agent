@@ -17,7 +17,7 @@ export const provideEventDetails = async (conversation: Conversation, ctx: Conte
     insertEventAgent,
     `Insert this event into my calendar:\nEvent name:${messageOne.text}\nDate of the event: ${messageTwo.text}\nTime range of the event: ${messageThree.text}`
   );
-  await ctx.reply(r.finalOutput!);
+  ctx.reply(r.finalOutput!);
 };
 
 export const searchForEventByName = async (conversation: Conversation, ctx: Context) => {

@@ -7,8 +7,8 @@ export const reqResAsyncHandler = (fn: (req: Request, res: Response, next: NextF
 };
 
 export const asyncHandler = (fn: (...args: any) => Promise<unknown>) => {
-  return (data: any) => {
-    fn(data).catch((error) => {
+  return (...args: any) => {
+    fn(args).catch((error) => {
       console.error(`Error found: ${error}`);
       throw error;
     });

@@ -7,7 +7,7 @@ export const activateAgent = asyncHandler(async (agent: Agent, text: string) => 
 
   if (!text) return `Please provide the prompt for the agent: ${agent.name}`;
 
-  const r = await run(agent, text);
+  const r = run(agent, text);
 
   return r.finalOutput;
 });

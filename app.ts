@@ -42,7 +42,7 @@ bot.use(createConversation(provideEventDetails));
 
 bot.on("message:text", async (ctx) => {
   const message = ctx.message?.text;
-  if (message === "add-event") return await ctx.conversation.enter("provideEventDetails");
+  if (message === "add-event") return ctx.conversation.enter("provideEventDetails");
 });
 
 bot.start();
