@@ -30,7 +30,6 @@ export const oauth2Client = new google.auth.OAuth2(CONFIG.client_id, CONFIG.clie
 oauth2Client.setCredentials({
   access_token: CREDENTIALS?.access_token,
   token_type: "Bearer",
-  refresh_token: CREDENTIALS?.refresh_token,
   expiry_date: CREDENTIALS?.expiry_date,
 });
 
