@@ -1,5 +1,5 @@
 import { calendar_v3 } from "googleapis";
-import errorFn from "../utils/error-template";
+import errorTemplate from "../utils/error-template";
 import { insertEventFn } from "./tools-utils/insert-event";
 import { tool } from "@openai/agents";
 import z from "zod";
@@ -41,7 +41,7 @@ export const insertEventTool = tool({
     console.log("Params received to tool:", params);
 
     if (!params.start?.dateTime || !params.end?.dateTime) {
-      errorFn("Missing dates of start and end!", 404);
+      errorTemplate("Missing dates of start and end!", 404);
     }
 
     const startDate = new Date(params.start.dateTime);
@@ -62,4 +62,16 @@ export const insertEventTool = tool({
 
     return insertEventFn(eventData);
   },
+});
+
+export const getEventsTool = tool({
+  name: "get_events_by_name_tool",
+});
+
+export const updateEventTool = tool({
+  name: "update_events_by_name_tool",
+});
+
+export const deleteEventTool = tool({
+  name: "delete_events_by_name_tool",
 });

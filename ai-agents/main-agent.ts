@@ -1,5 +1,6 @@
+import { deleteEventAgent, getEventsByNameAgent, insertEventAgent, updateEventAgent } from "./sub-agents";
+
 import { Agent } from "@openai/agents";
-import { insertEventAgent } from "./sub-agents";
 
 export const calendarRouterAgent = new Agent({
   name: "calendar_crud_router",

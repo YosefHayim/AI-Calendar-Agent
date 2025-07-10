@@ -1,23 +1,23 @@
-import { CREDENTIALS_FILE_PATH, SCOPES, oauth2Client } from '../config/root-config';
+import { CREDENTIALS_FILE_PATH, SCOPES, oauth2Client } from "../config/root-config";
 
-import CREDENTIALS from '../CREDENTIALS.json';
-import asyncHandler from '../utils/async-handler';
-import fs from 'fs';
+import CREDENTIALS from "../CREDENTIALS.json";
+import fs from "fs";
+import { reqResAsyncHandler } from "../utils/async-handler";
 
-const generateAuthUrl = asyncHandler(async (req, res) => {
+const generateAuthUrl = reqResAsyncHandler(async (req, res) => {
   const code = req.query.code as string | undefined;
-  const postman = req.headers['user-agent'];
+  const postman = req.headers["user-agent"];
 
   const url = oauth2Client.generateAuthUrl({
-    access_type: 'offline',
+    access_type: "offline",
     scope: SCOPES,
   });
 
   // 1. No code yet: send user to consent screen
   if (!code) {
     // If from Postman, just send the URL back instead of redirecting
-    if (postman?.includes('Postman')) {
-      return res.status(200).send({ status: 'success', url });
+    if (postman?.includes("Postman")) {
+      return res.status(200).send({ status: "success", url });
     }
     return res.redirect(url);
   }
@@ -27,16 +27,16 @@ const generateAuthUrl = asyncHandler(async (req, res) => {
     const now = Date.now();
 
     if (now >= CREDENTIALS.expiry_date) {
-      console.log('Access token expired or missing. setting new tokens...');
+      console.log("Access token expired or missing. setting new tokens...");
 
       const { tokens } = await oauth2Client.getToken(code);
       oauth2Client.setCredentials(tokens);
 
-      fs.writeFileSync(CREDENTIALS_FILE_PATH, JSON.stringify(tokens), 'utf8');
+      fs.writeFileSync(CREDENTIALS_FILE_PATH, JSON.stringify(tokens), "utf8");
 
       return res.status(200).json({
-        status: 'success',
-        message: 'New tokens received and stored.',
+        status: "success",
+        message: "New tokens received and stored.",
         tokens,
       });
     }
@@ -44,12 +44,12 @@ const generateAuthUrl = asyncHandler(async (req, res) => {
     // 3. Token still valid
     oauth2Client.setCredentials(CREDENTIALS);
     return res.status(200).json({
-      status: 'valid',
-      message: 'Existing token is still valid.',
+      status: "valid",
+      message: "Existing token is still valid.",
     });
   } catch (error) {
-    console.error('generateAuthUrl error:', error);
-    return res.status(500).json({ error: 'Failed to process OAuth token exchange.' });
+    console.error("generateAuthUrl error:", error);
+    return res.status(500).json({ error: "Failed to process OAuth token exchange." });
   }
 });
 

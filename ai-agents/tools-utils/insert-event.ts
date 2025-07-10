@@ -1,14 +1,17 @@
-export const insertEventFn = async (eventData: calendar_v3.Schema$Event): GaxiosPromise<calendar_v3.Schema$Event> => {
-  console.log("Event input recieved from agent: ", eventData);
-  try {
-    const r = await calendar.events.insert({
-      ...requestConfigBase,
-      requestBody: eventData,
-    });
-    if (r) console.log("Event has been successfully inserted: ", r.data);
-    return r;
-  } catch (error) {
-    console.error("Error inserting event:", error);
-    throw new Error("Failed to insert event");
-  }
-};
+import { calendar, requestConfigBase } from "../../config/root-config";
+
+import { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport";
+import { asyncHandler } from "../../utils/async-handler";
+import { calendar_v3 } from "googleapis";
+
+export const insertEventFn = asyncHandler(async (eventData: calendar_v3.Schema$Event): Promise<calendar_v3.Schema$Event> => {
+  console.log("Event input received from agent:", eventData);
+
+  const r = await calendar.events.insert({
+    ...requestConfigBase,
+    requestBody: eventData,
+  });
+
+  console.log("Event successfully inserted:", r.data);
+  return r.data;
+});

@@ -1,6 +1,6 @@
 import { Response } from "express";
 
-const errorFn = (message: string, status: number, res?: Response): void => {
+const errorTemplate = (message: string, status: number, res?: Response): void => {
   const error = new Error(message, { cause: { status } });
 
   if (res) {
@@ -14,4 +14,4 @@ const errorFn = (message: string, status: number, res?: Response): void => {
   throw Error(message, { cause: { status } });
 };
 
-export default errorFn;
+export default errorTemplate;
