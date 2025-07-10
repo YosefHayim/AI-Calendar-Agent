@@ -1,6 +1,6 @@
 import { Context } from "grammy";
 import { Conversation } from "@grammyjs/conversations";
-import { insertEventFnAgent } from "../ai-agents/agents";
+import { insertEventAgent } from "../ai-agents/sub-agents";
 import { run } from "@openai/agents";
 
 export const provideEventDetails = async (conversation: Conversation, ctx: Context) => {
@@ -14,7 +14,7 @@ export const provideEventDetails = async (conversation: Conversation, ctx: Conte
     `So, lets confirm and check that you provide accurate details in order to add them into your calendar:\nEvent name:${messageOne.text}\nDate of the event: ${messageTwo.text}\nTime range of the event: ${messageThree.text}`
   );
   const r = await run(
-    insertEventFnAgent,
+    insertEventAgent,
     `Insert this event into my calendar:\nEvent name:${messageOne.text}\nDate of the event: ${messageTwo.text}\nTime range of the event: ${messageThree.text}`
   );
   await ctx.reply(r.finalOutput!);

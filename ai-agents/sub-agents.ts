@@ -1,0 +1,47 @@
+import { Agent, run, setDefaultOpenAIKey } from "@openai/agents";
+
+import { CONFIG } from "../config/root-config";
+import { insertEventTool } from "./agents-tools";
+
+setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
+
+export const insertEventAgent = new Agent({
+  name: "insert_event",
+  model: "gpt-4.1-nano-2025-04-14",
+  instructions: `You insert a new event into the user's calendar.
+
+If any required detail is missing, use:
+- Default title: "Untitled Event"
+- Default duration: 1 hour
+- Omit location if missing.`,
+  tools: [insertEventTool],
+});
+
+export const getEventsByNameAgent = new Agent({
+  name: "get_events_by_name",
+  model: "gpt-4.1-nano-2025-04-14",
+  instructions: `You retrieve one or more events from the user's calendar by matching their title or keywords.`,
+  tools: [getEventsTool],
+});
+
+export const updateEventAgent = new Agent({
+  name: "update_event",
+  model: "gpt-4.1-nano-2025-04-14",
+  instructions: `You update an existing calendar event.
+
+Handle updates to:
+- Title
+- Time
+- Location
+- Duration
+
+If a field is not specified, keep the original value.`,
+  tools: [updateEventTool],
+});
+
+export const deleteEventAgent = new Agent({
+  name: "delete_event",
+  model: "gpt-4.1-nano-2025-04-14",
+  instructions: `You delete a calendar event based on the title or other identifying detail.`,
+  tools: [deleteEventTool],
+});

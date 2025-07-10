@@ -1,8 +1,6 @@
-import { calendar, requestConfigBase } from "./config/root-config";
-
-import { GaxiosPromise } from "googleapis/build/src/apis/abusiveexperiencereport";
 import { calendar_v3 } from "googleapis";
-import errorFn from "./utils/error-template";
+import errorFn from "../utils/error-template";
+import { insertEventFn } from "./tools-utils/insert-event";
 import { tool } from "@openai/agents";
 import z from "zod";
 
@@ -65,18 +63,3 @@ export const insertEventTool = tool({
     return insertEventFn(eventData);
   },
 });
-
-export const insertEventFn = async (eventData: calendar_v3.Schema$Event): GaxiosPromise<calendar_v3.Schema$Event> => {
-  console.log("Event input recieved from agent: ", eventData);
-  try {
-    const r = await calendar.events.insert({
-      ...requestConfigBase,
-      requestBody: eventData,
-    });
-    if (r) console.log("Event has been successfully inserted: ", r.data);
-    return r;
-  } catch (error) {
-    console.error("Error inserting event:", error);
-    throw new Error("Failed to insert event");
-  }
-};
