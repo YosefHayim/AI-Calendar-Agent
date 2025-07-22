@@ -1,7 +1,6 @@
 import { Action, SchemaEventProps } from "../types";
 import { calendar, requestConfigBase } from "../config/root-config";
 
-import { Response } from "express";
 import { asyncHandler } from "./async-handler";
 import errorTemplate from "./error-template";
 import formatDate from "./formatDate";
@@ -9,6 +8,9 @@ import formatDate from "./formatDate";
 export const handleEvents = asyncHandler(async (action: Action, eventData?: SchemaEventProps, extra?: Object): Promise<any> => {
   const calendarEvents = calendar.events;
   let r;
+
+  if (Action.UPDATE === action && !eventData?.id) return errorTemplate("Event ID is required for update action", 400);
+  if (Action.DELETE === action && !eventData?.id) return errorTemplate("Event ID is required for delete action", 400);
 
   switch (action) {
     case Action.GET:
@@ -45,7 +47,7 @@ export const handleEvents = asyncHandler(async (action: Action, eventData?: Sche
     case Action.UPDATE:
       r = await calendarEvents.update({
         ...requestConfigBase,
-        eventId: eventData?.id || "",
+        eventId: eventData?.id!,
         requestBody: eventData,
       });
       break;
@@ -53,13 +55,13 @@ export const handleEvents = asyncHandler(async (action: Action, eventData?: Sche
     case Action.DELETE:
       r = await calendarEvents.delete({
         ...requestConfigBase,
-        eventId: eventData?.id || "",
+        eventId: eventData?.id!,
       });
       break;
 
     default:
       errorTemplate("Unsupported calendar action", 400);
   }
-  console.log(r);
+  console.log(`Calendar action: ${action}, Result:`, r);
   return r;
 });

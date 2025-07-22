@@ -3,7 +3,7 @@ import { calendar_v3 } from "googleapis";
 import { handleEvents } from "../../utils/handler-calendar-event";
 
 export const insertEventExeuction = async (params: any) => {
-  console.log("Params received to tool:", params);
+  console.log("Params received to insert event tool:", params);
 
   const startDate = new Date(params.start.dateTime);
   const endDate = params.end ? new Date(params.end.dateTime) : new Date(startDate.getTime() + 60 * 60 * 1000);

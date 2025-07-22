@@ -41,8 +41,9 @@ bot.use(conversations());
 bot.use(createConversation(provideEventDetails));
 
 bot.on("message:text", async (ctx) => {
-  const message = ctx.message?.text;
-  if (message.toLowerCase() === "add-event") return ctx.conversation.enter("provideEventDetails");
+  const message = ctx.message?.text.toLowerCase();
+  if (message === "add-event") return ctx.conversation.enter("provideEventDetails");
+  if (message === "search-event") return ctx.conversation.enter("searchForEventByName");
 });
 
-bot.start();
+bot.start({ allowed_updates: ["message"] });

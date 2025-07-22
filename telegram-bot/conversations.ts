@@ -22,4 +22,6 @@ export const searchForEventByName = async (conversation: Conversation, ctx: Cont
   await ctx.reply("Please tell me the name of the event you are looking for: ");
   const { message: messageOne } = await conversation.waitFor("message:text");
   await ctx.reply(`Please wait while I search for all the events with the name: ${messageOne}`);
+  const r = await run(calendarRouterAgent, `Search for all the events with the name: ${messageOne.text}`);
+  await ctx.reply(r.finalOutput!);
 };

@@ -5,7 +5,7 @@ import errorTemplate from "../../utils/error-template";
 import { handleEvents } from "../../utils/handler-calendar-event";
 
 export const updateEventExecution = asyncHandler(async (params: any) => {
-  console.log("Params received to tool:", params);
+  console.log("Params received to update event tool:", params);
 
   if (!params.start?.dateTime || !params.end?.dateTime) {
     errorTemplate("Missing dates of start and end!", 404);
