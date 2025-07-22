@@ -1,4 +1,4 @@
-import { TIMEZONE } from "../../types";
+import { Timezone } from "../../types";
 import z from "zod";
 
 export const insertEventParameters = z.object({
@@ -6,10 +6,10 @@ export const insertEventParameters = z.object({
   description: z.string(),
   start: z.object({
     dateTime: z.string(),
-    timeZone: z.string().default(TIMEZONE.IL),
+    timeZone: z.string().default(Timezone.ASIA_JERUSALEM),
   }),
   end: z.object({
     dateTime: z.string(),
-    timeZone: z.string().default(TIMEZONE.IL),
+    timeZone: z.string().default(Timezone.ASIA_JERUSALEM),
   }),
 });
