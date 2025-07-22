@@ -8,3 +8,7 @@ export enum Action {
 }
 
 export type SchemaEventProps = calendar_v3.Schema$Event;
+
+export enum TIMEZONE {
+  IL = "Asia/Jerusalem",
+}

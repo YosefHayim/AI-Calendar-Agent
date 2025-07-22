@@ -1,3 +1,4 @@
+import { TIMEZONE } from "../../types";
 import z from "zod";
 
 export const deleteEventParameters = z.object({
@@ -5,10 +6,10 @@ export const deleteEventParameters = z.object({
   description: z.string(),
   start: z.object({
     dateTime: z.string(),
-    timeZone: z.string().default("Asia/Jerusalem"),
+    timeZone: z.string().default(TIMEZONE.IL),
   }),
   end: z.object({
     dateTime: z.string(),
-    timeZone: z.string().default("Asia/Jerusalem"),
+    timeZone: z.string().default(TIMEZONE.IL),
   }),
 });
