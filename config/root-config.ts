@@ -1,11 +1,11 @@
-import CREDENTIALS from "../CREDENTIALS.json";
+import credentials from "../credentials.json";
 import dotenv from "dotenv";
 import { google } from "googleapis";
 import path from "path";
 import { setDefaultOpenAIKey } from "@openai/agents";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
-export const CREDENTIALS_FILE_PATH = path.resolve(process.cwd(), "CREDENTIALS.JSON");
+export const credentials_file_path = path.resolve(process.cwd(), "credentials.JSON");
 
 export const CONFIG = {
   open_ai_api_key: process.env.OPEN_API_KEY,
@@ -28,9 +28,9 @@ export const oauth2Client = new google.auth.OAuth2(CONFIG.client_id, CONFIG.clie
 })();
 
 oauth2Client.setCredentials({
-  access_token: CREDENTIALS?.access_token,
+  access_token: credentials?.access_token,
   token_type: "Bearer",
-  expiry_date: CREDENTIALS?.expiry_date,
+  expiry_date: credentials?.expiry_date,
 });
 
 export const calendar = google.calendar({ version: "v3", auth: oauth2Client });

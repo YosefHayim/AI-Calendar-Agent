@@ -1,6 +1,6 @@
-import { CREDENTIALS_FILE_PATH, SCOPES, oauth2Client } from "../config/root-config";
+import { SCOPES, credentials_file_path, oauth2Client } from "../config/root-config";
 
-import CREDENTIALS from "../CREDENTIALS.json";
+import credentials from "../credentials.json";
 import fs from "fs";
 import { reqResAsyncHandler } from "../utils/async-handler";
 
@@ -26,13 +26,13 @@ const generateAuthUrl = reqResAsyncHandler(async (req, res) => {
     // 2. Check if existing token is expired
     const now = Date.now();
 
-    if (now >= CREDENTIALS.expiry_date) {
+    if (now >= credentials.expiry_date) {
       console.log("Access token expired or missing. setting new tokens...");
 
       const { tokens } = await oauth2Client.getToken(code);
       oauth2Client.setCredentials(tokens);
 
-      fs.writeFileSync(CREDENTIALS_FILE_PATH, JSON.stringify(tokens), "utf8");
+      fs.writeFileSync(credentials_file_path, JSON.stringify(tokens), "utf8");
 
       return res.status(200).json({
         status: "success",
@@ -42,7 +42,7 @@ const generateAuthUrl = reqResAsyncHandler(async (req, res) => {
     }
 
     // 3. Token still valid
-    oauth2Client.setCredentials(CREDENTIALS);
+    oauth2Client.setCredentials(credentials);
     return res.status(200).json({
       status: "valid",
       message: "Existing token is still valid.",

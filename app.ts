@@ -1,10 +1,10 @@
 import { Bot, type Context } from "grammy";
 
 import { CONFIG } from "./config/root-config";
-import CREDENTIALS from "./CREDENTIALS.json";
+import credentials from "./credentials.json";
 import authRouter from "./routes/auth-route";
 import calendarRoute from "./routes/calendar-route";
-import { Conversation, conversations, createConversation, type ConversationFlavor } from "@grammyjs/conversations";
+import { conversations, createConversation, type ConversationFlavor } from "@grammyjs/conversations";
 import cors from "cors";
 import errorHandler from "./middlewares/error-handler";
 import express from "express";
@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
-  if (CREDENTIALS.expiry_date <= Date.now() || CREDENTIALS.expiry_date === 0) {
+  if (credentials.expiry_date <= Date.now() || credentials.expiry_date === 0) {
     res.redirect(`${CONFIG.redirect_url}`);
   } else {
     res.status(200).send("Server is running and everything is established correctly.");
