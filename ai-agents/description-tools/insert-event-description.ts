@@ -1,4 +1,4 @@
-export const insertEventToolDescription = `Insert an event into the calendar. Must follow the paramters provided the structure is json format example to a request {
+export const insertEventToolDescription: string = `Insert an event into the calendar. Must follow the paramters provided the structure is json format example to a request {
   "summary": "Quick Standup Meeting",
   "location": "Online - Google Meet",
   "description": "Daily standup to sync team updates.",
