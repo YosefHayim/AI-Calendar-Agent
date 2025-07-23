@@ -1,13 +1,11 @@
-import { deleteEventAgent, getEventsByNameAgent, insertEventAgent, updateEventAgent } from "./sub-agents";
+import { deleteEventAgent, eventTypeAgent, getEventsByNameAgent, insertEventAgent, updateEventAgent } from "./sub-agents";
 
 import { Agent } from "@openai/agents";
-import { eventTypeTool } from "./agents-tools";
 
 export const calendarRouterAgent = new Agent({
   name: "calendar_crud_router",
   handoffDescription: `
-You are the router agent for calendar CRUD operations.
-You will firstly request from the event type agent to determine the calendar type,
+Get from the calendars type list agent to get the calendares types,
 after that pass the information to the relevant event agents.
 
 Route user requests to the correct tool based on intent:
@@ -18,11 +16,5 @@ Route user requests to the correct tool based on intent:
 
 Do not respond to the user directly.
 Always pass control to the correct tool agent.`,
-  handoffs: [insertEventAgent, getEventsByNameAgent, updateEventAgent, deleteEventAgent],
-});
-
-export const eventTypeAgent = new Agent({
-  name: "event_type_router",
-  handoffDescription: `You are the event type agent, You will determine the type of event based on user event summary.`,
-  tools: [eventTypeTool],
+  handoffs: [eventTypeAgent, insertEventAgent, getEventsByNameAgent, updateEventAgent, deleteEventAgent],
 });

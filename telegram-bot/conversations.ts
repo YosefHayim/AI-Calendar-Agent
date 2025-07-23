@@ -35,3 +35,9 @@ export const updateEventByName = async (conversation: Conversation, ctx: Context
   const r = await run(calendarRouterAgent, `Update the event with the name: ${messageOne.text}) with the new details: ${messageTwo.text}`);
   await ctx.reply(r.finalOutput!);
 };
+
+export const getCalendarList = async (conversation: Conversation, ctx: Context) => {
+  await ctx.reply("Please wait while I fetch your calendar list...");
+  const r = await run(calendarRouterAgent, "Get me all the calendars list I have");
+  await ctx.reply(r.finalOutput!);
+};

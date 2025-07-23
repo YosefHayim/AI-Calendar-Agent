@@ -2,6 +2,7 @@ import { deleteEventParameters } from "./parameters-tools/delete-event-paramters
 import { deleteEventToolDescription } from "./description-tools/delete-event-description";
 import { eventTypeToolDescription } from "./description-tools/event-type-tool";
 import { eventTypeToolParameters } from "./parameters-tools/event-type-tool-parameters";
+import { getCalendarEventTypes } from "./execeution-tools/get-calendar-types-execution";
 import { getEventExecution } from "./execeution-tools/get-event-execution";
 import { getEventParameters } from "./parameters-tools/get-event-paramters";
 import { getEventToolDescription } from "./description-tools/get-event-description";
@@ -22,7 +23,6 @@ export const insertEventTool = tool({
     console.error(" Tool execution failed:", error);
     return "Failed to insert event. Please check event details or calendar API access.";
   },
-  strict: true,
 });
 
 export const getEventsTool = tool({
@@ -34,7 +34,6 @@ export const getEventsTool = tool({
     console.error(" Tool execution failed:", error);
     return "Failed to insert event. Please check event details or calendar API access.";
   },
-  strict: true,
 });
 
 export const updateEventTool = tool({
@@ -46,7 +45,6 @@ export const updateEventTool = tool({
     console.error(" Tool execution failed:", error);
     return "Failed to insert event. Please check event details or calendar API access.";
   },
-  strict: true,
 });
 
 export const deleteEventTool = tool({
@@ -58,7 +56,6 @@ export const deleteEventTool = tool({
     console.error(" Tool execution failed:", error);
     return "Failed to insert event. Please check event details or calendar API access.";
   },
-  strict: true,
 });
 
 export const eventTypeTool = tool({
@@ -69,9 +66,5 @@ export const eventTypeTool = tool({
     console.error(" Tool execution failed:", error);
     return "Failed to determine event type. Please try again.";
   },
-  execute: async (params) => {
-    console.log("Event type tool executed with params:", params);
-    return "Event type determined successfully.";
-  },
-  strict: true,
+  execute: getCalendarEventTypes,
 });

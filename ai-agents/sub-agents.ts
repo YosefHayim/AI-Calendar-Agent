@@ -1,5 +1,5 @@
 import { Agent, setDefaultOpenAIKey } from "@openai/agents";
-import { deleteEventTool, getEventsTool, insertEventTool, updateEventTool } from "./agents-tools";
+import { deleteEventTool, eventTypeTool, getEventsTool, insertEventTool, updateEventTool } from "./agents-tools";
 
 import { CONFIG } from "../config/root-config";
 
@@ -40,4 +40,10 @@ export const deleteEventAgent = new Agent({
   name: "delete_event",
   instructions: `You delete a calendar event based on the title or other identifying detail.`,
   tools: [deleteEventTool],
+});
+
+export const eventTypeAgent = new Agent({
+  name: "calendars_types_list",
+  handoffDescription: `You return the list of calendars assositaed with the user's account.`,
+  tools: [eventTypeTool],
 });
