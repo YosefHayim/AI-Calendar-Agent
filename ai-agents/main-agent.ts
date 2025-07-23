@@ -1,6 +1,7 @@
 import { deleteEventAgent, getEventsByNameAgent, insertEventAgent, updateEventAgent } from "./sub-agents";
 
 import { Agent } from "@openai/agents";
+import { eventTypeTool } from "./agents-tools";
 
 export const calendarRouterAgent = new Agent({
   name: "calendar_crud_router",
@@ -22,7 +23,6 @@ Always pass control to the correct tool agent.`,
 
 export const eventTypeAgent = new Agent({
   name: "event_type_router",
-  handoffDescription: `
-You are the router agent for event type operations.`,
-  tools: [],
+  handoffDescription: `You are the event type agent, You will determine the type of event based on user event summary.`,
+  tools: [eventTypeTool],
 });
