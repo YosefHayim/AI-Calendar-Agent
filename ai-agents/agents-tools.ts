@@ -59,7 +59,7 @@ export const deleteEventTool = tool({
 });
 
 export const eventTypeTool = tool({
-  name: "event_type_tool",
+  name: "calendars_types_list_tool",
   description: eventTypeToolDescription,
   parameters: eventTypeToolParameters,
   errorFunction: async (params, error) => {

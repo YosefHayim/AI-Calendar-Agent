@@ -1,4 +1,4 @@
-import { SCOPES, credentials_file_path, oauth2Client } from "../config/root-config";
+import { CONFIG, SCOPES, credentials_file_path, oauth2Client } from "../config/root-config";
 
 import credentials from "../credentials.json";
 import fs from "fs";
@@ -11,6 +11,9 @@ const generateAuthUrl = reqResAsyncHandler(async (req, res) => {
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: SCOPES,
+    prompt: "consent",
+    include_granted_scopes: true,
+    redirect_uri: CONFIG.redirect_url,
   });
 
   // 1. No code yet: send user to consent screen
