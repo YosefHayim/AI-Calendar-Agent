@@ -2,8 +2,10 @@ import { asyncHandler } from "../../utils/async-handler";
 import { calendar } from "../../config/root-config";
 
 export const getCalendarEventTypes = asyncHandler(async () => {
-  console.log("Fetching all calendar types associated with the user's account...");
-  const r = await calendar.calendarList.get({ alt: "json", prettyPrint: true });
-  console.log(`All calendars that has been found about the user:\n${r}`);
-  return r;
+  console.log("Fetching calendar event types...");
+  const r = await calendar.calendarList.list();
+  console.log("Calendar items", r.data);
+  if (!r) return "No calendars has been found for the user";
+  const allCalendars = r.data.items?.map((item) => item.summary);
+  return allCalendars;
 });
