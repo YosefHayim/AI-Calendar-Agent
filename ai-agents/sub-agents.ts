@@ -1,5 +1,5 @@
 import { Agent, setDefaultOpenAIKey } from "@openai/agents";
-import { deleteEventTool, eventTypeTool, getEventsTool, insertEventTool, updateEventTool } from "./agents-tools";
+import { calendarTypeTool, deleteEventTool, getEventsTool, insertEventTool, updateEventTool } from "./agents-tools";
 
 import { CONFIG } from "../config/root-config";
 
@@ -42,8 +42,15 @@ export const deleteEventAgent = new Agent({
   tools: [deleteEventTool],
 });
 
-export const eventTypeAgent = new Agent({
+export const calendarTypeAgent = new Agent({
   name: "Calendar Types Agent",
   instructions: `An agent that returns the list of calendars assositaed with the user's account via google api calendar.`,
-  tools: [eventTypeTool],
+  tools: [calendarTypeTool],
+});
+
+export const analyseCalenderTypeByEventAgent = new Agent({
+  name: "Analyse Calender Type By Event Agent",
+  instructions: `An agent that analyse the event details and return the calendar type that best fits the event.
+  If the event is not suitable for any calendar type, return a default calendar type.`,
+  tools: [calendarTypeTool],
 });

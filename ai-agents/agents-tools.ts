@@ -58,7 +58,7 @@ export const deleteEventTool = tool({
   },
 });
 
-export const eventTypeTool = tool({
+export const calendarTypeTool = tool({
   name: "calendars_types_list_tool",
   description: eventTypeToolDescription,
   parameters: eventTypeToolParameters,
