@@ -9,7 +9,7 @@ import cors from "cors";
 import errorHandler from "./middlewares/error-handler";
 import express from "express";
 import morgan from "morgan";
-import { getCalendarList, provideEventDetails, searchForEventByName } from "./telegram-bot/conversations";
+import { getCalendarList, insertEventToCalendar, searchForEventByName } from "./telegram-bot/conversations";
 
 const app = express();
 const PORT = CONFIG.port;
@@ -38,14 +38,21 @@ app.listen(PORT, () => {
 });
 
 bot.use(conversations());
-bot.use(createConversation(provideEventDetails));
+bot.use(createConversation(insertEventToCalendar));
 bot.use(createConversation(getCalendarList));
 bot.use(createConversation(searchForEventByName));
 
+const commandMap: Record<string, string> = {
+  "calendars-list": "getCalendarList",
+  "add-event": "insertEventToCalendar",
+  "search-event": "searchForEventByName",
+};
+
 bot.on("message:text", async (ctx) => {
   const message = ctx.message?.text.toLowerCase();
+
   if (message === "calendars-list") return ctx.conversation.enter("getCalendarList");
-  if (message === "add-event") return ctx.conversation.enter("provideEventDetails");
+  if (message === "add-event") return ctx.conversation.enter("insertEventToCalendar");
   if (message === "search-event") return ctx.conversation.enter("searchForEventByName");
 });
 

@@ -3,7 +3,7 @@ import { Conversation } from "@grammyjs/conversations";
 import { calendarRouterAgent } from "../ai-agents/main-agent";
 import { run } from "@openai/agents";
 
-export const provideEventDetails = async (conversation: Conversation, ctx: Context) => {
+export const insertEventToCalendar = async (conversation: Conversation, ctx: Context) => {
   await ctx.reply("Please provide the name of the event: ");
   const { message: messageOne } = await conversation.waitFor("message:text");
   await ctx.reply(`Next, Please provide the date of the event.`);
