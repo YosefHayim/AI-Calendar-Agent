@@ -43,17 +43,20 @@ bot.use(createConversation(getCalendarList));
 bot.use(createConversation(searchForEventByName));
 
 const commandMap: Record<string, string> = {
-  "calendars-list": "getCalendarList",
+  "get-calendars-list": "getCalendarList",
   "add-event": "insertEventToCalendar",
   "search-event": "searchForEventByName",
 };
 
 bot.on("message:text", async (ctx) => {
   const message = ctx.message?.text.toLowerCase();
-
-  if (message === "calendars-list") return ctx.conversation.enter("getCalendarList");
-  if (message === "add-event") return ctx.conversation.enter("insertEventToCalendar");
-  if (message === "search-event") return ctx.conversation.enter("searchForEventByName");
+  if (commandMap[message]) {
+    if (message === "return") {
+      ctx.reply("You have exited the conversation.");
+      return ctx.conversation.exit(commandMap[message]);
+    }
+    return ctx.conversation.enter(commandMap[message]);
+  }
 });
 
 bot.start({ allowed_updates: ["message"] });

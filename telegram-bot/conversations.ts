@@ -41,3 +41,11 @@ export const getCalendarList = async (conversation: Conversation, ctx: Context) 
   const r = await run(calendarRouterAgent, "Get me all the calendars list I have");
   await ctx.reply(r.finalOutput!);
 };
+
+export const deleteEventByName = async (conversation: Conversation, ctx: Context) => {
+  await ctx.reply("Please tell me the name of the event you want to delete: ");
+  const { message: messageOne } = await conversation.waitFor("message:text");
+  await ctx.reply(`Please wait while I delete the event: ${messageOne.text}`);
+  const r = await run(calendarRouterAgent, `Delete the event with the name: ${messageOne.text}`);
+  await ctx.reply(r.finalOutput!);
+};
