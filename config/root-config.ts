@@ -1,3 +1,4 @@
+import { GoogleCalendarScopes } from "../types";
 import credentials from "../credentials.json";
 import dotenv from "dotenv";
 import { google } from "googleapis";
@@ -22,7 +23,7 @@ export const oauth2Client = new google.auth.OAuth2(CONFIG.client_id, CONFIG.clie
   if (!CONFIG.open_ai_api_key) {
     throw new Error("OpenAI API key is not set in the environment variables.");
   } else {
-    console.log("OpenAI API key is set.");
+    console.error("OpenAI API key is set.");
   }
   setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 })();
@@ -42,15 +43,4 @@ export const requestConfigBase = {
   supportsAttachments: true,
 };
 
-export const SCOPES = [
-  "https://www.googleapis.com/auth/calendar.app.created",
-  "https://www.googleapis.com/auth/calendar.events",
-  "https://www.googleapis.com/auth/calendar",
-  "https://www.googleapis.com/auth/calendar.readonly",
-  "https://www.googleapis.com/auth/calendar",
-  "https://www.googleapis.com/auth/calendar.calendarlist",
-  "https://www.googleapis.com/auth/calendar.calendarlist.readonly",
-  "https://www.googleapis.com/auth/calendar.events.owned.readonly",
-  "https://www.googleapis.com/auth/calendar.events.owned",
-  "https://www.googleapis.com/auth/calendar.freebusy",
-];
+export const SCOPES = Object.values(GoogleCalendarScopes);
