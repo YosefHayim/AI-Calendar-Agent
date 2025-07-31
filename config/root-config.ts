@@ -22,7 +22,6 @@ if (!CONFIG.open_ai_api_key) {
 }
 setDefaultOpenAIKey(CONFIG.open_ai_api_key);
 
-// --- Credentials Handling ---
 const credentialsPath = path.resolve(__dirname, "../credentials.json");
 
 let credentials: {

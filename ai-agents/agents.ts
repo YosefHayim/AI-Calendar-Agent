@@ -2,6 +2,7 @@ import { Agent, setDefaultOpenAIKey } from "@openai/agents";
 
 import { AGENT_TOOLS } from "./agents-tools";
 import { CONFIG } from "../config/root-config";
+import { chatWithAgent } from "../telegram-bot/conversations";
 
 setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 
@@ -89,6 +90,11 @@ export const AGENTS = {
     name: "An agent that delete an event by name",
     instructions: `An agent that delete an event by name.`,
     tools: [AGENT_TOOLS.deleteEvent],
+  }),
+  chatWithAgent: new Agent({
+    name: "An agent that  chat with the user",
+    instructions: `An agent that chat with the user and act as personal calendar assistant.`,
+    tools: [AGENT_TOOLS.calendarType],
   }),
 };
 

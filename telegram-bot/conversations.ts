@@ -81,3 +81,19 @@ export const deleteEventByName = async (conversation: Conversation, ctx: Context
   const r = await run(AGENTS.deleteEventByName, `Delete the event with the name: ${messageOne.text}`);
   await ctx.reply(r.finalOutput!);
 };
+
+export const chatWithAgent = async (conversation: Conversation, ctx: Context) => {
+  let chatWithAI = true;
+
+  while (chatWithAI) {
+    const message = (await conversation.waitFor("message:text")).message?.text;
+
+    if (message === "exit") {
+      chatWithAI = false;
+      await ctx.reply("You have exited the chat with the agent.");
+      return;
+    }
+    const r = await run(AGENTS.chatWithAgent, `Chat with the agent about: ${message}`);
+    await ctx.reply(r.finalOutput!);
+  }
+};
