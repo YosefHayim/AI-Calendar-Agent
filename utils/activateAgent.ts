@@ -1,13 +1,17 @@
 import { Agent, run } from "@openai/agents";
 
+import { Agents } from "../types";
 import { asyncHandler } from "./async-handler";
 
-export const activateAgent = asyncHandler(async (agent: Agent, text: string) => {
-  if (!agent) return `Please provide an agent in order to activate it.`;
+export const activateAgent = asyncHandler(async (agent: Agents[keyof Agents], instructions: string) => {
+  if (!(agent instanceof Agent)) {
+    return `The provided agent is not valid.`;
+  }
 
-  if (!text) return `Please provide the prompt for the agent: ${agent.name}`;
-
-  const r = run(agent, text);
-
-  return r.finalOutput;
+  if (!instructions) {
+    return `Please provide the instructions for the agent: ${agent.name}`;
+  }
+  const result = await run(agent, instructions);
+  console.log(`Result of the agent: ${agent.name} with instructions: ${instructions} is: ${result.finalOutput}`);
+  return result.finalOutput;
 });

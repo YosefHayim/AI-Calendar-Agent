@@ -1,3 +1,4 @@
+import { AGENTS } from "./ai-agents/sub-agents";
 import { calendar_v3 } from "googleapis";
 
 export enum GoogleCalendarScopes {
@@ -11,6 +12,9 @@ export enum GoogleCalendarScopes {
   EVENTS_OWNED = "https://www.googleapis.com/auth/calendar.events.owned",
   FREEBUSY = "https://www.googleapis.com/auth/calendar.freebusy",
 }
+
+export type Agents = keyof typeof AGENTS;
+export type AgentType = Agents[keyof Agents];
 
 export enum Action {
   GET = "get",
