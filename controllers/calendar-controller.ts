@@ -1,4 +1,4 @@
-import { Action, SchemaEventProps } from "../types";
+import { ACTION, SCHEMA_EVENT_PROPS } from "../types";
 import { calendar, requestConfigBase } from "../config/root-config";
 
 import { handleEvents } from "../utils/handler-calendar-event";
@@ -18,24 +18,24 @@ const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
 });
 
 const getAllEvents = reqResAsyncHandler(async (req, res) => {
-  const r = handleEvents(res, Action.GET);
+  const r = handleEvents(res, ACTION.GET);
   sendR(res)(200, "Successfully retrieved all events", r);
 });
 
 const createEvent = reqResAsyncHandler(async (req, res) => {
-  const event: SchemaEventProps = req.body;
-  const r = handleEvents(res, Action.INSERT, event);
+  const event: SCHEMA_EVENT_PROPS = req.body;
+  const r = handleEvents(res, ACTION.INSERT, event);
   sendR(res)(201, "Event created successfully", r);
 });
 
 const updateEvent = reqResAsyncHandler(async (req, res) => {
-  const event: SchemaEventProps = req.body;
-  const r = handleEvents(res, Action.UPDATE, { id: req.params.eventId, ...event });
+  const event: SCHEMA_EVENT_PROPS = req.body;
+  const r = handleEvents(res, ACTION.UPDATE, { id: req.params.eventId, ...event });
   sendR(res)(204, "Event has been successfully updated", r);
 });
 
 const deleteEvent = reqResAsyncHandler(async (req, res) => {
-  const r = handleEvents(res, Action.DELETE, { id: req.params.eventId });
+  const r = handleEvents(res, ACTION.DELETE, { id: req.params.eventId });
   sendR(res)(204, "Event has been successfully deleted", r);
 });
 

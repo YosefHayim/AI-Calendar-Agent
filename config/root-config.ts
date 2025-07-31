@@ -1,4 +1,4 @@
-import { GoogleCalendarScopes } from "../types";
+import { GOOGLE_CALENDAR_SCOPES } from "../types";
 import credentials from "../credentials.json";
 import dotenv from "dotenv";
 import { google } from "googleapis";
@@ -43,4 +43,4 @@ export const requestConfigBase = {
   supportsAttachments: true,
 };
 
-export const SCOPES = Object.values(GoogleCalendarScopes);
+export const SCOPES = Object.values(GOOGLE_CALENDAR_SCOPES);

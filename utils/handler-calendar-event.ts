@@ -9,8 +9,9 @@ export const handleEvents = asyncHandler(async (action: ACTION, eventData?: SCHE
   const calendarEvents = calendar.events;
   let r;
 
-  if (ACTION.UPDATE === action && !eventData?.id) return errorTemplate("Event ID is required for update action", 400);
-  if (ACTION.DELETE === action && !eventData?.id) return errorTemplate("Event ID is required for delete action", 400);
+  if ((ACTION.UPDATE && !eventData?.id) || (ACTION.DELETE && eventData?.id)) {
+    return errorTemplate("Event ID is required for update or delete action", 400);
+  }
 
   switch (action) {
     case ACTION.GET:
