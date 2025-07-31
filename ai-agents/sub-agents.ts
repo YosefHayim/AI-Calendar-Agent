@@ -54,3 +54,27 @@ export const analyseCalenderTypeByEventAgent = new Agent({
   If the event is not suitable for any calendar type, return a default calendar type.`,
   tools: [calendarTypeTool],
 });
+
+export const validateEventDateAgent = new Agent({
+  name: "Validate Event Date Agent",
+  instructions: `An agent that validate the date of an event.
+  The agent MUST return ONLY "true" if the date is valid and understood, otherwise it MUST return ONLY "false".
+  No other text or explanation is allowed.
+  `,
+  tools: [],
+});
+export const validateEventDurationAgent = new Agent({
+  name: "validate the event duration",
+  instructions: `An agent that validate the duration of an event.
+  The agent MUST return ONLY "true" if the duration is valid and understood, otherwise it MUST return ONLY "false".
+  No other text or explanation is allowed.`,
+  tools: [],
+});
+export const validateEventSummaryAgent = new Agent({
+  name: "validate the event summary",
+  instructions: `An agent that validate the name of the event.
+  The agent MUST return ONLY "true" if the summary is valid and understood, otherwise it MUST return ONLY "false".
+  No other text or explanation is allowed.
+  `,
+  tools: [],
+});

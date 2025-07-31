@@ -50,11 +50,14 @@ const commandMap: Record<string, string> = {
 
 bot.on("message:text", async (ctx) => {
   const message = ctx.message?.text.toLowerCase();
+
+  if (message === "return") {
+    console.log("Exited conversation successfully");
+    ctx.reply("You have exited the conversation.");
+    return ctx.conversation.exit(commandMap[message]);
+  }
+
   if (commandMap[message]) {
-    if (message === "return") {
-      ctx.reply("You have exited the conversation.");
-      return ctx.conversation.exit(commandMap[message]);
-    }
     return ctx.conversation.enter(commandMap[message]);
   }
 });
