@@ -78,6 +78,18 @@ export const AGENTS = {
     If no events are found, return a message that declares that.`,
     tools: [AGENT_TOOLS.getEvent],
   }),
+  updateEventByName: new Agent({
+    name: "An agent that update an event by name",
+    instructions: `An agent that update an event by name.
+    The agent MUST return the updated event if the update was successful, otherwise it MUST return an error message.
+    If no events are found, return a message that declares that.`,
+    tools: [AGENT_TOOLS.updateEvent],
+  }),
+  deleteEventByName: new Agent({
+    name: "An agent that delete an event by name",
+    instructions: `An agent that delete an event by name.`,
+    tools: [AGENT_TOOLS.deleteEvent],
+  }),
 };
 
 const subAgents = Object.values(AGENTS) as Agent[];
