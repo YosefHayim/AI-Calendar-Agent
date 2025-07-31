@@ -1,9 +1,9 @@
 import { Agent, run } from "@openai/agents";
 
-import { Agents } from "../types";
+import { AGENTS } from "../types";
 import { asyncHandler } from "./async-handler";
 
-export const activateAgent = asyncHandler(async (agent: Agents[keyof Agents], instructions: string) => {
+export const activateAgent = asyncHandler(async (agent: AGENTS[keyof AGENTS], instructions: string) => {
   if (!(agent instanceof Agent)) {
     return `The provided agent is not valid.`;
   }

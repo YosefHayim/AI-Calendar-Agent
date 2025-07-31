@@ -1,4 +1,4 @@
-import { Action } from "../../types";
+import { ACTION } from "../../types";
 import { asyncHandler } from "../../utils/async-handler";
 import { calendar_v3 } from "googleapis";
 import errorTemplate from "../../utils/error-template";
@@ -27,5 +27,5 @@ export const updateEventExecution = asyncHandler(async (params: any) => {
     },
   };
 
-  return handleEvents(Action.UPDATE, eventData);
+  return handleEvents(ACTION.UPDATE, eventData);
 });

@@ -1,4 +1,4 @@
-import { Action } from "../../types";
+import { ACTION } from "../../types";
 import { calendar_v3 } from "googleapis";
 import errorTemplate from "../../utils/error-template";
 import { handleEvents } from "../../utils/handler-calendar-event";
@@ -26,5 +26,5 @@ export const insertEventExeuction = async (params: any) => {
     },
   };
 
-  return handleEvents(Action.INSERT, eventData);
+  return handleEvents(ACTION.INSERT, eventData);
 };

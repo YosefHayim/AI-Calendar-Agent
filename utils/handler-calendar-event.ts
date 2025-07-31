@@ -1,19 +1,19 @@
-import { Action, SchemaEventProps } from "../types";
+import { ACTION, SCHEMA_EVENT_PROPS } from "../types";
 import { calendar, requestConfigBase } from "../config/root-config";
 
 import { asyncHandler } from "./async-handler";
 import errorTemplate from "./error-template";
 import formatDate from "./formatDate";
 
-export const handleEvents = asyncHandler(async (action: Action, eventData?: SchemaEventProps, extra?: Object): Promise<any> => {
+export const handleEvents = asyncHandler(async (action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: Object): Promise<any> => {
   const calendarEvents = calendar.events;
   let r;
 
-  if (Action.UPDATE === action && !eventData?.id) return errorTemplate("Event ID is required for update action", 400);
-  if (Action.DELETE === action && !eventData?.id) return errorTemplate("Event ID is required for delete action", 400);
+  if (ACTION.UPDATE === action && !eventData?.id) return errorTemplate("Event ID is required for update action", 400);
+  if (ACTION.DELETE === action && !eventData?.id) return errorTemplate("Event ID is required for delete action", 400);
 
   switch (action) {
-    case Action.GET:
+    case ACTION.GET:
       const events = await calendarEvents.list({
         ...requestConfigBase,
         timeMin: new Date().toISOString(),
@@ -37,14 +37,14 @@ export const handleEvents = asyncHandler(async (action: Action, eventData?: Sche
         });
       break;
 
-    case Action.INSERT:
+    case ACTION.INSERT:
       r = await calendarEvents.insert({
         ...requestConfigBase,
         requestBody: eventData,
       });
       break;
 
-    case Action.UPDATE:
+    case ACTION.UPDATE:
       r = await calendarEvents.update({
         ...requestConfigBase,
         eventId: eventData?.id!,
@@ -52,7 +52,7 @@ export const handleEvents = asyncHandler(async (action: Action, eventData?: Sche
       });
       break;
 
-    case Action.DELETE:
+    case ACTION.DELETE:
       r = await calendarEvents.delete({
         ...requestConfigBase,
         eventId: eventData?.id!,
