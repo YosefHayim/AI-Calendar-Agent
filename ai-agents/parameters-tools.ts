@@ -16,7 +16,7 @@ const fullEventParameters = z.object({
 export const EVENT_PARAMETERS = {
   deleteEventParameters: fullEventParameters,
   eventTypeToolParameters: z.object({}),
-  getEventParameters: fullEventParameters,
+  getEventParameters: z.object({}),
   insertEventParameters: fullEventParameters,
   updateEventParameters: fullEventParameters,
 };

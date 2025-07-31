@@ -56,14 +56,12 @@ export const AGENTS = {
     The agent MUST return ONLY "true" if the date is valid and understood, otherwise it MUST return ONLY "false".
     No other text or explanation is allowed.
     `,
-    tools: [AGENT_TOOLS.validateEventDate],
   }),
   validateDurationEvent: new Agent({
     name: "validate the event duration",
     instructions: `An agent that validate the duration of an event.
     The agent MUST return ONLY "true" if the duration is valid and understood, otherwise it MUST return ONLY "false".
     No other text or explanation is allowed.`,
-    tools: [AGENT_TOOLS.validateEventDuration],
   }),
 
   validateSummaryEvent: new Agent({
@@ -72,6 +70,5 @@ export const AGENTS = {
     The agent MUST return ONLY "true" if the summary is valid and understood, otherwise it MUST return ONLY "false".
     No other text or explanation is allowed.
     `,
-    tools: [AGENT_TOOLS.validateEventSummary],
   }),
 };
