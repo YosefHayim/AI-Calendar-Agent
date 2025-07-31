@@ -62,4 +62,6 @@ bot.on("message:text", async (ctx) => {
   }
 });
 
-bot.start({ allowed_updates: ["message"] });
+bot.start({ allowed_updates: ["message"] }).catch((error) => {
+  console.error("Error starting bot:", error);
+});

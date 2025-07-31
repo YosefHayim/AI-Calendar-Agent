@@ -9,8 +9,8 @@ export const insertEventToCalendar = async (conversation: Conversation, ctx: Con
   let eventDate;
   let eventTime;
 
+  await ctx.reply("Please provide the name of the event (minimum 3 letters): ");
   while (true) {
-    await ctx.reply("Please provide the name of the event (minimum 3 letters): ");
     eventName = (await conversation.waitFor("message:text")).message?.text;
 
     if (!eventName || eventName.length < 3) {
@@ -20,8 +20,8 @@ export const insertEventToCalendar = async (conversation: Conversation, ctx: Con
     break;
   }
 
+  await ctx.reply(`Next, Please provide the date of the event.`);
   while (true) {
-    await ctx.reply(`Next, Please provide the date of the event.`);
     eventDate = (await conversation.waitFor("message:text")).message?.text;
 
     if (!eventDate || eventDate.length < 7) {
@@ -31,8 +31,8 @@ export const insertEventToCalendar = async (conversation: Conversation, ctx: Con
     break;
   }
 
+  await ctx.reply(`Great, so the last thing I need from you is what is the duration of that event? you can either provide a time range.`);
   while (true) {
-    await ctx.reply(`Great, so the last thing I need from you is what is the duration of that event? you can either provide a time range.`);
     eventTime = (await conversation.waitFor("message:text")).message?.text;
     if (!eventTime || eventTime.length < 3) {
       await ctx.reply("Event time must be at least 3 letters. Please try again");
@@ -43,7 +43,7 @@ export const insertEventToCalendar = async (conversation: Conversation, ctx: Con
 
   await ctx.reply(`Great, I will now proceed to insert the event, please wait...`);
   const result = await activateAgent(
-    AGENTS.calendarRouterAgent,
+    AGENTS.insertEvent,
     `Insert this event into my calendar:\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
   );
   await ctx.reply(result.finalOutput!);

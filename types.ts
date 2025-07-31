@@ -15,9 +15,7 @@ export enum GOOGLE_CALENDAR_SCOPES {
 }
 export type TOOLS = keyof typeof AGENT_TOOLS;
 
-export type AGENTS = keyof typeof AGENTS;
-
-export type AGENT_TYPE = AGENTS[keyof AGENTS];
+export type AGENTS_LIST = keyof typeof AGENTS;
 
 export enum ACTION {
   GET = "get",

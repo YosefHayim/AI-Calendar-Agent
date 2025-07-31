@@ -5,7 +5,7 @@ import { CONFIG } from "../config/root-config";
 
 setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 
-export const AGENTS: { [key: string]: Agent } = {
+export const AGENTS = {
   insertEvent: new Agent({
     name: "Insert Event Agent",
     instructions: `An agent that insert a new event into the user's calendar.
@@ -16,8 +16,8 @@ export const AGENTS: { [key: string]: Agent } = {
     - Omit location if missing.`,
     tools: [AGENT_TOOLS.insertEvent],
   }),
-  getEventsByName: new Agent({
-    name: "Get Events By Name Agent",
+  getEventByName: new Agent({
+    name: "An agent that search for events by name",
     instructions: `An agent that retrieve one or more events from the user's calendar by matching their title or keywords.`,
     tools: [AGENT_TOOLS.getEvent],
   }),
@@ -35,45 +35,52 @@ export const AGENTS: { [key: string]: Agent } = {
     tools: [AGENT_TOOLS.updateEvent],
   }),
   deleteEventById: new Agent({
-    name: "Delete Event Agent",
+    name: "An agent that delete an event by its id",
     instructions: `An agent that delete a calendar event based on the title or other identifying detail.`,
     tools: [AGENT_TOOLS.deleteEvent],
   }),
   getCalendarList: new Agent({
-    name: "Calendar Types Agent",
+    name: "An agent that returns the list of calendars",
     instructions: `An agent that returns the list of calendars assositaed with the user's account via google api calendar.`,
     tools: [AGENT_TOOLS.calendarType],
   }),
   analyseCalendarTypeByEvent: new Agent({
-    name: "Analyse Calender Type By Event Agent",
+    name: "An agent that analyse the event type by the event details",
     instructions: `An agent that analyse the event details and return the calendar type that best fits the event.
     If the event is not suitable for any calendar type, return a default calendar type.`,
     tools: [AGENT_TOOLS.eventType],
   }),
   validateDateEvent: new Agent({
-    name: "Validate Event Date Agent",
+    name: "An agent that validate the event date",
     instructions: `An agent that validate the date of an event.
     The agent MUST return ONLY "true" if the date is valid and understood, otherwise it MUST return ONLY "false".
     No other text or explanation is allowed.
     `,
   }),
   validateDurationEvent: new Agent({
-    name: "validate the event duration",
+    name: "An agent that validate the event duration",
     instructions: `An agent that validate the duration of an event.
     The agent MUST return ONLY "true" if the duration is valid and understood, otherwise it MUST return ONLY "false".
     No other text or explanation is allowed.`,
   }),
 
   validateSummaryEvent: new Agent({
-    name: "validate the event summary",
+    name: "An agent that validate the event summary",
     instructions: `An agent that validate the name of the event.
     The agent MUST return ONLY "true" if the summary is valid and understood, otherwise it MUST return ONLY "false".
     No other text or explanation is allowed.
     `,
   }),
+  searchForEventByName: new Agent({
+    name: "An agent that search for events by name",
+    instructions: `An agent that search for events by name.
+    The agent MUST return the events that match the name provided by the user.
+    If no events are found, return a message that declares that.`,
+    tools: [AGENT_TOOLS.getEvent],
+  }),
 };
 
-const subAgents = Object.values(AGENTS);
+const subAgents = Object.values(AGENTS) as Agent[];
 
 export const calendarRouterAgent = new Agent({
   name: "Calendar Router Agent",

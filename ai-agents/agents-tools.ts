@@ -14,6 +14,7 @@ export const AGENT_TOOLS = {
     parameters: EVENT_PARAMETERS.insertEventParameters,
     execute: insertEventExeuction,
     errorFunction: async (params, error) => {
+      console.log("Params recieved: ", params);
       return `Failed to insert event. Please check event details or calendar API access. Error: ${error}`;
     },
   }),
