@@ -4,6 +4,6 @@ import { calendar } from "../../config/root-config";
 export const getCalendarEventTypes = asyncHandler(async (params: any) => {
   const r = calendar.calendarList.list();
   const allCalendars = (await r).data.items?.map((item) => item.summary);
-  console.log("Calendars typeps received: ", allCalendars);
+  console.log("Calendars types list received: ", allCalendars);
   return allCalendars;
 });

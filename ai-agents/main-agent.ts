@@ -5,7 +5,7 @@ import { Agent } from "@openai/agents";
 const agents = Object.values(AGENTS);
 
 export const calendarRouterAgent = new Agent({
-  name: "calendar_crud_router",
+  name: "Calendar Router Agent",
   handoffDescription: `
 Get from the analyse calender type by event agent the appropirate calender type to the event.
 after that, pass the information to the validation agents, and when you have recieved a positive response from the validation agents, 

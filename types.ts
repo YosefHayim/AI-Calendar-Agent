@@ -1,7 +1,8 @@
 import { AGENTS } from "./ai-agents/sub-agents";
+import { AGENT_TOOLS } from "./ai-agents/agents-tools";
 import { calendar_v3 } from "googleapis";
 
-export enum GoogleCalendarScopes {
+export enum GOOGLE_CALENDAR_SCOPES {
   APP_CREATED = "https://www.googleapis.com/auth/calendar.app.created",
   EVENTS = "https://www.googleapis.com/auth/calendar.events",
   FULL_ACCESS = "https://www.googleapis.com/auth/calendar",
@@ -12,20 +13,22 @@ export enum GoogleCalendarScopes {
   EVENTS_OWNED = "https://www.googleapis.com/auth/calendar.events.owned",
   FREEBUSY = "https://www.googleapis.com/auth/calendar.freebusy",
 }
+export type TOOLS = keyof typeof AGENT_TOOLS;
 
-export type Agents = keyof typeof AGENTS;
-export type AgentType = Agents[keyof Agents];
+export type AGENTS = keyof typeof AGENTS;
 
-export enum Action {
+export type AGENT_TYPE = AGENTS[keyof AGENTS];
+
+export enum ACTION {
   GET = "get",
   INSERT = "insert",
   UPDATE = "update",
   DELETE = "Delete",
 }
 
-export type SchemaEventProps = calendar_v3.Schema$Event;
+export type SCHEMA_EVENT_PROPS = calendar_v3.Schema$Event;
 
-export enum Timezone {
+export enum TIMEZONE {
   // Africa
   AFRICA_ABIDJAN = "Africa/Abidjan",
   AFRICA_ACCRA = "Africa/Accra",
@@ -431,7 +434,3 @@ export enum Timezone {
   CHILE_CONTINENTAL = "Chile/Continental",
   CHILE_EASTERISLAND = "Chile/EasterIsland",
 }
-
-// Example usage:
-// const israelTimezone = Timezone.ASIA_JERUSALEM;
-// const newYorkTimezone = Timezone.AMERICA_NEW_YORK;
