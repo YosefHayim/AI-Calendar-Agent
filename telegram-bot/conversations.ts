@@ -1,8 +1,9 @@
+import { run, user } from "@openai/agents";
+
 import { AGENTS } from "../ai-agents/agents";
 import { Context } from "grammy";
 import { Conversation } from "@grammyjs/conversations";
 import { activateAgent } from "../utils/activateAgent";
-import { run } from "@openai/agents";
 
 export const insertEventToCalendar = async (conversation: Conversation, ctx: Context) => {
   let eventName;
@@ -82,6 +83,8 @@ export const deleteEventByName = async (conversation: Conversation, ctx: Context
   await ctx.reply(r.finalOutput!);
 };
 
+const userMessages: any = [];
+
 export const chatWithAgent = async (conversation: Conversation, ctx: Context) => {
   let chatWithAI = true;
 
@@ -93,7 +96,15 @@ export const chatWithAgent = async (conversation: Conversation, ctx: Context) =>
       await ctx.reply("You have exited the chat with the agent.");
       return;
     }
-    const r = await run(AGENTS.chatWithAgent, `Chat with the agent about: ${message}`);
+
+    userMessages.push({ role: "user", content: message });
+
+    const r = await run(
+      AGENTS.chatWithAgent,
+      `Chat with the agent about: ${userMessages.length > 0 ? userMessages.map((m: any) => m.content).join(" ") : message}`
+    );
+    userMessages.push({ role: "assistant", content: r.finalOutput });
+    console.log(userMessages);
     await ctx.reply(r.finalOutput!);
   }
 };
