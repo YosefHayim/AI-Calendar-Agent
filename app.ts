@@ -9,7 +9,7 @@ import cors from "cors";
 import errorHandler from "./middlewares/error-handler";
 import express from "express";
 import morgan from "morgan";
-import { getCalendarList, insertEventToCalendar, searchForEventByName } from "./telegram-bot/conversations";
+import { getCalendarList, insertEventToCalendar, searchForEventByName } from "./telegram-bot-conversations";
 
 const app = express();
 const PORT = CONFIG.port;

@@ -1,4 +1,4 @@
-import { AGENTS } from "./ai-agents/sub-agents";
+import { AGENTS } from "./ai-agents/agents";
 import { AGENT_TOOLS } from "./ai-agents/agents-tools";
 import { calendar_v3 } from "googleapis";
 

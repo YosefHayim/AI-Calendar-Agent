@@ -1,0 +1,83 @@
+import { AGENTS } from "./ai-agents/agents";
+import { Context } from "grammy";
+import { Conversation } from "@grammyjs/conversations";
+import { activateAgent } from "./utils/activateAgent";
+import { run } from "@openai/agents";
+
+export const insertEventToCalendar = async (conversation: Conversation, ctx: Context) => {
+  let eventName;
+  let eventDate;
+  let eventTime;
+
+  while (true) {
+    await ctx.reply("Please provide the name of the event (minimum 3 letters): ");
+    eventName = (await conversation.waitFor("message:text")).message?.text;
+
+    if (!eventName || eventName.length < 3) {
+      await ctx.reply("Event name must be at least 3 letters. Please try again.");
+      continue;
+    }
+    break;
+  }
+
+  while (true) {
+    await ctx.reply(`Next, Please provide the date of the event.`);
+    eventDate = (await conversation.waitFor("message:text")).message?.text;
+
+    if (!eventDate || eventDate.length < 7) {
+      await ctx.reply("Event date must be at least 7 letters. Please try again.");
+      continue;
+    }
+    break;
+  }
+
+  while (true) {
+    await ctx.reply(`Great, so the last thing I need from you is what is the duration of that event? you can either provide a time range.`);
+    eventTime = (await conversation.waitFor("message:text")).message?.text;
+    if (!eventTime || eventTime.length < 3) {
+      await ctx.reply("Event time must be at least 3 letters. Please try again");
+      continue;
+    }
+    break;
+  }
+
+  await ctx.reply(`Great, I will now proceed to insert the event, please wait...`);
+  const result = await activateAgent(
+    AGENTS.calendarRouterAgent,
+    `Insert this event into my calendar:\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
+  );
+  await ctx.reply(result.finalOutput!);
+};
+
+export const searchForEventByName = async (conversation: Conversation, ctx: Context) => {
+  await ctx.reply("Please tell me the name of the event you are looking for: ");
+  const { message: messageOne } = await conversation.waitFor("message:text");
+  await ctx.reply(`Please wait while I search for all the events with the name: ${messageOne}`);
+  const r = await run(AGENTS.searchForEventByName, `Search for all the events with the name: ${messageOne.text}`);
+  await ctx.reply(r.finalOutput!);
+};
+
+export const updateEventByName = async (conversation: Conversation, ctx: Context) => {
+  await ctx.reply("Please tell me the name of the event you want to update: ");
+  const { message: messageOne } = await conversation.waitFor("message:text");
+
+  await ctx.reply(`Please provide the new details for the event: ${messageOne.text}`);
+  const { message: messageTwo } = await conversation.waitFor("message:text");
+  await ctx.reply(`Please wait while I update the event: ${messageOne.text}`);
+  const r = await run(AGENTS.updateEventByName, `Update the event with the name: ${messageOne.text}) with the new details: ${messageTwo.text}`);
+  await ctx.reply(r.finalOutput!);
+};
+
+export const getCalendarList = async (conversation: Conversation, ctx: Context) => {
+  await ctx.reply("Please wait while I fetch your calendar list...");
+  const r = await run(AGENTS.getCalendarList, "Get me all the calendars list I have");
+  await ctx.reply(r.finalOutput!);
+};
+
+export const deleteEventByName = async (conversation: Conversation, ctx: Context) => {
+  await ctx.reply("Please tell me the name of the event you want to delete: ");
+  const { message: messageOne } = await conversation.waitFor("message:text");
+  await ctx.reply(`Please wait while I delete the event: ${messageOne.text}`);
+  const r = await run(AGENTS.deleteEventByName, `Delete the event with the name: ${messageOne.text}`);
+  await ctx.reply(r.finalOutput!);
+};
