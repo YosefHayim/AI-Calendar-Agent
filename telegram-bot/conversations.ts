@@ -29,7 +29,7 @@ export const searchForEventByName = async (conversation: Conversation, ctx: Cont
 export const updateEventByName = async (conversation: Conversation, ctx: Context) => {
   await ctx.reply("Please tell me the name of the event you want to update: ");
   const { message: messageOne } = await conversation.waitFor("message:text");
-  
+
   await ctx.reply(`Please provide the new details for the event: ${messageOne.text}`);
   const { message: messageTwo } = await conversation.waitFor("message:text");
   await ctx.reply(`Please wait while I update the event: ${messageOne.text}`);

@@ -16,7 +16,7 @@ export const updateEventExecution = asyncHandler(async (params: any) => {
 
   const eventData: calendar_v3.Schema$Event = {
     summary: params.summary,
-    description: params.description ?? "",
+    description: params.description,
     start: {
       dateTime: startDate.toISOString(),
       timeZone: params.start.timeZone,

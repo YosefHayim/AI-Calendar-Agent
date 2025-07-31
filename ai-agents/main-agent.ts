@@ -1,27 +1,8 @@
-import {
-  analyseCalenderTypeByEventAgent,
-  calendarTypeAgent,
-  deleteEventAgent,
-  getEventsByNameAgent,
-  insertEventAgent,
-  updateEventAgent,
-  validateEventDateAgent,
-  validateEventDurationAgent,
-} from "./sub-agents";
-
+import { AGENTS } from "./sub-agents";
 import { Agent } from "@openai/agents";
 
-const agents = [
-  analyseCalenderTypeByEventAgent,
-  calendarTypeAgent,
-  insertEventAgent,
-  getEventsByNameAgent,
-  updateEventAgent,
-  deleteEventAgent,
-  validateEventDateAgent,
-  validateEventDurationAgent,
-  validateEventDateAgent,
-];
+// Converting the AGENTS object into array to fit the paramters of the hand-off agent.
+const agents = Object.values(AGENTS);
 
 export const calendarRouterAgent = new Agent({
   name: "calendar_crud_router",

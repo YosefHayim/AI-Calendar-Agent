@@ -1,21 +1,17 @@
+import { TOOLS_DESCIPRTION } from "./description-tools";
 import { deleteEventParameters } from "./parameters-tools/delete-event-paramters";
-import { deleteEventToolDescription } from "./description-tools/delete-event-description";
-import { eventTypeToolDescription } from "./description-tools/event-type-tool";
 import { eventTypeToolParameters } from "./parameters-tools/event-type-tool-parameters";
 import { getCalendarEventTypes } from "./execeution-tools/get-calendar-types-execution";
 import { getEventExecution } from "./execeution-tools/get-event-execution";
 import { getEventParameters } from "./parameters-tools/get-event-paramters";
-import { getEventToolDescription } from "./description-tools/get-event-description";
 import { insertEventExeuction } from "./execeution-tools/insert-event-execution";
 import { insertEventParameters } from "./parameters-tools/insert-event-parameters";
-import { insertEventToolDescription } from "./description-tools/insert-event-description";
 import { tool } from "@openai/agents";
 import { updateEventParameters } from "./parameters-tools/update-event-paramters";
-import { updateEventToolDescription } from "./description-tools/update-event-description";
 
 export const insertEventTool = tool({
   name: "insert_event_tool",
-  description: insertEventToolDescription,
+  description: TOOLS_DESCIPRTION.insertEvent,
   parameters: insertEventParameters,
   execute: insertEventExeuction,
   errorFunction: async (params, error) => {
@@ -27,7 +23,7 @@ export const insertEventTool = tool({
 
 export const getEventsTool = tool({
   name: "get_events_by_name_tool",
-  description: getEventToolDescription,
+  description: TOOLS_DESCIPRTION.getEvent,
   parameters: getEventParameters,
   execute: getEventExecution,
   errorFunction: async (params, error) => {
@@ -38,7 +34,7 @@ export const getEventsTool = tool({
 
 export const updateEventTool = tool({
   name: "update_events_by_name_tool",
-  description: updateEventToolDescription,
+  description: TOOLS_DESCIPRTION.updateEvent,
   parameters: updateEventParameters,
   execute: getEventExecution,
   errorFunction: async (params, error) => {
@@ -49,7 +45,7 @@ export const updateEventTool = tool({
 
 export const deleteEventTool = tool({
   name: "delete_events_by_name_tool",
-  description: deleteEventToolDescription,
+  description: TOOLS_DESCIPRTION.deleteEvent,
   parameters: deleteEventParameters,
   execute: getEventExecution,
   errorFunction: async (params, error) => {
@@ -60,7 +56,7 @@ export const deleteEventTool = tool({
 
 export const calendarTypeTool = tool({
   name: "calendars_types_list_tool",
-  description: eventTypeToolDescription,
+  description: TOOLS_DESCIPRTION.eventType,
   parameters: eventTypeToolParameters,
   errorFunction: async (params, error) => {
     console.error(" Tool execution failed:", error);

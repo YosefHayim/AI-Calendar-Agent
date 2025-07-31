@@ -1,6 +1,5 @@
-import { calendar, requestConfigBase } from "../../config/root-config";
-
 import { asyncHandler } from "../../utils/async-handler";
+import { calendar } from "../../config/root-config";
 
 export const getCalendarEventTypes = asyncHandler(async (params: any) => {
   const r = calendar.calendarList.list();
