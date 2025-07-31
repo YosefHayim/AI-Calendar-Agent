@@ -1,7 +1,7 @@
-import { AGENTS } from "./ai-agents/agents";
+import { AGENTS } from "../ai-agents/agents";
 import { Context } from "grammy";
 import { Conversation } from "@grammyjs/conversations";
-import { activateAgent } from "./utils/activateAgent";
+import { activateAgent } from "../utils/activateAgent";
 import { run } from "@openai/agents";
 
 export const insertEventToCalendar = async (conversation: Conversation, ctx: Context) => {

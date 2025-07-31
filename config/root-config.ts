@@ -1,12 +1,11 @@
 import { GOOGLE_CALENDAR_SCOPES } from "../types";
-import credentials from "../credentials.json";
 import dotenv from "dotenv";
+import fs from "fs";
 import { google } from "googleapis";
 import path from "path";
 import { setDefaultOpenAIKey } from "@openai/agents";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
-export const credentials_file_path = path.resolve(process.cwd(), "credentials.JSON");
 
 export const CONFIG = {
   open_ai_api_key: process.env.OPEN_API_KEY,
@@ -17,24 +16,51 @@ export const CONFIG = {
   port: process.env.PORT,
   telegram_access_token: process.env.TELEGRAM_BOT_ACCESS_TOKEN,
 };
+
+if (!CONFIG.open_ai_api_key) {
+  throw new Error("OpenAI API key is not set in environment variables.");
+}
+setDefaultOpenAIKey(CONFIG.open_ai_api_key);
+
+// --- Credentials Handling ---
+const credentialsPath = path.resolve(__dirname, "../credentials.json");
+
+let credentials: {
+  access_token: string;
+  expiry_date: number;
+  token_type: string;
+  refresh_token: string;
+  scope: string;
+};
+
+if (fs.existsSync(credentialsPath)) {
+  credentials = JSON.parse(fs.readFileSync(credentialsPath, "utf-8"));
+} else {
+  credentials = {
+    access_token: "",
+    expiry_date: 0,
+    token_type: "Bearer",
+    refresh_token: "",
+    scope: "",
+  };
+  fs.writeFileSync(credentialsPath, JSON.stringify(credentials, null, 2));
+}
+
+export const parsedCredentials = credentials;
+export const credentials_file_path = credentialsPath;
+
 export const oauth2Client = new google.auth.OAuth2(CONFIG.client_id, CONFIG.client_secret, CONFIG.redirect_url);
 
-(() => {
-  if (!CONFIG.open_ai_api_key) {
-    throw new Error("OpenAI API key is not set in the environment variables.");
-  } else {
-    console.error("OpenAI API key is set.");
-  }
-  setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
-})();
-
 oauth2Client.setCredentials({
-  access_token: credentials?.access_token,
+  access_token: credentials.access_token,
   token_type: "Bearer",
-  expiry_date: credentials?.expiry_date,
+  expiry_date: credentials.expiry_date,
 });
 
-export const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+export const calendar = google.calendar({
+  version: "v3",
+  auth: oauth2Client,
+});
 
 export const requestConfigBase = {
   calendarId: "primary",
