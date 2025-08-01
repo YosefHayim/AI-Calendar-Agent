@@ -2,8 +2,9 @@
 
 import { CONFIG, OAUTH2CLIENT, SCOPES, SUPABASE } from "../config/root-config";
 
-import { STATUS_CODES } from "../types";
+import { STATUS_RESPONSE } from "../types";
 import { reqResAsyncHandler } from "../utils/async-handler";
+import sendR from "../utils/sendR";
 
 const generateAuthUrl = reqResAsyncHandler(async (req, res) => {
   const code = req.query.code as string | undefined;
@@ -14,14 +15,14 @@ const generateAuthUrl = reqResAsyncHandler(async (req, res) => {
     scope: SCOPES,
     prompt: "consent",
     include_granted_scopes: true,
-    redirect_uri: process.env.NODE_ENV === "production" ? CONFIG.redirect_url_prod : CONFIG.redirect_url_dev,
+    redirect_uri: CONFIG.node_env === "production" ? CONFIG.redirect_url_prod : CONFIG.redirect_url_dev,
   });
 
   // 1. No code yet: send user to consent screen
   if (!code) {
     // If from Postman, just send the URL back instead of redirecting
     if (postman?.includes("Postman")) {
-      return res.status(STATUS_CODES.SUCCESS).send({ status: STATUS_CODES.SUCCESS, url });
+      sendR(res)(STATUS_RESPONSE.SUCCESS, url);
     }
     return res.redirect(url);
   }
@@ -50,23 +51,15 @@ const generateAuthUrl = reqResAsyncHandler(async (req, res) => {
 
     if (error) {
       console.error("Error inserting tokens into database:", error);
-      return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-        message: "Failed to store new tokens.",
-        error,
-      });
+      sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to store new tokens.", error);
     }
 
     // 3. Token still valid
     OAUTH2CLIENT.setCredentials(data!);
-    return res.status(STATUS_CODES.SUCCESS).json({
-      status: "valid",
-      message: "Existing token is still valid.",
-      data,
-    });
+    sendR(res)(STATUS_RESPONSE.SUCCESS, "Exisiting token is still valid.", data);
   } catch (error) {
     console.error("generateAuthUrl error:", error);
-    return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ error: "Failed to process OAuth token exchange." });
+    sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to process OAuth token exchange.", error);
   }
 });
 

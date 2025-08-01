@@ -21,7 +21,12 @@ app.use(morgan("dev"));
 app.use("/static", express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
-  res.status(200).send("Server is running and everything is established.");
+  if (CONFIG.node_env === "production") {
+    console.log("---------------------------------------------Server is running on Production environment---------------------------------------------");
+  } else {
+    console.log("---------------------------------------------Server is running on Development environment---------------------------------------------");
+  }
+  res.status(200).send(`Server is running and everything is established.`);
 });
 
 app.use("/api/auth", authRouter);
