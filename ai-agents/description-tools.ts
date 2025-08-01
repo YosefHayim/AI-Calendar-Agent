@@ -1,17 +1,17 @@
-export const TOOLS_DESCIPRTION = {
+export const TOOLS_DESCRIPTION = {
   deleteEvent: `Delete a calendar event by its ID. Once deleted, the event is permanently removed. Example request:
 {
   "eventId": "abc123def456"
 }`,
 
-  eventType: `Returns all the calendars list assosiated with the users account via API request to google api calendar.`,
+  eventType: `Returns all the calendars list associated with the users account via API request to google api calendar.`,
 
   getEvent: `Retrieve details of a calendar event using the event ID. Example request:
 {
   "eventId": "abc123def456"
 }`,
 
-  insertEvent: `Insert an event into the calendar. Must follow the paramters provided the structure is json format example to a request {
+  insertEvent: `Insert an event into the calendar. Must follow the parameters provided the structure is json format example to a request {
   "summary": "Quick Standup Meeting",
   "location": "Online - Google Meet",
   "description": "Daily standup to sync team updates.",

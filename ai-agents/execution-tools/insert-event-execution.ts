@@ -3,7 +3,7 @@ import { calendar_v3 } from "googleapis";
 import errorTemplate from "../../utils/error-template";
 import { handleEvents } from "../../utils/handler-calendar-event";
 
-export const insertEventExeuction = async (params: any) => {
+export const insertEventExecution = async (params: any) => {
   console.log("Params received to insert event tool:", params);
 
   if (!params.start?.dateTime || !params.end?.dateTime) errorTemplate("Missing dates of start and end!", 404);

@@ -11,7 +11,12 @@ export const activateAgent = asyncHandler(async (agent: AGENTS_LIST[keyof AGENTS
   if (!instructions) {
     return `Please provide the instructions for the agent: ${agent.name}`;
   }
-  const result = await run(agent, instructions);
-  console.log(`Result of the agent: ${agent.name} with instructions: ${instructions} is: ${result.finalOutput}`);
-  return result.finalOutput;
+  const { finalOutput } = await run(agent, instructions);
+
+  if (!finalOutput) {
+    return `The agent did not return any output. Please check the agent's implementation.`;
+  }
+
+  console.log(`Result of the agent: ${agent.name}\n with instructions: ${instructions}\n is: ${finalOutput}`);
+  return finalOutput;
 });

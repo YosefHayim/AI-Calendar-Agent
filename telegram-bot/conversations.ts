@@ -2,9 +2,10 @@ import { AGENTS } from "../ai-agents/agents";
 import { Context } from "grammy";
 import { Conversation } from "@grammyjs/conversations";
 import { activateAgent } from "../utils/activate-agent";
-import { getTokensOfUserAndAI } from "../utils/get-tokens-user-ai-";
 import { run } from "@openai/agents";
 import { userAndAiMessageProps } from "../types";
+
+const userAndAiMessages: userAndAiMessageProps[] = [];
 
 export const insertEventToCalendar = async (conversation: Conversation, ctx: Context) => {
   let eventName;
@@ -83,8 +84,6 @@ export const deleteEventByName = async (conversation: Conversation, ctx: Context
   const r = await run(AGENTS.deleteEventByName, `Delete the event with the name: ${messageOne.text}`);
   await ctx.reply(r.finalOutput!);
 };
-
-const userAndAiMessages: userAndAiMessageProps[] = [];
 
 export const chatWithAgent = async (conversation: Conversation, ctx: Context) => {
   console.log(ctx.from);
