@@ -3,7 +3,8 @@ import { run, user } from "@openai/agents";
 import { AGENTS } from "../ai-agents/agents";
 import { Context } from "grammy";
 import { Conversation } from "@grammyjs/conversations";
-import { activateAgent } from "../utils/activateAgent";
+import { activateAgent } from "../utils/activate-agent";
+import { spawn } from "child_process";
 
 export const insertEventToCalendar = async (conversation: Conversation, ctx: Context) => {
   let eventName;
@@ -84,6 +85,10 @@ export const deleteEventByName = async (conversation: Conversation, ctx: Context
 };
 
 const userMessages: any = [];
+
+const getTokensOfUserAndAI = () => {
+  spawn("python", ["c", "import ../utils/tokeniser.py",]);
+};
 
 export const chatWithAgent = async (conversation: Conversation, ctx: Context) => {
   let chatWithAI = true;
