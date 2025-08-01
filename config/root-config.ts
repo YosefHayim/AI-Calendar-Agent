@@ -1,4 +1,5 @@
 import { GOOGLE_CALENDAR_SCOPES } from "../types";
+import { SupabaseClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import fs from "fs";
 import { google } from "googleapis";
@@ -15,6 +16,8 @@ export const CONFIG = {
   redirect_url: process.env.REDIRECT_URL,
   port: process.env.PORT,
   telegram_access_token: process.env.TELEGRAM_BOT_ACCESS_TOKEN,
+  supabase_url: process.env.SUPABASE_URL,
+  supabase_service_role_key: process.env.SUPABASE_SERVICE_ROLE_KEY,
 };
 
 if (!CONFIG.open_ai_api_key) {
@@ -23,6 +26,8 @@ if (!CONFIG.open_ai_api_key) {
 setDefaultOpenAIKey(CONFIG.open_ai_api_key);
 
 const credentialsPath = path.resolve(__dirname, "../credentials.json");
+
+export const supabase = new SupabaseClient(CONFIG.supabase_url!, CONFIG.supabase_service_role_key!);
 
 let credentials: {
   access_token: string;

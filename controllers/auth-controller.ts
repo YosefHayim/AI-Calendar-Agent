@@ -1,4 +1,4 @@
-import { CONFIG, SCOPES, credentials_file_path, oauth2Client } from "../config/root-config";
+import { CONFIG, SCOPES, credentials_file_path, oauth2Client, supabase } from "../config/root-config";
 
 import credentials from "../credentials.json";
 import fs from "fs";
@@ -35,7 +35,8 @@ const generateAuthUrl = reqResAsyncHandler(async (req, res) => {
       const { tokens } = await oauth2Client.getToken(code);
       oauth2Client.setCredentials(tokens);
 
-      fs.writeFileSync(credentials_file_path, JSON.stringify(tokens), "utf8");
+      // fs.writeFileSync(credentials_file_path, JSON.stringify(tokens), "utf8");
+      const { data, error } = await supabase.from("").insert({ id: 1, name: "Mordor" }).select();
 
       return res.status(200).json({
         status: "success",

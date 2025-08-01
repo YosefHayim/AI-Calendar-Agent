@@ -87,8 +87,8 @@ export const deleteEventByName = async (conversation: Conversation, ctx: Context
 const userAndAiMessages: userAndAiMessageProps[] = [];
 
 export const chatWithAgent = async (conversation: Conversation, ctx: Context) => {
+  console.log(ctx.from);
   const message = (await conversation.waitFor("message:text")).message?.text;
-
   userAndAiMessages.push({ role: "user", content: message });
 
   const r = await run(
