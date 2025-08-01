@@ -2,10 +2,11 @@ import { Agent, setDefaultOpenAIKey } from "@openai/agents";
 
 import { AGENT_TOOLS } from "./agents-tools";
 import { CONFIG } from "../config/root-config";
+import { MODELS } from "../types";
 
 setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 
-const MODEL = "gpt-4o-mini";
+const MODEL = MODELS.O4_MINI;
 
 export const AGENTS = {
   insertEvent: new Agent({
