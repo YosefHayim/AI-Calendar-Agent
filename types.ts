@@ -14,6 +14,11 @@ export enum GOOGLE_CALENDAR_SCOPES {
   FREEBUSY = "https://www.googleapis.com/auth/calendar.freebusy",
 }
 
+export enum PROVIDERS {
+  GOOGLE = "google",
+  GITHUB = "github",
+}
+
 export enum STATUS_RESPONSE {
   SUCCESS = 200,
   CREATED = 201,

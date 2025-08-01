@@ -7,15 +7,13 @@ router.get("/callback", userController.generateAuthGoogleUrl);
 
 router.get("/:id", userController.getUserByEmail);
 
-router.post("signup", userController.signUpUserReg);
+router.post("/signup", userController.signUpUserReg);
 
-router.post("signup/google", userController.signUpUserViaGoogle);
+router.get("/signup/google", userController.signUpOrSignInWithGoogle);
 
-router.post("signup/linkedin", userController.signUpUserViaLinkedin);
+router.get("/signup/linkedin", userController.signUpUserViaLinkedin);
 
-router.post("signup/github", userController.signUpUserViaGitHub);
-
-router.post("signup/telegram", userController.signUpUserViaTelegram);
+router.get("/signup/github", userController.signUpUserViaGitHub);
 
 router.delete("/:id", userController.deActivateUser);
 

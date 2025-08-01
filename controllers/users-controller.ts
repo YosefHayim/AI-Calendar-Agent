@@ -1,11 +1,12 @@
 //@ts-nocheck
 
 import { CONFIG, OAUTH2CLIENT, SCOPES, SCOPES_STRING, SUPABASE } from "../config/root-config";
+import { PROVIDERS, STATUS_RESPONSE } from "../types";
 import { Request, Response } from "express";
 import { asyncHandler, reqResAsyncHandler } from "../utils/async-handler";
 
-import { STATUS_RESPONSE } from "../types";
 import sendR from "../utils/sendR";
+import { thirdPartySignInOrSignUp } from "../utils/third-party-signup-signin-supabase";
 
 const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
   const code = req.query.code as string | undefined;
@@ -52,7 +53,7 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
 
     // 3. Token still valid
     OAUTH2CLIENT.setCredentials(data!);
-    sendR(res)(STATUS_RESPONSE.SUCCESS, "Exisiting token is still valid.", data);
+    sendR(res)(STATUS_RESPONSE.SUCCESS, "Existing token is still valid.", data);
   } catch (error) {
     console.error("generateAuthUrl error:", error);
     sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to process OAuth token exchange.", error);
@@ -74,38 +75,15 @@ const signUpUserReg = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-const signUpUserViaGoogle = asyncHandler(async (req: Request, res: Response) => {
-  const { data, error } = await SUPABASE.auth.signInWithOAuth({
-    provider: "google",
-    options: {
-      redirectTo: CONFIG.node_env === "production" ? CONFIG.redirect_url_prod : CONFIG.redirect_url_dev,
-      scopes: SCOPES_STRING,
-      queryParams: {
-        access_type: "offline",
-        prompt: "consent",
-      },
-    },
-  });
-
-  if (data.url) {
-    res.redirect(data.url);
-  }
-
-  if (error) {
-    console.error("Error signing up user:", error);
-    sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to sign up user.", error);
-  }
-
-  if (data) {
-    sendR(res)(STATUS_RESPONSE.SUCCESS, "User signed up successfully.", data);
-  }
+const signUpOrSignInWithGoogle = asyncHandler(async (req: Request, res: Response) => {
+  await thirdPartySignInOrSignUp(req, res, PROVIDERS.GOOGLE);
 });
 
 const signUpUserViaLinkedin = asyncHandler(async (req: Request, res: Response) => {});
 
-const signUpUserViaGitHub = asyncHandler(async (req: Request, res: Response) => {});
-
-const signUpUserViaTelegram = asyncHandler(async (req: Request, res: Response) => {});
+const signUpUserViaGitHub = asyncHandler(async (req: Request, res: Response) => {
+  await thirdPartySignInOrSignUp(req, res, PROVIDERS.GITHUB);
+});
 
 const getUserByEmail = asyncHandler(async (req: Request, res: Response) => {
   let email;
@@ -133,12 +111,11 @@ const updateUserById = asyncHandler(async (req: Request, res: Response) => {});
 
 export const userController = {
   signUpUserReg,
-  signUpUserViaGoogle,
+  signUpOrSignInWithGoogle,
   signUpUserViaLinkedin,
   signUpUserViaGitHub,
   getUserByEmail,
   deActivateUser,
   updateUserById,
-  signUpUserViaTelegram,
   generateAuthGoogleUrl,
 };
