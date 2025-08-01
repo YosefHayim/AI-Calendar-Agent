@@ -1,10 +1,9 @@
-import { run, user } from "@openai/agents";
-
 import { AGENTS } from "../ai-agents/agents";
 import { Context } from "grammy";
 import { Conversation } from "@grammyjs/conversations";
 import { activateAgent } from "../utils/activate-agent";
-import { spawn } from "child_process";
+import { getTokensOfUserAndAI } from "../utils/get-tokens-user-ai-";
+import { run } from "@openai/agents";
 
 export const insertEventToCalendar = async (conversation: Conversation, ctx: Context) => {
   let eventName;
@@ -84,11 +83,7 @@ export const deleteEventByName = async (conversation: Conversation, ctx: Context
   await ctx.reply(r.finalOutput!);
 };
 
-const userMessages: any = [];
-
-const getTokensOfUserAndAI = () => {
-  spawn("python", ["c", "import ../utils/tokeniser.py",]);
-};
+const userAndAiMessages: any = [];
 
 export const chatWithAgent = async (conversation: Conversation, ctx: Context) => {
   let chatWithAI = true;
@@ -98,18 +93,19 @@ export const chatWithAgent = async (conversation: Conversation, ctx: Context) =>
 
     if (message === "exit") {
       chatWithAI = false;
+      getTokensOfUserAndAI(userAndAiMessages);
       await ctx.reply("You have exited the chat with the agent.");
       return;
     }
 
-    userMessages.push({ role: "user", content: message });
+    userAndAiMessages.push({ role: "user", content: message });
 
     const r = await run(
       AGENTS.chatWithAgent,
-      `Chat with the agent about: ${userMessages.length > 0 ? userMessages.map((m: any) => m.content).join(" ") : message}`
+      `Chat with the agent about: ${userAndAiMessages.length > 0 ? userAndAiMessages.map((m: any) => m.content).join(" ") : message}`
     );
-    userMessages.push({ role: "assistant", content: r.finalOutput });
-    console.log(userMessages);
+    userAndAiMessages.push({ role: "assistant", content: r.finalOutput });
+    console.log(userAndAiMessages);
     await ctx.reply(r.finalOutput!);
   }
 };

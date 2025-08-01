@@ -2,16 +2,14 @@ import { Agent, setDefaultOpenAIKey } from "@openai/agents";
 
 import { AGENT_TOOLS } from "./agents-tools";
 import { CONFIG } from "../config/root-config";
-import { MODELS } from "../types";
+import { CURRENT_MODEL } from "../types";
 
 setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
-
-const MODEL = MODELS.O4_MINI;
 
 export const AGENTS = {
   insertEvent: new Agent({
     name: "Insert Event Agent",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that insert a new event into the user's calendar.
     If any required detail is missing, use:
     - Default Summary title: "Untitled Event"
@@ -22,13 +20,13 @@ export const AGENTS = {
   }),
   getEventByName: new Agent({
     name: "An agent that search for events by name",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that retrieve one or more events from the user's calendar by matching their title or keywords.`,
     tools: [AGENT_TOOLS.getEvent],
   }),
   updateEventById: new Agent({
     name: "update_event",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that update an existing calendar event.
   
   Handle updates to:
@@ -42,26 +40,26 @@ export const AGENTS = {
   }),
   deleteEventById: new Agent({
     name: "An agent that delete an event by its id",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that delete a calendar event based on the title or other identifying detail.`,
     tools: [AGENT_TOOLS.deleteEvent],
   }),
   getCalendarList: new Agent({
     name: "An agent that returns the list of calendars",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that returns the list of calendars assositaed with the user's account via google api calendar.`,
     tools: [AGENT_TOOLS.calendarType],
   }),
   analyseCalendarTypeByEvent: new Agent({
     name: "An agent that analyse the event type by the event details",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that analyse the event details and return the calendar type that best fits the event.
     If the event is not suitable for any calendar type, return a default calendar type.`,
     tools: [AGENT_TOOLS.eventType],
   }),
   validateDateEvent: new Agent({
     name: "An agent that validate the event date",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that validate the date of an event.
     The agent MUST return ONLY "true" if the date is valid and understood, otherwise it MUST return ONLY "false".
     No other text or explanation is allowed.
@@ -69,7 +67,7 @@ export const AGENTS = {
   }),
   validateDurationEvent: new Agent({
     name: "An agent that validate the event duration",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that validate the duration of an event.
     The agent MUST return ONLY "true" if the duration is valid and understood, otherwise it MUST return ONLY "false".
     No other text or explanation is allowed.`,
@@ -77,7 +75,7 @@ export const AGENTS = {
 
   validateSummaryEvent: new Agent({
     name: "An agent that validate the event summary",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that validate the name of the event.
     The agent MUST return ONLY "true" if the summary is valid and understood, otherwise it MUST return ONLY "false".
     No other text or explanation is allowed.
@@ -85,7 +83,7 @@ export const AGENTS = {
   }),
   searchForEventByName: new Agent({
     name: "An agent that search for events by name",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that search for events by name.
     The agent MUST return the events that match the name provided by the user.
     If no events are found, return a message that declares that.`,
@@ -93,7 +91,7 @@ export const AGENTS = {
   }),
   updateEventByName: new Agent({
     name: "An agent that update an event by name",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that update an event by name.
     The agent MUST return the updated event if the update was successful, otherwise it MUST return an error message.
     If no events are found, return a message that declares that.`,
@@ -101,13 +99,13 @@ export const AGENTS = {
   }),
   deleteEventByName: new Agent({
     name: "An agent that delete an event by name",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that delete an event by name.`,
     tools: [AGENT_TOOLS.deleteEvent],
   }),
   chatWithAgent: new Agent({
     name: "An agent that  chat with the user",
-    model: MODEL,
+    model: CURRENT_MODEL,
     instructions: `An agent that chat with the user and act as personal calendar assistant.`,
     tools: [AGENT_TOOLS.calendarType],
   }),
@@ -117,7 +115,7 @@ const subAgents = Object.values(AGENTS) as Agent[];
 
 export const calendarRouterAgent = new Agent({
   name: "Calendar Router Agent",
-  model: MODEL,
+  model: CURRENT_MODEL,
   handoffDescription: `
   Get from the analyse calender type by event agent the appropirate calender type to the event.
   after that, pass the information to the validation agents, and when you have recieved a positive response from the validation agents, 

@@ -87,6 +87,8 @@ export enum MODELS {
   DAVINCI_002 = "davinci-002",
 }
 
+export const CURRENT_MODEL = MODELS.O4_MINI;
+
 export enum ACTION {
   GET = "get",
   INSERT = "insert",

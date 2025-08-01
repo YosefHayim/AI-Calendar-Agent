@@ -2,17 +2,20 @@ import json
 import tiktoken
 import sys
 
-enc = tiktoken.get_encoding("gpt-4")
-
-# To get the tokeniser corresponding to a specific model in the OpenAI API:
-enc = tiktoken.encoding_for_model("gpt-4o-mini")
-
-amount_of_tokens = ''
+def get_tokens(messages, role):
+    enc = tiktoken.encoding_for_model("gpt-4o-mini")
+    tokens = 0
+    for message in messages:
+        if message["role"] == role:
+            tokens += len(enc.encode(message["content"]))
+    return tokens
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        amount_of_tokens = enc.encode(sys.argv[1])
-        print(f'Encoded tokens: {amount_of_tokens}')
-        json.dumps({'tokens': amount_of_tokens})
-    else:
-        print("Please provide a string to encode as a command line argument.")
+    try:
+        input_data = json.load(sys.stdin)
+        messages = input_data.get("messages", [])
+        role = input_data.get("role", "user")
+        total_tokens = get_tokens(messages, role)
+        print(json.dumps({"tokens": total_tokens}))
+    except Exception as e:
+        print(json.dumps({"error": str(e)}))
