@@ -1,3 +1,4 @@
+import { Database } from "../database.types";
 import { GOOGLE_CALENDAR_SCOPES } from "../types";
 import { SupabaseClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
@@ -27,13 +28,14 @@ setDefaultOpenAIKey(CONFIG.open_ai_api_key);
 
 const credentialsPath = path.resolve(__dirname, "../credentials.json");
 
-export const supabase = new SupabaseClient(CONFIG.supabase_url!, CONFIG.supabase_service_role_key!);
+export const supabase = new SupabaseClient<Database>(CONFIG.supabase_url!, CONFIG.supabase_service_role_key!);
 
 let credentials: {
   access_token: string;
   expiry_date: number;
   token_type: string;
   refresh_token: string;
+  refresh_token_expires_in: number;
   scope: string;
 };
 
@@ -45,6 +47,7 @@ if (fs.existsSync(credentialsPath)) {
     expiry_date: 0,
     token_type: "Bearer",
     refresh_token: "",
+    refresh_token_expires_in: 0,
     scope: "",
   };
   fs.writeFileSync(credentialsPath, JSON.stringify(credentials, null, 2));

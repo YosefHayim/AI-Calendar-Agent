@@ -19,12 +19,6 @@ export interface userAndAiMessageProps {
   content: string | undefined;
 }
 
-export enum TABLES {
-  CONVERSATION_STATS = "conversation_stats",
-  TELEGRAM_BOTS = "telegram_bots",
-  CALENDARS_USERS = "users_calendars",
-}
-
 export enum MODELS {
   // Reasoning models
   O4_MINI = "o4-mini",

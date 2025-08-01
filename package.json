@@ -1,7 +1,7 @@
 {
   "name": "ai-calendar-server",
   "version": "1.0.0",
-  "description": "AI Calendar assitant via whatsapp account.",
+  "description": "AI Calendar assistant",
   "keywords": [],
   "homepage": "https://github.com/YosefHayim/AI-Calendar-Server#readme",
   "bugs": {
@@ -47,5 +47,10 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.0",
     "ultracite": "5.0.32"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "supabase"
+    ]
   }
 }
