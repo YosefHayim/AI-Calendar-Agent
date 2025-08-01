@@ -4,6 +4,7 @@ import { Conversation } from "@grammyjs/conversations";
 import { activateAgent } from "../utils/activate-agent";
 import { getTokensOfUserAndAI } from "../utils/get-tokens-user-ai-";
 import { run } from "@openai/agents";
+import { userAndAiMessageProps } from "../types";
 
 export const insertEventToCalendar = async (conversation: Conversation, ctx: Context) => {
   let eventName;
@@ -71,7 +72,7 @@ export const updateEventByName = async (conversation: Conversation, ctx: Context
 
 export const getCalendarList = async (conversation: Conversation, ctx: Context) => {
   await ctx.reply("Please wait while I fetch your calendar list...");
-  const r = await run(AGENTS.getCalendarList, "Get me all the calendars list I have");
+  const r = await run(AGENTS.calendarList, "Get me all the calendars list I have");
   await ctx.reply(r.finalOutput!);
 };
 
@@ -83,29 +84,18 @@ export const deleteEventByName = async (conversation: Conversation, ctx: Context
   await ctx.reply(r.finalOutput!);
 };
 
-const userAndAiMessages: any = [];
+const userAndAiMessages: userAndAiMessageProps[] = [];
 
 export const chatWithAgent = async (conversation: Conversation, ctx: Context) => {
-  let chatWithAI = true;
+  const message = (await conversation.waitFor("message:text")).message?.text;
 
-  while (chatWithAI) {
-    const message = (await conversation.waitFor("message:text")).message?.text;
+  userAndAiMessages.push({ role: "user", content: message });
 
-    if (message === "exit") {
-      chatWithAI = false;
-      getTokensOfUserAndAI(userAndAiMessages);
-      await ctx.reply("You have exited the chat with the agent.");
-      return;
-    }
-
-    userAndAiMessages.push({ role: "user", content: message });
-
-    const r = await run(
-      AGENTS.chatWithAgent,
-      `Chat with the agent about: ${userAndAiMessages.length > 0 ? userAndAiMessages.map((m: any) => m.content).join(" ") : message}`
-    );
-    userAndAiMessages.push({ role: "assistant", content: r.finalOutput });
-    console.log(userAndAiMessages);
-    await ctx.reply(r.finalOutput!);
-  }
+  const r = await run(
+    AGENTS.chatWithAgent,
+    `Chat with the agent about: ${userAndAiMessages.length > 0 ? userAndAiMessages.map((m: any) => m.content).join(" ") : message}`
+  );
+  userAndAiMessages.push({ role: "assistant", content: r.finalOutput });
+  console.log(userAndAiMessages);
+  await ctx.reply(r.finalOutput!);
 };

@@ -1,5 +1,5 @@
 // bot.ts
-import { Bot, Filter, FilterQuery, type Context } from "grammy";
+import { Bot, type Context } from "grammy";
 import { conversations, createConversation, type ConversationFlavor } from "@grammyjs/conversations";
 import { chatWithAgent, getCalendarList, insertEventToCalendar, searchForEventByName } from "./conversations";
 import { CONFIG } from "../config/root-config";

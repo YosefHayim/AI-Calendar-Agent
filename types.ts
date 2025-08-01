@@ -13,9 +13,11 @@ export enum GOOGLE_CALENDAR_SCOPES {
   EVENTS_OWNED = "https://www.googleapis.com/auth/calendar.events.owned",
   FREEBUSY = "https://www.googleapis.com/auth/calendar.freebusy",
 }
-export type TOOLS = keyof typeof AGENT_TOOLS;
 
-export type AGENTS_LIST = keyof typeof AGENTS;
+export interface userAndAiMessageProps {
+  role: "user" | "assistant";
+  content: string | undefined;
+}
 
 export enum MODELS {
   // Reasoning models
@@ -86,8 +88,6 @@ export enum MODELS {
   BABBAGE_002 = "babbage-002",
   DAVINCI_002 = "davinci-002",
 }
-
-export const CURRENT_MODEL = MODELS.O4_MINI;
 
 export enum ACTION {
   GET = "get",
@@ -504,3 +504,7 @@ export enum TIMEZONE {
   CHILE_CONTINENTAL = "Chile/Continental",
   CHILE_EASTERISLAND = "Chile/EasterIsland",
 }
+
+export type TOOLS = keyof typeof AGENT_TOOLS;
+export type AGENTS_LIST = keyof typeof AGENTS;
+export const CURRENT_MODEL = MODELS.O4_MINI;

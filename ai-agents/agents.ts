@@ -44,7 +44,7 @@ export const AGENTS = {
     instructions: `An agent that delete a calendar event based on the title or other identifying detail.`,
     tools: [AGENT_TOOLS.deleteEvent],
   }),
-  getCalendarList: new Agent({
+  calendarList: new Agent({
     name: "An agent that returns the list of calendars",
     model: CURRENT_MODEL,
     instructions: `An agent that returns the list of calendars assositaed with the user's account via google api calendar.`,
