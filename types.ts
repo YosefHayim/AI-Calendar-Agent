@@ -17,6 +17,7 @@ export enum GOOGLE_CALENDAR_SCOPES {
 export enum PROVIDERS {
   GOOGLE = "google",
   GITHUB = "github",
+  LINKEDIN = "linkedin",
 }
 
 export enum STATUS_RESPONSE {

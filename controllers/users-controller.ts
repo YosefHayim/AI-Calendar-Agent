@@ -90,11 +90,7 @@ const getUserByEmail = asyncHandler(async (req: Request, res: Response) => {
 
   if (req.params.email) email = req.params.email;
   if (req.body.email) email = req.body.email;
-  if (!email)
-    return res.status(STATUS_RESPONSE.BAD_REQUEST).json({
-      status: STATUS_RESPONSE.BAD_REQUEST,
-      message: "Email is required.",
-    });
+  if (!email) sendR(res)(STATUS_RESPONSE.BAD_REQUEST, "Email is required.");
 
   const { data, error } = await SUPABASE.from("calendars_users").select().eq("id", email).single();
 
