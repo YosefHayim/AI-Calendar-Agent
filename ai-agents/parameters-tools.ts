@@ -3,7 +3,7 @@ import z from "zod";
 
 const eventTimeParameters = z.object({
   dateTime: z.string(),
-  TIMEZONE: z.string().default(TIMEZONE.ASIA_JERUSALEM),
+  timeZone: z.string().default(TIMEZONE.ASIA_JERUSALEM),
 });
 
 const fullEventParameters = z.object({

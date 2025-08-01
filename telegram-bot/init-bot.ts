@@ -1,4 +1,3 @@
-// bot.ts
 import { Bot, type Context } from "grammy";
 import { conversations, createConversation, type ConversationFlavor } from "@grammyjs/conversations";
 import { chatWithAgent, getCalendarList, insertEventToCalendar, searchForEventByName } from "./conversations";
@@ -6,6 +5,10 @@ import { CONFIG } from "../config/root-config";
 import { asyncHandler } from "../utils/async-handler";
 
 export const bot = new Bot<ConversationFlavor<Context>>(CONFIG.telegram_access_token!);
+
+bot.catch((err) => {
+  console.error("Error in bot:", err);
+});
 
 const commandMap: Record<string, string> = {
   "get-calendars-list": "getCalendarList",
