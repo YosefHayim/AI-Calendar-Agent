@@ -9,7 +9,7 @@ export const reqResAsyncHandler = (fn: (req: Request, res: Response, next: NextF
 export const asyncHandler = (fn: (...args: any[]) => Promise<any>) => {
   return (...args: any[]) => {
     return fn(...args).catch((error) => {
-      console.error(`Async error found: ${error}`);
+      console.error(`Async error found: ${error}\nStack trace: ${error.stack}`);
     });
   };
 };

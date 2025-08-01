@@ -50,7 +50,7 @@ export const insertEventToCalendar = async (conversation: Conversation, ctx: Con
     calendarRouterAgent,
     `Insert this event into my calendar:\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
   );
-  await ctx.reply(result.finalOutput!);
+  await ctx.reply(result?.finalOutput!);
 };
 
 export const searchForEventByName = async (conversation: Conversation, ctx: Context) => {
