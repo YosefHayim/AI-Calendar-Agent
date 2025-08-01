@@ -513,4 +513,4 @@ export enum TIMEZONE {
 
 export type TOOLS = keyof typeof AGENT_TOOLS;
 export type AGENTS_LIST = keyof typeof AGENTS;
-export const CURRENT_MODEL = MODELS.O4_MINI;
+export const CURRENT_MODEL = MODELS.GPT_4O_MINI;
