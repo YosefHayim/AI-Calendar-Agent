@@ -9,7 +9,7 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   const r = CALENDAR.calendarList.list();
 
   const allCalendars = (await r).data.items?.map((item) => item.summary);
-  sendR(res)(STATUS_CODES.SUCCESS, "Successfully recieved your current calendars", allCalendars);
+  sendR(res)(STATUS_CODES.SUCCESS, "Successfully received your current calendars", allCalendars);
 });
 
 const getSpecificEvent = reqResAsyncHandler(async (req, res) => {

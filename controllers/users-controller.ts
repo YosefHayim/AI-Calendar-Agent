@@ -15,7 +15,17 @@ const signUpUserViaGitHub = asyncHandler(async (req: Request, res: Response) => 
 const signUpUserViaTelegram = asyncHandler(async (req: Request, res: Response) => {});
 
 const getUserByEmail = asyncHandler(async (req: Request, res: Response) => {
-  const { data, error } = await SUPABASE.from("calendars_users").select().eq("id", req.body.email).single();
+  let email;
+
+  if (req.params.email) email = req.params.email;
+  if (req.body.email) email = req.body.email;
+  if (!email)
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      status: STATUS_CODES.BAD_REQUEST,
+      message: "Email is required.",
+    });
+
+  const { data, error } = await SUPABASE.from("calendars_users").select().eq("id", email).single();
 
   if (error) {
     console.error("Error fetching user by email:", error);
