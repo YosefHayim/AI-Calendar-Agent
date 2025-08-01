@@ -1,5 +1,4 @@
 import { CONFIG } from "./config/root-config";
-import authRouter from "./routes/auth-route";
 import calendarRoute from "./routes/calendar-route";
 import conversationStatsRouter from "./routes/conversation-stats";
 import cors from "cors";
@@ -10,6 +9,7 @@ import path from "path";
 import { startTelegramBot } from "./telegram-bot/init-bot";
 import telegramBotRouter from "./routes/telegram-bots";
 import telegramUserRouter from "./routes/telegram-bots";
+import usersRouter from "./routes/users";
 
 const app = express();
 const PORT = CONFIG.port;
@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
   res.status(200).send(`Server is running and everything is established.`);
 });
 
-app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 app.use("/api/calendar", calendarRoute);
 app.use("/api/telegram-bots", telegramBotRouter);
 app.use("/api/telegram-users", telegramUserRouter);

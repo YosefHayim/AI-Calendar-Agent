@@ -8,7 +8,7 @@ const router = express.Router();
 router.get("/", authHandler, calendarController.getAllCalendars);
 
 // get all the next events of the user
-router.get("/events", authHandler, calendarController.getAllEvents);
+router.get("events", authHandler, calendarController.getAllEvents);
 
 // get specific event by id
 router.get("/:eventId", authHandler, calendarController.getSpecificEvent);

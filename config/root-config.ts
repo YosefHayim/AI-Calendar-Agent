@@ -44,3 +44,4 @@ export const requestConfigBase = {
 };
 
 export const SCOPES = Object.values(GOOGLE_CALENDAR_SCOPES);
+export const SCOPES_STRING = Object.values(GOOGLE_CALENDAR_SCOPES).join(" ");

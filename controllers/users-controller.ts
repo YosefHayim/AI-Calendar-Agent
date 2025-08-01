@@ -1,20 +1,95 @@
-import { CONFIG, SUPABASE } from "../config/root-config";
+//@ts-nocheck
+
+import { CONFIG, OAUTH2CLIENT, SCOPES, SCOPES_STRING, SUPABASE } from "../config/root-config";
 import { Request, Response } from "express";
+import { asyncHandler, reqResAsyncHandler } from "../utils/async-handler";
 
 import { STATUS_RESPONSE } from "../types";
-import { asyncHandler } from "../utils/async-handler";
 import sendR from "../utils/sendR";
 
-const signUpUserReg = asyncHandler(async (req: Request, res: Response) => {});
+const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
+  const code = req.query.code as string | undefined;
+  const postman = req.headers["user-agent"];
 
-const signUpUserViaGoogle = asyncHandler(async (req: Request, res: Response) => {
+  const url = OAUTH2CLIENT.generateAuthUrl({
+    access_type: "offline",
+    scope: SCOPES,
+    prompt: "consent",
+    include_granted_scopes: true,
+    redirect_uri: CONFIG.node_env === "production" ? CONFIG.redirect_url_prod : CONFIG.redirect_url_dev,
+  });
+
+  // 1. No code yet: send user to consent screen
+  if (!code) {
+    // If from Postman, just send the URL back instead of redirecting
+    if (postman?.includes("Postman")) {
+      sendR(res)(STATUS_RESPONSE.SUCCESS, url);
+    }
+    return res.redirect(url);
+  }
+
+  try {
+    const { tokens } = await OAUTH2CLIENT.getToken(code);
+    console.log("New tokens received:", tokens);
+    OAUTH2CLIENT.setCredentials(tokens);
+
+    const { data, error } = await SUPABASE.from("calendars_users")
+      .insert({
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        scopes: tokens.scope,
+        token_type: tokens.token_type,
+        refresh_expiry: tokens.refresh_token_expires_in,
+        expiry_date: tokens.expiry_date,
+      })
+      .eq("user_id", req.user.id)
+      .select();
+
+    if (error) {
+      console.error("Error inserting tokens into database:", error);
+      sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to store new tokens.", error);
+    }
+
+    // 3. Token still valid
+    OAUTH2CLIENT.setCredentials(data!);
+    sendR(res)(STATUS_RESPONSE.SUCCESS, "Exisiting token is still valid.", data);
+  } catch (error) {
+    console.error("generateAuthUrl error:", error);
+    sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to process OAuth token exchange.", error);
+  }
+});
+
+const signUpUserReg = asyncHandler(async (req: Request, res: Response) => {
   const { data, error } = await SUPABASE.auth.signUp({
     email: req.body.email,
     password: req.body.password,
+  });
+
+  if (error) {
+    console.error("Error signing up regularly user:", error);
+    sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to sign up user.", error);
+  }
+  if (data) {
+    sendR(res)(STATUS_RESPONSE.SUCCESS, "User signed up successfully.", data);
+  }
+});
+
+const signUpUserViaGoogle = asyncHandler(async (req: Request, res: Response) => {
+  const { data, error } = await SUPABASE.auth.signInWithOAuth({
+    provider: "google",
     options: {
-      emailRedirectTo: CONFIG.node_env === "production" ? CONFIG.redirect_url_prod : CONFIG.redirect_url_dev,
+      redirectTo: CONFIG.node_env === "production" ? CONFIG.redirect_url_prod : CONFIG.redirect_url_dev,
+      scopes: SCOPES_STRING,
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
+      },
     },
   });
+
+  if (data.url) {
+    res.redirect(data.url);
+  }
 
   if (error) {
     console.error("Error signing up user:", error);
@@ -65,4 +140,5 @@ export const userController = {
   deActivateUser,
   updateUserById,
   signUpUserViaTelegram,
+  generateAuthGoogleUrl,
 };

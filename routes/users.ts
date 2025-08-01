@@ -3,6 +3,8 @@ import { userController } from "../controllers/users-controller";
 
 const router = express.Router();
 
+router.get("/callback", userController.generateAuthGoogleUrl);
+
 router.get("/:id", userController.getUserByEmail);
 
 router.post("signup", userController.signUpUserReg);
