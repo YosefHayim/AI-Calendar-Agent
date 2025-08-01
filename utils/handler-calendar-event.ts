@@ -1,12 +1,12 @@
 import { ACTION, SCHEMA_EVENT_PROPS } from "../types";
-import { calendar, requestConfigBase } from "../config/root-config";
+import { CALENDAR, requestConfigBase } from "../config/root-config";
 
 import { asyncHandler } from "./async-handler";
 import errorTemplate from "./error-template";
 import formatDate from "./formatDate";
 
 export const handleEvents = asyncHandler(async (action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: Object): Promise<any> => {
-  const calendarEvents = calendar.events;
+  const calendarEvents = CALENDAR.events;
   let r;
 
   if ((action === ACTION.UPDATE && !eventData?.id) || (action === ACTION.DELETE && eventData?.id)) {
