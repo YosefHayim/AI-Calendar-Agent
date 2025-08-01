@@ -50,7 +50,7 @@ export const insertEventToCalendar = async (conversation: Conversation, ctx: Con
     calendarRouterAgent,
     `Insert this event into my calendar:\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
   );
-  await ctx.reply(result?.finalOutput!);
+  await ctx.reply(result);
 };
 
 export const searchForEventByName = async (conversation: Conversation, ctx: Context) => {
@@ -95,7 +95,7 @@ export const chatWithAgent = async (conversation: Conversation, ctx: Context) =>
     AGENTS.chatWithAgent,
     `Chat with the agent about: ${userAndAiMessages.length > 0 ? userAndAiMessages.map((m: any) => m.content).join(" ") : message}`
   );
-  userAndAiMessages.push({ role: "assistant", content: r.finalOutput });
+  userAndAiMessages.push({ role: "assistant", content: r.finalOutput! });
   console.log(userAndAiMessages);
   await ctx.reply(r.finalOutput!);
 };

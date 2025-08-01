@@ -1,10 +1,9 @@
-import { TIMEZONE } from "../types";
 import z from "zod";
 
 const eventTimeParameters = z.object({
   date: z.string(),
   dateTime: z.string(),
-  timeZone: z.string().default(TIMEZONE.ASIA_JERUSALEM),
+  timeZone: z.string(),
 });
 
 const fullEventParameters = z.object({
