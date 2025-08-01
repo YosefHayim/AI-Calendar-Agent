@@ -22,9 +22,9 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
   if (CONFIG.node_env === "production") {
-    console.log("---------------------------------------------Server is running on Production environment---------------------------------------------");
+    console.log("Server is running on Production environment");
   } else {
-    console.log("---------------------------------------------Server is running on Development environment---------------------------------------------");
+    console.log("Server is running on Development environment");
   }
   res.status(200).send(`Server is running and everything is established.`);
 });
