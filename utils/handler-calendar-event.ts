@@ -1,16 +1,29 @@
-import { ACTION, SCHEMA_EVENT_PROPS } from "../types";
-import { CALENDAR, requestConfigBase } from "../config/root-config";
+import { ACTION, SCHEMA_EVENT_PROPS, STATUS_RESPONSE } from "../types";
+import { SUPABASE, requestConfigBase } from "../config/root-config";
 
+import { Request } from "express";
+import { TOKEN_FIELDS } from "./storage";
+import { User } from "@supabase/supabase-js";
 import { asyncHandler } from "./async-handler";
 import errorTemplate from "./error-template";
 import formatDate from "./formatDate";
+import { setAuthSpecificUserAndCalendar } from "./set-credentials-oauth-specific-user";
 
-export const handleEvents = asyncHandler(async (action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: Object): Promise<any> => {
-  const calendarEvents = CALENDAR.events;
+export const handleEvents = asyncHandler(async (req: Request, action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: Object): Promise<any> => {
+  const user = (req as Request & { user: User }).user;
+
+  const { data, error } = await SUPABASE.from("calendars_users").select(TOKEN_FIELDS).eq("email", user.email!);
+
+  if (error) {
+    return console.error(`Error occurred durning handle event fn: ${error}`);
+  }
+
+  const calendar = await setAuthSpecificUserAndCalendar(data[0]);
+  const calendarEvents = calendar.events;
   let r;
 
   if ((action === ACTION.UPDATE && !eventData?.id) || (action === ACTION.DELETE && eventData?.id)) {
-    return errorTemplate("Event ID is required for update or delete action", 400);
+    return errorTemplate("Event ID is required for update or delete action", STATUS_RESPONSE.BAD_REQUEST);
   }
 
   switch (action) {
@@ -22,7 +35,7 @@ export const handleEvents = asyncHandler(async (action: ACTION, eventData?: SCHE
         ...extra,
       });
       r = events.data.items
-        ?.map((event) => {
+        ?.map((event: any) => {
           return {
             eventId: event.id,
             summary: event.summary,
@@ -33,7 +46,7 @@ export const handleEvents = asyncHandler(async (action: ACTION, eventData?: SCHE
             location: event.location,
           };
         })
-        .sort((a, b) => {
+        .sort((a: any, b: any) => {
           return new Date(a.start).getTime() - new Date(b.start).getTime();
         });
       break;
@@ -61,7 +74,7 @@ export const handleEvents = asyncHandler(async (action: ACTION, eventData?: SCHE
       break;
 
     default:
-      errorTemplate("Unsupported calendar action", 400);
+      errorTemplate("Unsupported calendar action", STATUS_RESPONSE.BAD_REQUEST);
   }
   console.log(`Calendar action: ${action}, Result:`, r);
   return r;

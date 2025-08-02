@@ -22,9 +22,19 @@ export enum PROVIDERS {
   LINKEDIN = "linkedin",
 }
 
+export interface tokens {
+  access_token: string;
+  refresh_token: string;
+  scopes: string;
+  token_type: "Bearer";
+  id_token: string;
+  expiry_date: number;
+  refresh_token_expires_in: number;
+}
+
 export enum ROUTES {
   USERS = "/api/users",
-  CALENDAR = "/api/calendar",
+  CALENDAR = "/api/calendars",
   TELEGRAM_BOT = "/api/telegram-bots",
   TELEGRAM_USERS = "/api/telegram-users",
   CONVERSATION_STATS = "/api/conversation-stats",
