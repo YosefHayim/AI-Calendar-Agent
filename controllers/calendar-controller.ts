@@ -1,4 +1,4 @@
-import { ACTION, SCHEMA_EVENT_PROPS, STATUS_RESPONSE } from "../types";
+import { ACTION, STATUS_RESPONSE } from "../types";
 
 import { Request } from "express";
 import { User } from "@supabase/supabase-js";
@@ -33,22 +33,22 @@ const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
 });
 
 const getAllEvents = reqResAsyncHandler(async (req, res) => {
-  const r = handleEvents(req, ACTION.GET);
+  const r = await handleEvents(req, ACTION.GET);
   sendR(res)(STATUS_RESPONSE.SUCCESS, "Successfully retrieved all events", r);
 });
 
 const createEvent = reqResAsyncHandler(async (req, res) => {
-  const r = handleEvents(req, ACTION.INSERT, req.body);
+  const r = await handleEvents(req, ACTION.INSERT, req.body);
   sendR(res)(STATUS_RESPONSE.CREATED, "Event created successfully", r);
 });
 
 const updateEvent = reqResAsyncHandler(async (req, res) => {
-  const r = handleEvents(req, ACTION.UPDATE, { id: req.params.eventId, ...req.body });
+  const r = await handleEvents(req, ACTION.UPDATE, { id: req.params.eventId, ...req.body });
   sendR(res)(STATUS_RESPONSE.NOT_FOUND, "Event updated successfully", r);
 });
 
 const deleteEvent = reqResAsyncHandler(async (req, res) => {
-  const r = handleEvents(req, ACTION.DELETE, { id: req.params.eventId });
+  const r = await handleEvents(req, ACTION.DELETE, { id: req.params.eventId });
   sendR(res)(STATUS_RESPONSE.NOT_FOUND, "Event deleted successfully", r);
 });
 

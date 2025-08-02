@@ -39,13 +39,8 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
 
     const { data, error } = await SUPABASE.from("calendars_of_users")
       .insert({
-        access_token: tokens.access_token,
-        refresh_token_expires_in: tokens.refresh_token_expires_in,
-        expiry_date: tokens.expiry_date,
+        ...tokens,
         scope: SCOPES.join(" "),
-        token_type: tokens.token_type,
-        id_token: tokens.id_token,
-        refresh_token: tokens.refresh_token,
         email: user.email,
       })
       .eq("email", user.email)

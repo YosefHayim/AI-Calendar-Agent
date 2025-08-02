@@ -10,7 +10,7 @@ router.use(authHandler);
 router.get("/", calendarController.getAllCalendars);
 
 // get all the next events of the user
-router.get("events", calendarController.getAllEvents);
+router.get("/events", calendarController.getAllEvents);
 
 // get specific event by id
 router.get("/:eventId", calendarController.getSpecificEvent);

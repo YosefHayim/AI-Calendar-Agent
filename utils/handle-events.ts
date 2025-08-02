@@ -30,7 +30,6 @@ export const handleEvents = asyncHandler(async (req: Request, action: ACTION, ev
     case ACTION.GET:
       const events = await calendarEvents.list({
         ...requestConfigBase,
-        timeMin: new Date().toISOString(),
         prettyPrint: true,
         ...extra,
       });
