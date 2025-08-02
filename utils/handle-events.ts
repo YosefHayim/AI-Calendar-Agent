@@ -6,7 +6,7 @@ import { TOKEN_FIELDS } from "./storage";
 import { User } from "@supabase/supabase-js";
 import { asyncHandler } from "./async-handler";
 import errorTemplate from "./error-template";
-import formatDate from "./format-date";
+import { getEventDurationString } from "./get-event-duration-string";
 import { setAuthSpecificUserAndCalendar } from "./set-credentials-oauth-specific-user";
 
 export const handleEvents = asyncHandler(async (req: Request, action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: Object): Promise<any> => {
@@ -31,6 +31,7 @@ export const handleEvents = asyncHandler(async (req: Request, action: ACTION, ev
       const events = await calendarEvents.list({
         ...requestConfigBase,
         prettyPrint: true,
+        maxResults: 2500,
         ...extra,
       });
       r = events.data.items
@@ -38,9 +39,7 @@ export const handleEvents = asyncHandler(async (req: Request, action: ACTION, ev
           return {
             eventId: event.id,
             summary: event.summary,
-            start: formatDate(event.start?.date || event.start?.dateTime),
-            end: formatDate(event.end?.date || event.end?.dateTime),
-
+            durationOfEvent: getEventDurationString(event.start.date || event.start?.dateTime, event.end.date || event.end?.dateTime),
             description: event.description,
             location: event.location,
           };
