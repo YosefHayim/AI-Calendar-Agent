@@ -4,7 +4,7 @@ import { userController } from "../controllers/users-controller";
 
 const router = express.Router();
 
-router.get("/callback", authHandler, userController.generateAuthGoogleUrl);
+router.get("/callback", userController.generateAuthGoogleUrl);
 
 router.get("/get-user", authHandler, userController.getUserInformation);
 
