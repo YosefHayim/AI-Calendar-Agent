@@ -5,6 +5,7 @@ import { PROVIDERS, STATUS_RESPONSE } from "../types";
 import { Request, Response } from "express";
 import { asyncHandler, reqResAsyncHandler } from "../utils/async-handler";
 
+import jwt from "jsonwebtoken";
 import sendR from "../utils/sendR";
 import { thirdPartySignInOrSignUp } from "../utils/third-party-signup-signin-supabase";
 
@@ -33,25 +34,31 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
 
     // 3. Token still valid
     OAUTH2CLIENT.setCredentials(tokens);
+    const refresh_expiry = new Date(Date.now() + tokens.refresh_token_expires_in * 1000).toISOString();
+    const expiry_date = new Date(tokens.expiry_date).toISOString();
 
-    // const { data, error } = await SUPABASE.from("calendars_users")
-    //   .insert({
-    //     access_token: tokens.access_token,
-    //     refresh_token: tokens.refresh_token,
-    //     scopes: tokens.scope,
-    //     token_type: tokens.token_type,
-    //     refresh_expiry: tokens.refresh_token_expires_in,
-    //     expiry_date: tokens.expiry_date,
-    //   })
-    //   .eq("user_id", req.user.id)
-    //   .select();
+    const user = jwt.decode(tokens.id_token);
 
-    // if (error) {
-    //   console.error("Error inserting tokens into database:", error);
-    //   return sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to store new tokens.", error);
-    // }
+    const { data, error } = await SUPABASE.from("calendars_users")
+      .insert({
+        email: user.email,
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        scopes: tokens.scope,
+        token_type: tokens.token_type,
+        refresh_expiry,
+        expiry_date,
+        id_token: tokens.id_token,
+      })
+      .eq("email", user.email)
+      .select();
 
-    sendR(res)(STATUS_RESPONSE.SUCCESS, "Existing token is still valid.", { data, user: req.user });
+    if (error) {
+      console.error("Error inserting tokens into database:", error);
+      return sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to store new tokens.", error);
+    }
+
+    sendR(res)(STATUS_RESPONSE.SUCCESS, "Existing token is still valid.", { data });
   } catch (error) {
     console.error("generateAuthUrl error:", error);
     sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to process OAuth token exchange.", error);
