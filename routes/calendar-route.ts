@@ -6,11 +6,13 @@ const router = express.Router();
 
 router.use(authHandler);
 
-// get info about all the calendars of user
+// get info about all the calendars the user has
 router.get("/", calendarController.getAllCalendars);
 
-// get all the next events of the user
+// get all the events of the user
 router.get("/events", calendarController.getAllEvents);
+
+router.get("/events/filtered", calendarController.getAllFilteredEvents);
 
 // get specific event by id
 router.get("/:eventId", calendarController.getSpecificEvent);

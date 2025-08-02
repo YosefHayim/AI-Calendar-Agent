@@ -7,17 +7,23 @@ export function getEventDurationString(startISO: string, endISO: string) {
   if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return null;
 
   const diffMs = end.getTime() - start.getTime();
-  const diffSec = diffMs / 1000;
 
-  if (diffSec < 60) {
-    return `${Math.round(diffSec)}s`;
+  const totalSeconds = Math.round(diffMs / 1000);
+  if (totalSeconds < 60) {
+    return `${totalSeconds}s`;
   }
 
-  const diffMin = diffSec / 60;
-  if (diffMin < 60) {
-    return `${Math.round(diffMin)}m`;
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  if (totalMinutes < 60) {
+    return `${totalMinutes}m`;
   }
 
-  const diffHrs = diffMin / 60;
-  return `${diffHrs.toFixed(1)}h`;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (minutes === 0) {
+    return `${hours}h`;
+  }
+
+  return `${hours}h ${minutes}m`;
 }

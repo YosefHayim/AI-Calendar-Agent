@@ -37,6 +37,11 @@ const getAllEvents = reqResAsyncHandler(async (req, res) => {
   sendR(res, STATUS_RESPONSE.SUCCESS, "Successfully retrieved all events", r);
 });
 
+const getAllFilteredEvents = reqResAsyncHandler(async (req, res) => {
+  const r = await handleEvents(req, ACTION.GET, undefined, req.query);
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Successfully retrieved all filtered events", r);
+});
+
 const createEvent = reqResAsyncHandler(async (req, res) => {
   const r = await handleEvents(req, ACTION.INSERT, req.body);
   sendR(res, STATUS_RESPONSE.CREATED, "Event created successfully", r);
@@ -59,4 +64,5 @@ export default {
   updateEvent,
   deleteEvent,
   getSpecificEvent,
+  getAllFilteredEvents,
 };
