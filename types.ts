@@ -20,6 +20,14 @@ export enum PROVIDERS {
   LINKEDIN = "linkedin",
 }
 
+export enum ROUTES {
+  USERS = "/api/users",
+  CALENDAR = "/api/calendar",
+  TELEGRAM_BOT = "/api/telegram-bots",
+  TELEGRAM_USERS = "/api/telegram-users",
+  CONVERSATION_STATS = "/api/conversation-stats",
+}
+
 export enum STATUS_RESPONSE {
   SUCCESS = 200,
   CREATED = 201,

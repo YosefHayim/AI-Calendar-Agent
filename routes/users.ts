@@ -9,6 +9,8 @@ router.get("/:id", userController.getUserByEmail);
 
 router.post("/signup", userController.signUpUserReg);
 
+router.post('/signin',userController.signInUserReg)
+
 router.get("/signup/google", userController.signUpOrSignInWithGoogle);
 
 router.get("/signup/linkedin", userController.signUpUserViaLinkedin);

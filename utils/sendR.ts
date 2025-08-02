@@ -5,7 +5,6 @@ const sendR = (res: Response) => {
   return (status: number, message: string, data?: unknown) => {
     res.status(status).json({
       status: status >= 400 ? "error" : "success",
-      code: STATUS_RESPONSE[status],
       message,
       data,
     });

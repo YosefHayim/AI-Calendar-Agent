@@ -27,5 +27,7 @@ export const insertEventExecution = async (params: any) => {
     },
   };
 
-  return handleEvents(ACTION.INSERT, eventData);
+  const r = await handleEvents(ACTION.INSERT, eventData);
+  console.log("Event inserted successfully:", r);
+  return r;
 };

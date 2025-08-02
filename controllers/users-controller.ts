@@ -61,6 +61,8 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
 });
 
 const signUpUserReg = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.body.email || !req.body.password) sendR(res)(STATUS_RESPONSE.BAD_REQUEST, "Email and password are required.");
+  console.log(req.body);
   const { data, error } = await SUPABASE.auth.signUp({
     email: req.body.email,
     password: req.body.password,
@@ -103,6 +105,22 @@ const getUserByEmail = asyncHandler(async (req: Request, res: Response) => {
 
 const deActivateUser = asyncHandler(async (req: Request, res: Response) => {});
 
+const signInUserReg = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.body.email || !req.body.password) sendR(res)(STATUS_RESPONSE.BAD_REQUEST, "Email and password are required ");
+
+  const { data, error } = await SUPABASE.auth.signInWithPassword({
+    email: req.body.email,
+    password: req.body.password,
+  });
+
+  if (error) {
+    console.error("Error signing up regularly user by email:", error);
+    sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to fetch user by email.", error);
+  }
+
+  sendR(res)(STATUS_RESPONSE.SUCCESS, "User signin successfully.", data);
+});
+
 const updateUserById = asyncHandler(async (req: Request, res: Response) => {});
 
 export const userController = {
@@ -110,6 +128,7 @@ export const userController = {
   signUpOrSignInWithGoogle,
   signUpUserViaLinkedin,
   signUpUserViaGitHub,
+  signInUserReg,
   getUserByEmail,
   deActivateUser,
   updateUserById,
