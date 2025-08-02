@@ -3,6 +3,7 @@ import { ROUTES, STATUS_RESPONSE } from "./types";
 import { CONFIG } from "./config/root-config";
 import calendarRoute from "./routes/calendar-route";
 import conversationStatsRouter from "./routes/conversation-stats";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import errorHandler from "./middlewares/error-handler";
 import express from "express";
@@ -18,6 +19,7 @@ const PORT = CONFIG.port;
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use("/static", express.static(path.join(__dirname, "public")));
