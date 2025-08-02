@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { STATUS_RESPONSE } from "../types";
-import sendR from "../utils/sendR";
+import sendR from "../utils/send-response";
 
 const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);

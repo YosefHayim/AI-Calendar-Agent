@@ -3,7 +3,7 @@ import { PROVIDERS, STATUS_RESPONSE } from "../types";
 import { Request, Response } from "express";
 
 import { asyncHandler } from "./async-handler";
-import sendR from "./sendR";
+import sendR from "./send-response";
 
 export const thirdPartySignInOrSignUp = asyncHandler(async (req: Request, res: Response, provider: PROVIDERS) => {
   const { data, error } = await SUPABASE.auth.signInWithOAuth({

@@ -6,7 +6,7 @@ import { TOKEN_FIELDS } from "./storage";
 import { User } from "@supabase/supabase-js";
 import { asyncHandler } from "./async-handler";
 import errorTemplate from "./error-template";
-import formatDate from "./formatDate";
+import formatDate from "./format-date";
 import { setAuthSpecificUserAndCalendar } from "./set-credentials-oauth-specific-user";
 
 export const handleEvents = asyncHandler(async (req: Request, action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: Object): Promise<any> => {

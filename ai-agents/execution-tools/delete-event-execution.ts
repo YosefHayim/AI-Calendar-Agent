@@ -2,7 +2,7 @@ import { ACTION } from "../../types";
 import { asyncHandler } from "../../utils/async-handler";
 import { calendar_v3 } from "googleapis";
 import errorTemplate from "../../utils/error-template";
-import { handleEvents } from "../../utils/handler-calendar-event";
+import { handleEvents } from "../../utils/handle-events";
 
 export const deleteEventExecution = asyncHandler(async (params: any) => {
   console.log("Params received to delete event tool:", params);

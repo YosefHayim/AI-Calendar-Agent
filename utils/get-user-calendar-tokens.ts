@@ -5,9 +5,7 @@ import { User } from "@supabase/supabase-js";
 import errorTemplate from "./error-template";
 
 export async function getUserCalendarTokens(user: User, matchBy: "email") {
-  const { data, error } = await SUPABASE.from("calendars_users")
-    .select(TOKEN_FIELDS)
-    .eq(matchBy, matchBy === "email" ? user.email! : user.id);
+  const { data, error } = await SUPABASE.from("calendars_users").select(TOKEN_FIELDS).eq(matchBy, user.email!);
 
   if (error) {
     return errorTemplate(`Error occurred durning getUserCalendarTokens fn: ${error}`, STATUS_RESPONSE.INTERNAL_SERVER_ERROR);

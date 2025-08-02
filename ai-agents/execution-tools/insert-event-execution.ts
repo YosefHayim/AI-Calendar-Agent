@@ -2,7 +2,7 @@ import { ACTION, TIMEZONE } from "../../types";
 
 import { calendar_v3 } from "googleapis";
 import errorTemplate from "../../utils/error-template";
-import { handleEvents } from "../../utils/handler-calendar-event";
+import { handleEvents } from "../../utils/handle-events";
 
 export const insertEventExecution = async (params: any) => {
   console.log("Params received to insert event tool:", params);

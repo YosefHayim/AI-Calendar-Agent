@@ -38,7 +38,6 @@ export const CALENDAR = google.calendar({
 
 export const requestConfigBase = {
   calendarId: "primary",
-  auth: OAUTH2CLIENT,
   sendUpdates: "all",
   supportsAttachments: true,
 };

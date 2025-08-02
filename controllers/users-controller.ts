@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 import { asyncHandler, reqResAsyncHandler } from "../utils/async-handler";
 
 import jwt from "jsonwebtoken";
-import sendR from "../utils/sendR";
+import sendR from "../utils/send-response";
 import { thirdPartySignInOrSignUp } from "../utils/third-party-signup-signin-supabase";
 
 const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
