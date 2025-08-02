@@ -12,7 +12,7 @@ import { setAuthSpecificUserAndCalendar } from "./set-credentials-oauth-specific
 export const handleEvents = asyncHandler(async (req: Request, action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: Object): Promise<any> => {
   const user = (req as Request & { user: User }).user;
 
-  const { data, error } = await SUPABASE.from("calendars_users").select(TOKEN_FIELDS).eq("email", user.email!);
+  const { data, error } = await SUPABASE.from("calendars_of_users").select(TOKEN_FIELDS).eq("email", user.email!);
 
   if (error) {
     return console.error(`Error occurred durning handle event fn: ${error}`);

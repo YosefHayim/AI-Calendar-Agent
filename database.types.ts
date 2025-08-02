@@ -14,44 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
-      calendars_users: {
+      calendars_of_users: {
         Row: {
           access_token: string | null
           created_at: string
           email: string | null
-          expiry_date: string | null
+          expiry_date: number | null
           id: number
           id_token: string | null
           is_active: boolean | null
-          refresh_expiry: string | null
           refresh_token: string | null
-          scopes: Json | null
+          refresh_token_expires_in: number | null
+          scope: string | null
           token_type: string | null
         }
         Insert: {
           access_token?: string | null
           created_at?: string
           email?: string | null
-          expiry_date?: string | null
+          expiry_date?: number | null
           id?: number
           id_token?: string | null
           is_active?: boolean | null
-          refresh_expiry?: string | null
           refresh_token?: string | null
-          scopes?: Json | null
+          refresh_token_expires_in?: number | null
+          scope?: string | null
           token_type?: string | null
         }
         Update: {
           access_token?: string | null
           created_at?: string
           email?: string | null
-          expiry_date?: string | null
+          expiry_date?: number | null
           id?: number
           id_token?: string | null
           is_active?: boolean | null
-          refresh_expiry?: string | null
           refresh_token?: string | null
-          scopes?: Json | null
+          refresh_token_expires_in?: number | null
+          scope?: string | null
           token_type?: string | null
         }
         Relationships: []
@@ -92,7 +92,7 @@ export type Database = {
             foreignKeyName: "conversation_stats_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "calendars_users"
+            referencedRelation: "calendars_of_users"
             referencedColumns: ["id"]
           },
         ]
@@ -124,7 +124,7 @@ export type Database = {
             foreignKeyName: "telegram_bots_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "calendars_users"
+            referencedRelation: "calendars_of_users"
             referencedColumns: ["id"]
           },
         ]
@@ -162,7 +162,7 @@ export type Database = {
             foreignKeyName: "telegram_users_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "calendars_users"
+            referencedRelation: "calendars_of_users"
             referencedColumns: ["id"]
           },
         ]

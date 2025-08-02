@@ -34,21 +34,19 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
 
     // 3. Token still valid
     OAUTH2CLIENT.setCredentials(tokens);
-    const refresh_expiry = new Date(Date.now() + tokens.refresh_token_expires_in * 1000).toISOString();
-    const expiry_date = new Date(tokens.expiry_date).toISOString();
 
     const user = jwt.decode(tokens.id_token);
 
-    const { data, error } = await SUPABASE.from("calendars_users")
+    const { data, error } = await SUPABASE.from("calendars_of_users")
       .insert({
-        email: user.email,
         access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-        scopes: tokens.scope,
+        refresh_token_expires_in: tokens.refresh_token_expires_in,
+        expiry_date: tokens.expiry_date,
+        scope: SCOPES.join(" "),
         token_type: tokens.token_type,
-        refresh_expiry,
-        expiry_date,
         id_token: tokens.id_token,
+        refresh_token: tokens.refresh_token,
+        email: user.email,
       })
       .eq("email", user.email)
       .select();
