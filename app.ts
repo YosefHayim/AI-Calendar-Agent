@@ -16,6 +16,7 @@ import usersRouter from "./routes/users";
 
 const app = express();
 const PORT = CONFIG.port;
+const BASE_URL = CONFIG.base_url;
 
 app.use(cors());
 app.use(express.json());
@@ -42,7 +43,7 @@ app.listen(PORT, () => {
   } else {
     console.log("Server is running on Development environment");
   }
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on ${BASE_URL}:${PORT}`);
 });
 
 startTelegramBot();

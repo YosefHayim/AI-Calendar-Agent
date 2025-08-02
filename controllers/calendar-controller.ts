@@ -12,44 +12,44 @@ import { setAuthSpecificUserAndCalendar } from "../utils/set-credentials-oauth-s
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
   const tokenData = await getUserCalendarTokens(user, "email");
-  if (!tokenData) return sendR(res)(STATUS_RESPONSE.NOT_FOUND, "User token not found.");
+  if (!tokenData) return sendR(res, STATUS_RESPONSE.NOT_FOUND, "User token not found.");
 
   const calendar = await setAuthSpecificUserAndCalendar(tokenData);
   const r = await calendar.calendarList.list();
   const allCalendars = r.data.items?.map((item: any) => item.summary);
 
-  sendR(res)(STATUS_RESPONSE.SUCCESS, "Successfully received your current calendars", allCalendars);
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Successfully received your current calendars", allCalendars);
 });
 
 const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
   const tokenData = await getUserCalendarTokens(user, "email");
-  if (!tokenData) return sendR(res)(STATUS_RESPONSE.NOT_FOUND, "User token not found.");
+  if (!tokenData) return sendR(res, STATUS_RESPONSE.NOT_FOUND, "User token not found.");
 
   const calendar = await setAuthSpecificUserAndCalendar(tokenData);
   const r = await calendar.events.get({ ...requestConfigBase, eventId: req.params.eventId });
 
-  sendR(res)(STATUS_RESPONSE.SUCCESS, "Event retrieved successfully", r.data);
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Event retrieved successfully", r.data);
 });
 
 const getAllEvents = reqResAsyncHandler(async (req, res) => {
   const r = await handleEvents(req, ACTION.GET);
-  sendR(res)(STATUS_RESPONSE.SUCCESS, "Successfully retrieved all events", r);
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Successfully retrieved all events", r);
 });
 
 const createEvent = reqResAsyncHandler(async (req, res) => {
   const r = await handleEvents(req, ACTION.INSERT, req.body);
-  sendR(res)(STATUS_RESPONSE.CREATED, "Event created successfully", r);
+  sendR(res, STATUS_RESPONSE.CREATED, "Event created successfully", r);
 });
 
 const updateEvent = reqResAsyncHandler(async (req, res) => {
   const r = await handleEvents(req, ACTION.UPDATE, { id: req.params.eventId, ...req.body });
-  sendR(res)(STATUS_RESPONSE.NOT_FOUND, "Event updated successfully", r);
+  sendR(res, STATUS_RESPONSE.NOT_FOUND, "Event updated successfully", r);
 });
 
 const deleteEvent = reqResAsyncHandler(async (req, res) => {
   const r = await handleEvents(req, ACTION.DELETE, { id: req.params.eventId });
-  sendR(res)(STATUS_RESPONSE.NOT_FOUND, "Event deleted successfully", r);
+  sendR(res, STATUS_RESPONSE.NOT_FOUND, "Event deleted successfully", r);
 });
 
 export default {
