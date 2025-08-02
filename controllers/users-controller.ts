@@ -10,7 +10,7 @@ import { thirdPartySignInOrSignUp } from "../utils/third-party-signup-signin-sup
 
 const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
   const code = req.query.code as string | undefined;
-  const postman = req.headers["user-agent"];
+  const postmanHeaders = req.headers["user-agent"];
 
   const url = OAUTH2CLIENT.generateAuthUrl({
     access_type: "offline",
@@ -23,37 +23,35 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
   // 1. No code yet: send user to consent screen
   if (!code) {
     // If from Postman, just send the URL back instead of redirecting
-    if (postman?.includes("Postman")) {
-      sendR(res)(STATUS_RESPONSE.SUCCESS, url);
-    }
+    if (postmanHeaders?.includes("Postman")) return sendR(res)(STATUS_RESPONSE.SUCCESS, url);
     return res.redirect(url);
   }
 
   try {
     const { tokens } = await OAUTH2CLIENT.getToken(code);
-    console.log("New tokens received:", tokens);
     OAUTH2CLIENT.setCredentials(tokens);
 
-    const { data, error } = await SUPABASE.from("calendars_users")
-      .insert({
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-        scopes: tokens.scope,
-        token_type: tokens.token_type,
-        refresh_expiry: tokens.refresh_token_expires_in,
-        expiry_date: tokens.expiry_date,
-      })
-      .eq("user_id", req.user.id)
-      .select();
-
-    if (error) {
-      console.error("Error inserting tokens into database:", error);
-      sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to store new tokens.", error);
-    }
-
     // 3. Token still valid
-    OAUTH2CLIENT.setCredentials(data!);
-    sendR(res)(STATUS_RESPONSE.SUCCESS, "Existing token is still valid.", data);
+    OAUTH2CLIENT.setCredentials(tokens);
+
+    // const { data, error } = await SUPABASE.from("calendars_users")
+    //   .insert({
+    //     access_token: tokens.access_token,
+    //     refresh_token: tokens.refresh_token,
+    //     scopes: tokens.scope,
+    //     token_type: tokens.token_type,
+    //     refresh_expiry: tokens.refresh_token_expires_in,
+    //     expiry_date: tokens.expiry_date,
+    //   })
+    //   .eq("user_id", req.user.id)
+    //   .select();
+
+    // if (error) {
+    //   console.error("Error inserting tokens into database:", error);
+    //   return sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to store new tokens.", error);
+    // }
+
+    sendR(res)(STATUS_RESPONSE.SUCCESS, "Existing token is still valid.", { data, user: req.user });
   } catch (error) {
     console.error("generateAuthUrl error:", error);
     sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to process OAuth token exchange.", error);
@@ -87,20 +85,9 @@ const signUpUserViaGitHub = asyncHandler(async (req: Request, res: Response) => 
   await thirdPartySignInOrSignUp(req, res, PROVIDERS.GITHUB);
 });
 
-const getUserByEmail = asyncHandler(async (req: Request, res: Response) => {
-  let email;
-
-  if (req.params.email) email = req.params.email;
-  if (req.body.email) email = req.body.email;
-  if (!email) sendR(res)(STATUS_RESPONSE.BAD_REQUEST, "Email is required.");
-
-  const { data, error } = await SUPABASE.from("calendars_users").select().eq("id", email).single();
-
-  if (error) {
-    console.error("Error fetching user by email:", error);
-    sendR(res)(STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to fetch user by email.", error);
-  }
-  sendR(res)(STATUS_RESPONSE.SUCCESS, "User fetched successfully.", data);
+const getUserInformation = asyncHandler(async (req, res) => {
+  if (!req.user) return sendR(res)(STATUS_RESPONSE.UNAUTHORIZED, "User not authenticated.");
+  sendR(res)(STATUS_RESPONSE.SUCCESS, "User fetched successfully.", req.user);
 });
 
 const deActivateUser = asyncHandler(async (req: Request, res: Response) => {});
@@ -129,7 +116,7 @@ export const userController = {
   signUpUserViaLinkedin,
   signUpUserViaGitHub,
   signInUserReg,
-  getUserByEmail,
+  getUserInformation,
   deActivateUser,
   updateUserById,
   generateAuthGoogleUrl,
