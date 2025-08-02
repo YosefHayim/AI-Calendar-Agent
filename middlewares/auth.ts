@@ -18,5 +18,6 @@ export const authHandler = asyncHandler(async (req: Request, res: Response, next
   if (!user) return sendR(res)(STATUS_RESPONSE.UNAUTHORIZED, "User is not authenticated.");
 
   (req as Request & { user: UserResponse["data"]["user"] }).user = user;
+  console.log(`User that has been pass the auth middleware: ${user.email}`);
   next();
 });

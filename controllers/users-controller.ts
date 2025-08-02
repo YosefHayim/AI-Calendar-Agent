@@ -17,7 +17,7 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
     scope: SCOPES,
     prompt: "consent",
     include_granted_scopes: true,
-    redirect_uri: CONFIG.node_env === "production" ? CONFIG.redirect_url_prod : CONFIG.redirect_url_dev,
+    redirect_uri: CONFIG.redirect_url_dev,
   });
 
   // 1. No code yet: send user to consent screen
