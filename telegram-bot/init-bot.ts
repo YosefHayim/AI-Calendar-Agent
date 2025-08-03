@@ -7,13 +7,25 @@ import { insertEventToCalendar, searchForEventByName, deleteEventByName, getCale
 import { CONFIG } from "@/config/root-config";
 import { mainMenu } from "./menus";
 import { SessionData } from "@/types";
+import { authTgHandler } from "./auth-middleware";
 
 type BaseContext = Context & MenuFlavor & SessionFlavor<SessionData>;
 export type MyContext = ConversationFlavor<BaseContext>;
 
 const bot = new Bot<MyContext>(CONFIG.telegram_access_token!);
 
-bot.use(session());
+function initialSession(): SessionData {
+  return {
+    chatId: 0,
+    username: undefined,
+    userId: 0,
+    codeLang: undefined,
+    messageCount: 0,
+    email: undefined,
+  };
+}
+
+bot.use(session({ initial: initialSession }));
 bot.use(conversations());
 bot.use(createConversation(insertEventToCalendar));
 bot.use(createConversation(searchForEventByName));
@@ -21,6 +33,8 @@ bot.use(createConversation(deleteEventByName));
 bot.use(createConversation(updateEventByName));
 bot.use(createConversation(getCalendarList));
 bot.use(createConversation(chatWithAgent));
+bot.use(authTgHandler);
+
 bot.use(mainMenu);
 
 bot.command("start", async (ctx) => {
