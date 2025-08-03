@@ -15,7 +15,7 @@ export const EXECUTION_TOOLS = {
     }
 
     const startDate = new Date(params.start.dateTime);
-    const endDate = params.end ? new Date(params.end.dateTime) : new Date(startDate.getTime() + 60 * 60 * 1000);
+    const endDate = new Date(params.end.dateTime);
 
     const eventData: calendar_v3.Schema$Event = {
       summary: params.summary,
@@ -40,7 +40,7 @@ export const EXECUTION_TOOLS = {
       errorTemplate("Time zones must match!", 404);
 
     const startDate = new Date(params.start.dateTime);
-    const endDate = params.end ? new Date(params.end.dateTime) : new Date(startDate.getTime() + 60 * 60 * 1000);
+    const endDate = new Date(params.end.dateTime);
 
     const eventData: calendar_v3.Schema$Event = {
       summary: params.summary,
@@ -71,10 +71,11 @@ export const EXECUTION_TOOLS = {
 
     if (!params.start?.dateTime || !params.end?.dateTime) errorTemplate("Missing dates of start and end!", 404);
     if (!params.summary) errorTemplate("Missing event summary!", 404);
-    if (params.start.timeZone !== params.end.timeZone) errorTemplate("Time zones must match!", 404);
+    if (params.start.timeZone !== params.end.timeZone && !(params.start.timeZone in TIMEZONE && params.end.timeZone in TIMEZONE))
+      errorTemplate("Time zones must match!", 404);
 
     const startDate = new Date(params.start.dateTime);
-    const endDate = params.end ? new Date(params.end.dateTime) : new Date(startDate.getTime() + 60 * 60 * 1000);
+    const endDate = new Date(params.end.dateTime);
 
     const eventData: calendar_v3.Schema$Event = {
       summary: params.summary,
