@@ -24,6 +24,7 @@ export const CONFIG = {
 
 if (!CONFIG.open_ai_api_key) {
   throw new Error("OpenAI API key is not set in environment variables.");
+
 }
 setDefaultOpenAIKey(CONFIG.open_ai_api_key);
 
