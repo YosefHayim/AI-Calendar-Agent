@@ -1,10 +1,28 @@
 import { Menu } from "@grammyjs/menu";
+import { MyContext } from "./init-bot";
 
-export const mainMenu = new Menu("calendar-operations")
-  .text("Would you like to add an event to your calendar?", (ctx) => ctx.reply("Initiating Agent"))
+export const mainMenu = new Menu<MyContext>("calendar-operations")
+  .text("Create Event", async (ctx) => {
+    await ctx.conversation.enter("insertEventToCalendar");
+    await ctx.menu.close();
+  })
   .row()
-  .text("Search for an event by name", (ctx) => ctx.reply("Initiating Agent"))
+  .text("Search Event", async (ctx) => {
+    await ctx.conversation.enter("searchForEventByName");
+  })
   .row()
-  .text("Delete an event", (ctx) => ctx.reply("Initiating Agent"))
+  .text("Delete Event", async (ctx) => {
+    await ctx.conversation.enter("deleteEventByName");
+  })
   .row()
-  .text("Get your calendar list", (ctx) => ctx.reply("Initiating Agent"));
+  .text("Update Event", async (ctx) => {
+    await ctx.conversation.enter("updateEventByName");
+  })
+  .row()
+  .text("List Calendars", async (ctx) => {
+    await ctx.conversation.enter("getCalendarList");
+  })
+  .row()
+  .text("Chat with AI", async (ctx) => {
+    await ctx.conversation.enter("chatWithAgent");
+  });

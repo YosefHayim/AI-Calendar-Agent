@@ -1,7 +1,7 @@
 import { AGENTS, calendarRouterAgent } from "@/ai-agents/agents";
+import type { Conversation } from "@grammyjs/conversations";
+import type { Context } from "grammy";
 
-import { Context } from "grammy";
-import { Conversation } from "@grammyjs/conversations";
 import { activateAgent } from "@/utils/activate-agent";
 import { run } from "@openai/agents";
 import { userAndAiMessageProps } from "@/types";
