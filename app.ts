@@ -26,7 +26,7 @@ app.use(morgan("dev"));
 app.use("/static", express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
-  res.status(STATUS_RESPONSE.SUCCESS).send(`Server is running and everything is established.`);
+  res.status(STATUS_RESPONSE.SUCCESS).send(`Server is running.`);
 });
 
 app.use(ROUTES.USERS, usersRouter);

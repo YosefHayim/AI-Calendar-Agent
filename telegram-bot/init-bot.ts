@@ -1,10 +1,17 @@
+//@ts-nocheck
+
 import { Bot, type Context } from "grammy";
-import { conversations, createConversation, type ConversationFlavor } from "@grammyjs/conversations";
+import { conversations, createConversation, ConversationFlavor, Conversation } from "@grammyjs/conversations";
 import { chatWithAgent, getCalendarList, insertEventToCalendar, searchForEventByName } from "./conversations";
 import { CONFIG } from "../config/root-config";
 import { asyncHandler } from "../utils/async-handler";
+import { Menu, MenuFlavor } from "@grammyjs/menu";
+import { mainMenu } from "./menus";
 
-export const bot = new Bot<ConversationFlavor<Context>>(CONFIG.telegram_access_token!);
+type BaseContext = Context & MenuFlavor;
+type MyContext = ConversationFlavor<BaseContext>;
+
+const bot = new Bot<MyContext>(CONFIG.telegram_access_token!);
 
 bot.catch((err) => {
   console.error("Error in bot:", err);
@@ -18,6 +25,12 @@ const commandMap: Record<string, string> = {
 };
 
 bot.use(conversations());
+bot.use(mainMenu);
+
+bot.command("start", async (ctx) => {
+  await ctx.reply("Calendar Opreations Bot", { reply_markup: mainMenu });
+});
+
 bot.use(createConversation(insertEventToCalendar));
 bot.use(createConversation(getCalendarList));
 bot.use(createConversation(searchForEventByName));
