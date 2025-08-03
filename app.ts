@@ -10,9 +10,8 @@ import express from "express";
 import morgan from "morgan";
 import path from "path";
 import { startTelegramBot } from "@/telegram-bot/init-bot";
-import telegramBotRouter from "@/routes/telegram-bots";
-import telegramUserRouter from "@/routes/telegram-bots";
 import usersRouter from "@/routes/users";
+import telegramUserRouter from "@/routes/telegram-users";
 
 const app = express();
 const PORT = CONFIG.port;
@@ -31,7 +30,6 @@ app.get("/", (req, res) => {
 
 app.use(ROUTES.USERS, usersRouter);
 app.use(ROUTES.CALENDAR, calendarRoute);
-app.use(ROUTES.TELEGRAM_BOT, telegramBotRouter);
 app.use(ROUTES.TELEGRAM_USERS, telegramUserRouter);
 app.use(ROUTES.CONVERSATION_STATS, conversationStatsRouter);
 

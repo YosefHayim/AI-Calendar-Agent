@@ -97,75 +97,35 @@ export type Database = {
           },
         ]
       }
-      telegram_bots: {
-        Row: {
-          bot_access_token: string | null
-          created_at: string
-          id: number
-          is_active: boolean | null
-          user_id: number | null
-        }
-        Insert: {
-          bot_access_token?: string | null
-          created_at?: string
-          id?: number
-          is_active?: boolean | null
-          user_id?: number | null
-        }
-        Update: {
-          bot_access_token?: string | null
-          created_at?: string
-          id?: number
-          is_active?: boolean | null
-          user_id?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "telegram_bots_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "calendars_of_users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       telegram_users: {
         Row: {
+          chat_id: number | null
           created_at: string
           first_name: string | null
           id: number
           language_code: string | null
-          telegram_id: number | null
           user_id: number | null
           username: string | null
         }
         Insert: {
+          chat_id?: number | null
           created_at?: string
           first_name?: string | null
           id?: number
           language_code?: string | null
-          telegram_id?: number | null
           user_id?: number | null
           username?: string | null
         }
         Update: {
+          chat_id?: number | null
           created_at?: string
           first_name?: string | null
           id?: number
           language_code?: string | null
-          telegram_id?: number | null
           user_id?: number | null
           username?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "telegram_users_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "calendars_of_users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {

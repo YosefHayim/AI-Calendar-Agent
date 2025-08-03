@@ -22,6 +22,15 @@ export enum PROVIDERS {
   LINKEDIN = "linkedin",
 }
 
+export interface SessionData {
+  chatId: number;
+  username: string | undefined;
+  userId: number;
+  codeLang: string | undefined;
+  messageCount: number;
+  email: string | undefined;
+}
+
 export interface tokens {
   access_token: string;
   refresh_token: string;
@@ -35,7 +44,6 @@ export interface tokens {
 export enum ROUTES {
   USERS = "/api/users",
   CALENDAR = "/api/calendars",
-  TELEGRAM_BOT = "/api/telegram-bots",
   TELEGRAM_USERS = "/api/telegram-users",
   CONVERSATION_STATS = "/api/conversation-stats",
 }
