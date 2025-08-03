@@ -16,7 +16,7 @@
   "type": "commonjs",
   "main": "app.ts",
   "scripts": {
-"dev": "nodemon --watch src --exec ts-node -r tsconfig-paths/register app.ts",
+    "dev": "nodemon",
     "sort": "npx sort-package-json"
   },
   "dependencies": {

@@ -1,12 +1,10 @@
-//@ts-nocheck
-
 import { Bot, type Context } from "grammy";
 import { conversations, createConversation, ConversationFlavor, Conversation } from "@grammyjs/conversations";
-import { chatWithAgent, getCalendarList, insertEventToCalendar, searchForEventByName } from "@/conversations";
+import { chatWithAgent, getCalendarList, insertEventToCalendar, searchForEventByName } from "./conversations";
 import { CONFIG } from "@/config/root-config";
 import { asyncHandler } from "@/utils/async-handler";
 import { Menu, MenuFlavor } from "@grammyjs/menu";
-import { mainMenu } from "@/menus";
+import { mainMenu } from "./menus";
 
 type BaseContext = Context & MenuFlavor;
 type MyContext = ConversationFlavor<BaseContext>;

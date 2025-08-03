@@ -1,6 +1,6 @@
 import { Agent, setDefaultOpenAIKey } from "@openai/agents";
 
-import { AGENT_TOOLS } from "@/agents-tools";
+import { AGENT_TOOLS } from "./agents-tools";
 import { CONFIG } from "@/config/root-config";
 import { CURRENT_MODEL } from "@/types";
 

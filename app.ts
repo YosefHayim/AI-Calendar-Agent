@@ -1,4 +1,4 @@
-import { ROUTES, STATUS_RESPONSE } from "@/types";
+import { ROUTES, STATUS_RESPONSE } from "./types";
 
 import { CONFIG } from "@/config/root-config";
 import calendarRoute from "@/routes/calendar-route";
