@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { asyncHandler } from "../utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 
 const getTelegramUserById = asyncHandler(async (req: Request, res: Response) => {});
 

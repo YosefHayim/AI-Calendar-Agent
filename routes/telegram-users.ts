@@ -1,5 +1,5 @@
 import express from "express";
-import { telegramUserController } from "../controllers/telegram-users-controller";
+import { telegramUserController } from "@/controllers/telegram-users-controller";
 
 const router = express.Router();
 

@@ -1,4 +1,4 @@
-import { SUPABASE } from "../config/root-config";
+import { SUPABASE } from "@/config/root-config";
 import { TOKEN_FIELDS } from "./storage";
 import { User } from "@supabase/supabase-js";
 import { asyncHandler } from "./async-handler";

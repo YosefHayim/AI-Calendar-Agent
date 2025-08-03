@@ -1,5 +1,5 @@
-import { CONFIG, SCOPES_STRING, SUPABASE } from "../config/root-config";
-import { PROVIDERS, STATUS_RESPONSE } from "../types";
+import { CONFIG, SCOPES_STRING, SUPABASE } from "@/config/root-config";
+import { PROVIDERS, STATUS_RESPONSE } from "@/types";
 import { Request, Response } from "express";
 
 import { asyncHandler } from "./async-handler";
@@ -25,6 +25,6 @@ export const thirdPartySignInOrSignUp = asyncHandler(async (req: Request, res: R
   if (error) {
     console.error("error received:", error);
     console.error("Error signing up user:", error);
-    sendR(res,STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to sign up user.", error);
+    sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to sign up user.", error);
   }
 });

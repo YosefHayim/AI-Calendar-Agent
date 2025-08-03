@@ -1,4 +1,4 @@
-import { CURRENT_MODEL } from "../types";
+import { CURRENT_MODEL } from "@/types";
 import { execSync } from "child_process";
 import path from "path";
 

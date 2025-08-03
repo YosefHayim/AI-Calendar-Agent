@@ -1,18 +1,18 @@
-import { ROUTES, STATUS_RESPONSE } from "./types";
+import { ROUTES, STATUS_RESPONSE } from "@/types";
 
-import { CONFIG } from "./config/root-config";
-import calendarRoute from "./routes/calendar-route";
-import conversationStatsRouter from "./routes/conversation-stats";
+import { CONFIG } from "@/config/root-config";
+import calendarRoute from "@/routes/calendar-route";
+import conversationStatsRouter from "@/routes/conversation-stats";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import errorHandler from "./middlewares/error-handler";
+import errorHandler from "@/middlewares/error-handler";
 import express from "express";
 import morgan from "morgan";
 import path from "path";
-import { startTelegramBot } from "./telegram-bot/init-bot";
-import telegramBotRouter from "./routes/telegram-bots";
-import telegramUserRouter from "./routes/telegram-bots";
-import usersRouter from "./routes/users";
+import { startTelegramBot } from "@/telegram-bot/init-bot";
+import telegramBotRouter from "@/routes/telegram-bots";
+import telegramUserRouter from "@/routes/telegram-bots";
+import usersRouter from "@/routes/users";
 
 const app = express();
 const PORT = CONFIG.port;

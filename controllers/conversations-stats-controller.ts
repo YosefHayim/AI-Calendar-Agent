@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { asyncHandler } from "../utils/async-handler";
+import { asyncHandler } from "@/utils/async-handler";
 
 const getConversationById = asyncHandler(async (req: Request, res: Response) => {});
 

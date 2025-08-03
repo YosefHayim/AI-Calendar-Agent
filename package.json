@@ -16,7 +16,7 @@
   "type": "commonjs",
   "main": "app.ts",
   "scripts": {
-    "dev": "npx nodemon app.ts",
+"dev": "nodemon --watch src --exec ts-node -r tsconfig-paths/register app.ts",
     "sort": "npx sort-package-json"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "morgan": "^1.10.0",
     "nodemon": "^3.1.10",
     "stripe": "^18.4.0",
+    "tsconfig-paths": "^4.2.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

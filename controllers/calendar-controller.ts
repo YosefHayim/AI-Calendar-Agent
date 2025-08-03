@@ -1,13 +1,13 @@
-import { ACTION, STATUS_RESPONSE } from "../types";
+import { ACTION, STATUS_RESPONSE } from "@/types";
 
 import { Request } from "express";
 import { User } from "@supabase/supabase-js";
-import { getUserCalendarTokens } from "../utils/get-user-calendar-tokens";
-import { handleEvents } from "../utils/handle-events";
-import { reqResAsyncHandler } from "../utils/async-handler";
-import { requestConfigBase } from "../config/root-config";
-import sendR from "../utils/send-response";
-import { setAuthSpecificUserAndCalendar } from "../utils/set-credentials-oauth-specific-user";
+import { getUserCalendarTokens } from "@/utils/get-user-calendar-tokens";
+import { handleEvents } from "@/utils/handle-events";
+import { reqResAsyncHandler } from "@/utils/async-handler";
+import { requestConfigBase } from "@/config/root-config";
+import sendR from "@/utils/send-response";
+import { setAuthSpecificUserAndCalendar } from "@/utils/set-credentials-oauth-specific-user";
 
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;

@@ -1,5 +1,5 @@
-import { ACTION, SCHEMA_EVENT_PROPS, STATUS_RESPONSE } from "../types";
-import { SUPABASE, requestConfigBase } from "../config/root-config";
+import { ACTION, SCHEMA_EVENT_PROPS, STATUS_RESPONSE } from "@/types";
+import { SUPABASE, requestConfigBase } from "@/config/root-config";
 
 import { Request } from "express";
 import { TOKEN_FIELDS } from "./storage";

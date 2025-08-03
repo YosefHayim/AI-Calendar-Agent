@@ -1,10 +1,10 @@
-import { AGENTS, calendarRouterAgent } from "../ai-agents/agents";
+import { AGENTS, calendarRouterAgent } from "@/ai-agents/agents";
 
 import { Context } from "grammy";
 import { Conversation } from "@grammyjs/conversations";
-import { activateAgent } from "../utils/activate-agent";
+import { activateAgent } from "@/utils/activate-agent";
 import { run } from "@openai/agents";
-import { userAndAiMessageProps } from "../types";
+import { userAndAiMessageProps } from "@/types";
 
 const userAndAiMessages: userAndAiMessageProps[] = [];
 

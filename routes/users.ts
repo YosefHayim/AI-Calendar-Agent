@@ -1,6 +1,6 @@
-import { authHandler } from "../middlewares/auth-handler";
+import { authHandler } from "@/middlewares/auth-handler";
 import express from "express";
-import { userController } from "../controllers/users-controller";
+import { userController } from "@/controllers/users-controller";
 
 const router = express.Router();
 

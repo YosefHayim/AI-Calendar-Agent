@@ -1,4 +1,4 @@
-import { conversationController } from "../controllers/conversations-stats-controller";
+import { conversationController } from "@/controllers/conversations-stats-controller";
 import express from "express";
 
 const router = express.Router();

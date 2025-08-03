@@ -1,10 +1,10 @@
-import { ACTION, TIMEZONE } from "../types";
+import { ACTION, TIMEZONE } from "@/types";
 
-import { CALENDAR } from "../config/root-config";
-import { asyncHandler } from "../utils/async-handler";
+import { CALENDAR } from "@/config/root-config";
+import { asyncHandler } from "@/utils/async-handler";
 import { calendar_v3 } from "googleapis";
-import errorTemplate from "../utils/error-template";
-import { handleEvents } from "../utils/handle-events";
+import errorTemplate from "@/utils/error-template";
+import { handleEvents } from "@/utils/handle-events";
 
 export const EXECUTION_TOOLS = {
   updateEvent: asyncHandler(async (params: any) => {

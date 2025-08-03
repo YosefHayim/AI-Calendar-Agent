@@ -1,7 +1,7 @@
-import { OAUTH2CLIENT } from "../config/root-config";
+import { OAUTH2CLIENT } from "@/config/root-config";
 import { asyncHandler } from "./async-handler";
 import { google } from "googleapis";
-import { tokens } from "../types";
+import { tokens } from "@/types";
 
 export const setAuthSpecificUserAndCalendar = asyncHandler(async (tokens: tokens) => {
   OAUTH2CLIENT.setCredentials(tokens);

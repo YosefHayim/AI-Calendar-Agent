@@ -1,6 +1,6 @@
-import { EVENT_PARAMETERS } from "./parameters-tools";
-import { EXECUTION_TOOLS } from "./execution-tools";
-import { TOOLS_DESCRIPTION } from "./description-tools";
+import { EVENT_PARAMETERS } from "@/parameters-tools";
+import { EXECUTION_TOOLS } from "@/execution-tools";
+import { TOOLS_DESCRIPTION } from "@/description-tools";
 import { tool } from "@openai/agents";
 
 export const AGENT_TOOLS = {

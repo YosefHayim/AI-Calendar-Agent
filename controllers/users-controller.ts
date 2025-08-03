@@ -1,11 +1,11 @@
-import { CONFIG, OAUTH2CLIENT, SCOPES, SCOPES_STRING, SUPABASE } from "../config/root-config";
-import { PROVIDERS, STATUS_RESPONSE } from "../types";
+import { CONFIG, OAUTH2CLIENT, SCOPES, SCOPES_STRING, SUPABASE } from "@/config/root-config";
+import { PROVIDERS, STATUS_RESPONSE } from "@/types";
 import { Request, Response } from "express";
-import { asyncHandler, reqResAsyncHandler } from "../utils/async-handler";
+import { asyncHandler, reqResAsyncHandler } from "@/utils/async-handler";
 
 import jwt from "jsonwebtoken";
-import sendR from "../utils/send-response";
-import { thirdPartySignInOrSignUp } from "../utils/third-party-signup-signin-supabase";
+import sendR from "@/utils/send-response";
+import { thirdPartySignInOrSignUp } from "@/utils/third-party-signup-signin-supabase";
 
 const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
   const code = req.query.code as string | undefined;
