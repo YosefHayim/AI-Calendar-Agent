@@ -11,7 +11,6 @@ import morgan from "morgan";
 import path from "path";
 import { startTelegramBot } from "@/telegram-bot/init-bot";
 import usersRouter from "@/routes/users";
-import telegramUserRouter from "@/routes/telegram-users";
 
 const app = express();
 const PORT = CONFIG.port;
@@ -30,7 +29,6 @@ app.get("/", (req, res) => {
 
 app.use(ROUTES.USERS, usersRouter);
 app.use(ROUTES.CALENDAR, calendarRoute);
-app.use(ROUTES.TELEGRAM_USERS, telegramUserRouter);
 app.use(ROUTES.CONVERSATION_STATS, conversationStatsRouter);
 
 app.use(errorHandler);
