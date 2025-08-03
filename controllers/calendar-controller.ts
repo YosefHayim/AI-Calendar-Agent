@@ -1,51 +1,68 @@
-import { ACTION, SCHEMA_EVENT_PROPS, STATUS_RESPONSE } from "../types";
-import { CALENDAR, requestConfigBase } from "../config/root-config";
+import { ACTION, STATUS_RESPONSE } from "../types";
 
-import { handleEvents } from "../utils/handler-calendar-event";
+import { Request } from "express";
+import { User } from "@supabase/supabase-js";
+import { getUserCalendarTokens } from "../utils/get-user-calendar-tokens";
+import { handleEvents } from "../utils/handle-events";
 import { reqResAsyncHandler } from "../utils/async-handler";
-import sendR from "../utils/sendR";
+import { requestConfigBase } from "../config/root-config";
+import sendR from "../utils/send-response";
+import { setAuthSpecificUserAndCalendar } from "../utils/set-credentials-oauth-specific-user";
 
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
-  const r = CALENDAR.calendarList.list();
+  const user = (req as Request & { user: User }).user;
+  const tokenData = await getUserCalendarTokens(user, "email");
+  if (!tokenData) return sendR(res, STATUS_RESPONSE.NOT_FOUND, "User token not found.");
 
-  const allCalendars = (await r).data.items?.map((item) => item.summary);
-  sendR(res)(STATUS_RESPONSE.SUCCESS, "Successfully received your current calendars", allCalendars);
+  const calendar = await setAuthSpecificUserAndCalendar(tokenData);
+  const r = await calendar.calendarList.list();
+  const allCalendars = r.data.items?.map((item: any) => item.summary);
+
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Successfully received your current calendars", allCalendars);
 });
 
 const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
-  const r = await CALENDAR.events.get({ ...requestConfigBase, eventId: req.params.eventId });
-  sendR(res)(STATUS_RESPONSE.SUCCESS, "Event retrieved successfully", r.data);
+  const user = (req as Request & { user: User }).user;
+  const tokenData = await getUserCalendarTokens(user, "email");
+  if (!tokenData) return sendR(res, STATUS_RESPONSE.NOT_FOUND, "User token not found.");
+
+  const calendar = await setAuthSpecificUserAndCalendar(tokenData);
+  const r = await calendar.events.get({ ...requestConfigBase, eventId: req.params.eventId });
+
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Event retrieved successfully", r.data);
 });
 
 const getAllEvents = reqResAsyncHandler(async (req, res) => {
-  const r = handleEvents(res, ACTION.GET);
-  sendR(res)(STATUS_RESPONSE.SUCCESS, "Successfully retrieved all events", r);
+  const r = await handleEvents(req, ACTION.GET);
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Successfully retrieved all events", r);
+});
+
+const getAllFilteredEvents = reqResAsyncHandler(async (req, res) => {
+  const r = await handleEvents(req, ACTION.GET, undefined, req.query);
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Successfully retrieved all filtered events", r);
 });
 
 const createEvent = reqResAsyncHandler(async (req, res) => {
-  const event: SCHEMA_EVENT_PROPS = req.body;
-  const r = handleEvents(res, ACTION.INSERT, event);
-  sendR(res)(STATUS_RESPONSE.CREATED, "Event created successfully", r);
+  const r = await handleEvents(req, ACTION.INSERT, req.body);
+  sendR(res, STATUS_RESPONSE.CREATED, "Event created successfully", r);
 });
 
 const updateEvent = reqResAsyncHandler(async (req, res) => {
-  const event: SCHEMA_EVENT_PROPS = req.body;
-  const r = handleEvents(res, ACTION.UPDATE, { id: req.params.eventId, ...event });
-  sendR(res)(STATUS_RESPONSE.NOT_FOUND, "Event has been successfully updated", r);
+  const r = await handleEvents(req, ACTION.UPDATE, { id: req.params.eventId, ...req.body });
+  sendR(res, STATUS_RESPONSE.NOT_FOUND, "Event updated successfully", r);
 });
 
 const deleteEvent = reqResAsyncHandler(async (req, res) => {
-  const r = handleEvents(res, ACTION.DELETE, { id: req.params.eventId });
-  sendR(res)(STATUS_RESPONSE.NOT_FOUND, "Event has been successfully deleted", r);
+  const r = await handleEvents(req, ACTION.DELETE, { id: req.params.eventId });
+  sendR(res, STATUS_RESPONSE.NOT_FOUND, "Event deleted successfully", r);
 });
 
-const calendarController = {
+export default {
   getAllCalendars,
   getAllEvents,
   createEvent,
   updateEvent,
   deleteEvent,
   getSpecificEvent,
+  getAllFilteredEvents,
 };
-
-export default calendarController;

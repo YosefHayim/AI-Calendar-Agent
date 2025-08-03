@@ -1,3 +1,5 @@
+import { User, UserResponse } from "@supabase/supabase-js";
+
 import { AGENTS } from "./ai-agents/agents";
 import { AGENT_TOOLS } from "./ai-agents/agents-tools";
 import { calendar_v3 } from "googleapis";
@@ -18,6 +20,24 @@ export enum PROVIDERS {
   GOOGLE = "google",
   GITHUB = "github",
   LINKEDIN = "linkedin",
+}
+
+export interface tokens {
+  access_token: string;
+  refresh_token: string;
+  scopes: string;
+  token_type: "Bearer";
+  id_token: string;
+  expiry_date: number;
+  refresh_token_expires_in: number;
+}
+
+export enum ROUTES {
+  USERS = "/api/users",
+  CALENDAR = "/api/calendars",
+  TELEGRAM_BOT = "/api/telegram-bots",
+  TELEGRAM_USERS = "/api/telegram-users",
+  CONVERSATION_STATS = "/api/conversation-stats",
 }
 
 export enum STATUS_RESPONSE {
