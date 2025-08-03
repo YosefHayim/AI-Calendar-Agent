@@ -1,5 +1,5 @@
 // bot.ts
-import { Bot, type Context } from "grammy";
+import { Bot, session, SessionFlavor, type Context } from "grammy";
 import { conversations, createConversation, type ConversationFlavor } from "@grammyjs/conversations";
 import { MenuFlavor } from "@grammyjs/menu";
 
@@ -7,12 +7,14 @@ import { insertEventToCalendar, searchForEventByName, deleteEventByName, getCale
 
 import { CONFIG } from "@/config/root-config";
 import { mainMenu } from "./menus";
+import { SessionData } from "@/types";
 
-type BaseContext = Context & MenuFlavor;
+type BaseContext = Context & MenuFlavor & SessionFlavor<SessionData>;
 export type MyContext = ConversationFlavor<BaseContext>;
 
 const bot = new Bot<MyContext>(CONFIG.telegram_access_token!);
 
+bot.use(session());
 bot.use(conversations());
 bot.use(createConversation(insertEventToCalendar));
 bot.use(createConversation(searchForEventByName));
