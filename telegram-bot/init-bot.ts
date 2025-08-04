@@ -7,7 +7,7 @@ import { insertEventToCalendar, searchForEventByName, deleteEventByName, getCale
 import { CONFIG } from "@/config/root-config";
 import { mainMenu } from "./menus";
 import { SessionData } from "@/types";
-import { authTgHandler } from "./auth-middleware";
+import { authTgHandler } from "./middleware/auth-tg-handler";
 
 type BaseContext = Context & MenuFlavor & SessionFlavor<SessionData>;
 export type MyContext = ConversationFlavor<BaseContext>;

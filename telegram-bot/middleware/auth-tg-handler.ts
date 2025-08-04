@@ -1,9 +1,9 @@
-import { Context, NextFunction } from "grammy";
-
-import { MyContext } from "./init-bot";
+import { MyContext } from "../init-bot";
+import { NextFunction } from "grammy";
 import { SUPABASE } from "@/config/root-config";
+import { User } from "@supabase/supabase-js";
 
-export const authTgHandler = async (ctx: MyContext, next: NextFunction) => {
+export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise<User | undefined> => {
   const from = ctx?.from;
   const session = ctx?.session;
   if (from && session && session.messageCount === 0) {
