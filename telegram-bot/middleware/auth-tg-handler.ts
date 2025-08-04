@@ -22,6 +22,9 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
   if (data?.email && data.email !== undefined && data.email !== null) {
     session.email = data.email;
     console.log(`Email has been set to the session successfuly: ${session.email}`);
+  } else {
+    const emailMessage = await ctx.reply("First time? Provide your email address to authroize:");
+    if (emailMessage.text.test(/^\S+@\S+\.\S+$/)))
   }
 
   if (error) console.log(`Error of db query: ${JSON.stringify(error)}`);
