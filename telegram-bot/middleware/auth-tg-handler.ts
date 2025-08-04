@@ -18,7 +18,12 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
     return;
   }
 
-  const { data, error } = await SUPABASE.from("telegram_users").select("*").eq("chat_id", from.id);
+  const { data, error } = await SUPABASE.from("telegram_users").select("email").eq("chat_id", from.id).single();
+  if (data?.email && data.email !== undefined && data.email !== null) {
+    session.email = data.email;
+    console.log(`Email has been set to the session successfuly: ${session.email}`);
+  }
+
   if (error) console.log(`Error of db query: ${JSON.stringify(error)}`);
   console.log(`User is auth: ${JSON.stringify(data)}`);
   await next();
