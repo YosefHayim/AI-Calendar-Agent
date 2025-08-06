@@ -2,6 +2,7 @@ import { MyContext } from "../init-bot";
 import { NextFunction } from "grammy";
 import { SUPABASE } from "@/config/root-config";
 import { User } from "@supabase/supabase-js";
+import isEmail from "validator/lib/isEmail";
 
 export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise<User | undefined> => {
   const from = ctx?.from;
@@ -23,8 +24,17 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
     session.email = data.email;
     console.log(`Email has been set to the session successfuly: ${session.email}`);
   } else {
-    const emailMessage = await ctx.reply("First time? Provide your email address to authroize:");
-    if (emailMessage.text.test(/^\S+@\S+\.\S+$/)))
+    const emailMessage = (await ctx.reply("First time? Provide your email address to authroize:")).text;
+    if (isEmail(emailMessage)) {
+      await ctx.reply("Email");
+      session.email = emailMessage;
+
+      await SUPABASE.from("telegram_users").insert({
+        chat_id: from.id,
+        email: emailMessage,
+        username: from.username,
+      });
+    }
   }
 
   if (error) console.log(`Error of db query: ${JSON.stringify(error)}`);
