@@ -8,8 +8,6 @@ import { handleEvents } from "@/utils/handle-events";
 
 export const EXECUTION_TOOLS = {
   updateEvent: asyncHandler(async (params: any) => {
-    console.log("Params received to update event tool:", params);
-
     if (!params.start?.dateTime || !params.end?.dateTime) {
       errorTemplate("Missing dates of start and end!", 404);
     }
@@ -33,8 +31,6 @@ export const EXECUTION_TOOLS = {
     return handleEvents(ACTION.UPDATE, eventData);
   }),
   insertEvent: asyncHandler(async (params: any) => {
-    console.log("Params received to insert event tool:", params);
-
     if (!params.start?.dateTime || !params.end?.dateTime) errorTemplate("Missing dates of start and end!", 404);
     if (params.start.timeZone !== params.end.timeZone && !(params.start.timeZone in TIMEZONE && params.end.timeZone in TIMEZONE))
       errorTemplate("Time zones must match!", 404);
@@ -63,12 +59,9 @@ export const EXECUTION_TOOLS = {
   getCalendarTypes: asyncHandler(async (params: any) => {
     const r = await CALENDAR.calendarList.list();
     const allCalendars = r.data.items?.map((item) => item.summary);
-    console.log("Calendars types list received: ", allCalendars);
     return allCalendars;
   }),
   deleteEvent: asyncHandler(async (params: any) => {
-    console.log("Params received to delete event tool:", params);
-
     if (!params.start?.dateTime || !params.end?.dateTime) errorTemplate("Missing dates of start and end!", 404);
     if (!params.summary) errorTemplate("Missing event summary!", 404);
     if (params.start.timeZone !== params.end.timeZone && !(params.start.timeZone in TIMEZONE && params.end.timeZone in TIMEZONE))

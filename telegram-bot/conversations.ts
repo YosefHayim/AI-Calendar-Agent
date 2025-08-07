@@ -1,7 +1,7 @@
 import { AGENTS, calendarRouterAgent } from "@/ai-agents/agents";
-import type { Conversation } from "@grammyjs/conversations";
-import type { Context } from "grammy";
 
+import type { Context } from "grammy";
+import type { Conversation } from "@grammyjs/conversations";
 import { activateAgent } from "@/utils/activate-agent";
 import { run } from "@openai/agents";
 import { userAndAiMessageProps } from "@/types";
@@ -87,7 +87,6 @@ export const deleteEventByName = async (conversation: Conversation, ctx: Context
 };
 
 export const chatWithAgent = async (conversation: Conversation, ctx: Context) => {
-  console.log(ctx.from);
   const message = (await conversation.waitFor("message:text")).message?.text;
   userAndAiMessages.push({ role: "user", content: message });
 
@@ -96,6 +95,5 @@ export const chatWithAgent = async (conversation: Conversation, ctx: Context) =>
     `Chat with the agent about: ${userAndAiMessages.length > 0 ? userAndAiMessages.map((m: any) => m.content).join(" ") : message}`
   );
   userAndAiMessages.push({ role: "assistant", content: r.finalOutput! });
-  console.log(userAndAiMessages);
   await ctx.reply(r.finalOutput!);
 };
