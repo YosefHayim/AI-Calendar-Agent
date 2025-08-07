@@ -9,21 +9,34 @@ import errorTemplate from "./error-template";
 import { getEventDurationString } from "./get-event-duration-string";
 import { setAuthSpecificUserAndCalendar } from "./set-credentials-oauth-specific-user";
 
-export const handleEvents = asyncHandler(async (req: Request, action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: Object): Promise<any> => {
-  const user = (req as Request & { user: User }).user;
+export const handleEvents = asyncHandler(async (req: Request | null, action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: any): Promise<any> => {
+  let user: User | undefined;
+  let credentials;
 
-  const { data, error } = await SUPABASE.from("calendars_of_users").select(TOKEN_FIELDS).eq("email", user.email!);
+  // Optional request handling
+  if (req && (req as any).user) {
+    user = (req as Request & { user: User }).user;
 
-  if (error) {
-    return console.error(`Error occurred durning handle event fn: ${error}`);
+    const { data, error } = await SUPABASE.from("calendars_of_users").select(TOKEN_FIELDS).eq("email", user.email!);
+
+    if (error || !data || data.length === 0) {
+      throw new Error(`Could not fetch credentials for user: ${error?.message || "No data"}`);
+    }
+
+    credentials = data[0];
   }
 
-  const calendar = await setAuthSpecificUserAndCalendar(data[0]);
-  const calendarEvents = calendar.events;
-  let r;
+  // Fallback: if no credentials, throw
+  if (!credentials) {
+    throw new Error("No user credentials available for calendar operation.");
+  }
 
-  if ((action === ACTION.UPDATE && !eventData?.id) || (action === ACTION.DELETE && eventData?.id)) {
-    return errorTemplate("Event ID is required for update or delete action", STATUS_RESPONSE.BAD_REQUEST);
+  const calendar = await setAuthSpecificUserAndCalendar(credentials);
+  const calendarEvents = calendar.events;
+  let result;
+
+  if ((action === ACTION.UPDATE || action === ACTION.DELETE) && !eventData?.id) {
+    throw errorTemplate("Event ID is required for update or delete action", STATUS_RESPONSE.BAD_REQUEST);
   }
 
   switch (action) {
@@ -34,46 +47,46 @@ export const handleEvents = asyncHandler(async (req: Request, action: ACTION, ev
         maxResults: 2500,
         ...extra,
       });
-      r = events.data.items
-        ?.map((event: any) => {
-          return {
-            eventId: event.id,
-            summary: event.summary,
-            durationOfEvent: getEventDurationString(event.start.date || event.start?.dateTime, event.end.date || event.end?.dateTime),
-            description: event.description,
-            location: event.location,
-          };
-        })
-        .sort((a: any, b: any) => {
-          return new Date(a.start).getTime() - new Date(b.start).getTime();
-        });
+
+      result = events.data.items
+        ?.map((event: any) => ({
+          eventId: event.id,
+          summary: event.summary,
+          durationOfEvent: getEventDurationString(event.start.date || event.start?.dateTime, event.end.date || event.end?.dateTime),
+          description: event.description,
+          location: event.location,
+          start: event.start.date || event.start?.dateTime, // for sorting
+        }))
+        .sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
       break;
 
     case ACTION.INSERT:
-      r = await calendarEvents.insert({
+      result = await calendarEvents.insert({
         ...requestConfigBase,
         requestBody: eventData,
       });
       break;
 
     case ACTION.UPDATE:
-      r = await calendarEvents.update({
+      result = await calendarEvents.update({
         ...requestConfigBase,
-        eventId: eventData?.id!,
+        eventId: eventData!.id!,
         requestBody: eventData,
       });
       break;
 
     case ACTION.DELETE:
-      r = await calendarEvents.delete({
+      result = await calendarEvents.delete({
         ...requestConfigBase,
-        eventId: eventData?.id!,
+        eventId: eventData!.id!,
       });
       break;
 
     default:
-      errorTemplate("Unsupported calendar action", STATUS_RESPONSE.BAD_REQUEST);
+      throw errorTemplate("Unsupported calendar action", STATUS_RESPONSE.BAD_REQUEST);
   }
-  console.log(`Calendar action: ${action}, Result:`, r);
-  return r;
+
+  console.log(`Calendar action: ${action}, Result:`, result);
+  return result;
 });

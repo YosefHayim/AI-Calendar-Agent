@@ -49,6 +49,7 @@ export const AGENT_TOOLS = {
     },
     execute: EXECUTION_TOOLS.getCalendarTypes,
   } as const),
+  
   event_type: tool({
     name: "event_type",
     description: TOOLS_DESCRIPTION.eventType,

@@ -31,6 +31,7 @@ export const EXECUTION_TOOLS = {
     return handleEvents(ACTION.UPDATE, eventData);
   }),
   insertEvent: asyncHandler(async (params: any) => {
+    
     if (!params.start?.dateTime || !params.end?.dateTime) errorTemplate("Missing dates of start and end!", 404);
     if (params.start.timeZone !== params.end.timeZone && !(params.start.timeZone in TIMEZONE && params.end.timeZone in TIMEZONE))
       errorTemplate("Time zones must match!", 404);
