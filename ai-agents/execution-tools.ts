@@ -7,6 +7,7 @@ import errorTemplate from "@/utils/error-template";
 import { handleEvents } from "@/utils/handle-events";
 
 export const EXECUTION_TOOLS = {
+  validateUser:asyncHandler(async(params:any)),
   updateEvent: asyncHandler(async (params: any) => {
     if (!params.start?.dateTime || !params.end?.dateTime) {
       errorTemplate("Missing dates of start and end!", 404);

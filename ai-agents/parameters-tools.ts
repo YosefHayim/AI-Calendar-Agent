@@ -21,3 +21,7 @@ export const EVENT_PARAMETERS = {
   insertEventParameters: fullEventParameters,
   updateEventParameters: fullEventParameters,
 };
+
+export const VALIDATE_USER_PARAMETERS = z.object({
+  email: z.string().email(),
+});

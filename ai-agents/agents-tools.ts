@@ -1,9 +1,16 @@
-import { EVENT_PARAMETERS } from "./parameters-tools";
+import { EVENT_PARAMETERS, VALIDATE_USER_PARAMETERS } from "./parameters-tools";
+
 import { EXECUTION_TOOLS } from "./execution-tools";
 import { TOOLS_DESCRIPTION } from "./description-tools";
 import { tool } from "@openai/agents";
 
 export const AGENT_TOOLS = {
+  validate_user: tool({
+    name: "validate_user",
+    description: TOOLS_DESCRIPTION.validateUser,
+    parameters: VALIDATE_USER_PARAMETERS,
+    execute:EXECUTION_TOOLS.validateUser
+  }),
   insert_event: tool({
     name: "insert_event",
     description: TOOLS_DESCRIPTION.insertEvent,
@@ -49,7 +56,7 @@ export const AGENT_TOOLS = {
     },
     execute: EXECUTION_TOOLS.getCalendarTypes,
   } as const),
-  
+
   event_type: tool({
     name: "event_type",
     description: TOOLS_DESCRIPTION.eventType,
