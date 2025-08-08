@@ -7,6 +7,11 @@ import { CURRENT_MODEL } from "@/types";
 setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 
 export const AGENTS = {
+  validateUser: new Agent({
+    name: "validate_user_agent",
+    model: CURRENT_MODEL,
+    instructions: `An agent that sends a request to database and expects in return a response that is not null.`,
+  })
   insertEvent: new Agent({
     name: "insert_event_agent",
     model: CURRENT_MODEL,
