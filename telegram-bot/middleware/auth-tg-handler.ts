@@ -30,9 +30,10 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
   // Check if email already exists in DB
   const { data, error } = await SUPABASE.from("telegram_users").select("email,first_name").eq("chat_id", from.id).single();
 
-  if (data?.email) {
+  if (data?.email && session.messageCount === 1) {
     await ctx.reply(`Hello there ${data.first_name}`);
     session.email = data.email;
+    console.log("auth session set: ", session);
     await next();
     return;
   }
@@ -58,6 +59,6 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
 
     await ctx.reply(`Email has been saved successfully!`);
   }
-
+  console.log("auth session: ", session);
   await next();
 };

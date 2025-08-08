@@ -9,12 +9,16 @@ import { userAndAiMessageProps } from "@/types";
 
 const userAndAiMessages: userAndAiMessageProps[] = [];
 
-export const insertEventToCalendar = async (conversation: Conversation<Context, MyContext>, ctx: MyContext) => {
+export const insertEventToCalendar = async (conversation: Conversation<MyContext, Context>, ctx: Context) => {
   let eventName;
   let eventDate;
+
   let eventTime;
   let email;
-  
+
+  const session = await conversation.external((ctx) => ctx.session!);
+  console.log("conversation session: ", session);
+
   await ctx.reply("Please provide the name of the event (minimum 3 letters): ");
   while (true) {
     eventName = (await conversation.waitFor("message:text")).message?.text;
