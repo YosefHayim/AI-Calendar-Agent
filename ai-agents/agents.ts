@@ -11,8 +11,8 @@ export const AGENTS = {
     name: "validate_user_agent",
     model: CURRENT_MODEL,
     instructions: `An agent that sends a request to database and expects in return a response from database that is not error.`,
-    tools:[AGENT_TOOLS.validate_user]
-  })
+    tools: [AGENT_TOOLS.validate_user],
+  }),
   insertEvent: new Agent({
     name: "insert_event_agent",
     model: CURRENT_MODEL,

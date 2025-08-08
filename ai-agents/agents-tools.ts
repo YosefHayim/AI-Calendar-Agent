@@ -1,7 +1,7 @@
 import { EVENT_PARAMETERS, VALIDATE_USER_PARAMETERS } from "./parameters-tools";
 
-import { EXECUTION_TOOLS } from "./execution-tools";
 import { TOOLS_DESCRIPTION } from "./description-tools";
+import { executionTools } from "./execution-tools";
 import { tool } from "@openai/agents";
 
 export const AGENT_TOOLS = {
@@ -9,13 +9,13 @@ export const AGENT_TOOLS = {
     name: "validate_user",
     description: TOOLS_DESCRIPTION.validateUser,
     parameters: VALIDATE_USER_PARAMETERS,
-    execute:EXECUTION_TOOLS.validateUser
+    execute: executionTools.validateUser,
   }),
   insert_event: tool({
     name: "insert_event",
     description: TOOLS_DESCRIPTION.insertEvent,
     parameters: EVENT_PARAMETERS.insertEventParameters,
-    execute: EXECUTION_TOOLS.insertEvent,
+    execute: executionTools.insertEvent,
     errorFunction: async (params, error) => {
       return `Failed to insert event. Please check event details or calendar API access. Error: ${error}`;
     },
@@ -24,7 +24,7 @@ export const AGENT_TOOLS = {
     name: "get_event",
     description: TOOLS_DESCRIPTION.getEvent,
     parameters: EVENT_PARAMETERS.getEventParameters,
-    execute: EXECUTION_TOOLS.getEvent,
+    execute: executionTools.getEvent,
     errorFunction: async (_, error) => {
       return `Failed to get event. Please check event details. Error: ${error}`;
     },
@@ -33,7 +33,7 @@ export const AGENT_TOOLS = {
     name: "update_event",
     description: TOOLS_DESCRIPTION.updateEvent,
     parameters: EVENT_PARAMETERS.updateEventParameters,
-    execute: EXECUTION_TOOLS.updateEvent,
+    execute: executionTools.updateEvent,
     errorFunction: async (_, error) => {
       return `Failed to update event. Please check event details. Error: ${error}`;
     },
@@ -42,7 +42,7 @@ export const AGENT_TOOLS = {
     name: "delete_event",
     description: TOOLS_DESCRIPTION.deleteEvent,
     parameters: EVENT_PARAMETERS.deleteEventParameters,
-    execute: EXECUTION_TOOLS.deleteEvent,
+    execute: executionTools.deleteEvent,
     errorFunction: async (_, error) => {
       return `Failed to delete event. Please check event details or calendar API access. Error: ${error}`;
     },
@@ -54,13 +54,13 @@ export const AGENT_TOOLS = {
     errorFunction: async (_, error) => {
       return `Failed to determine event type. Please try again. Error: ${error}`;
     },
-    execute: EXECUTION_TOOLS.getCalendarTypes,
+    execute: executionTools.getCalendarTypes,
   } as const),
 
   event_type: tool({
     name: "event_type",
     description: TOOLS_DESCRIPTION.eventType,
     parameters: EVENT_PARAMETERS.getEventParameters,
-    execute: EXECUTION_TOOLS.getCalendarTypes,
+    execute: executionTools.getCalendarTypes,
   } as const),
 };

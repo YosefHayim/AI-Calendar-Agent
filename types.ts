@@ -1,9 +1,6 @@
 import { AGENTS } from "@/ai-agents/agents";
 import { AGENT_TOOLS } from "@/ai-agents/agents-tools";
 import { calendar_v3 } from "googleapis";
-import { ConversationFlavor } from "@grammyjs/conversations";
-import { MenuFlavor } from "@grammyjs/menu";
-import { Context } from "vm";
 
 export enum GOOGLE_CALENDAR_SCOPES {
   APP_CREATED = "https://www.googleapis.com/auth/calendar.app.created",
