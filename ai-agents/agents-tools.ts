@@ -10,6 +10,9 @@ export const AGENT_TOOLS = {
     description: TOOLS_DESCRIPTION.validateUser,
     parameters: validateEventParameter,
     execute: executionTools.validateUser,
+    errorFunction: async (params, error) => {
+      return `Failed to validate user from database query Error: ${error}`;
+    },
   }),
   insert_event: tool({
     name: "insert_event",
