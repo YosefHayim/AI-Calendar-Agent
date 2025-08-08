@@ -108,7 +108,6 @@ export const AGENTS = {
     instructions: `An agent that chat with the user and act as personal calendar assistant.`,
     tools: [AGENT_TOOLS.calendar_type],
   }),
-  
 };
 
 const subAgents = Object.values(AGENTS) as Agent[];
@@ -117,17 +116,6 @@ export const calendarRouterAgent = new Agent({
   name: "calendar_router_agent",
   model: CURRENT_MODEL,
   handoffDescription: `
-  Get from the analyst calender type by event agent the appropriate calender type to the event.
-  after that, pass the information to the validation agents, and when you have received a positive response from the validation agents, 
-  pass the information to the correct agent based on the user intent.
-
-  Route user requests to the correct tool based on intent:
-  - "add", "insert", "schedule", "make", "create" pass to Insert Event
-  - "get", "find", "show", "list", "see" pass to Get Events
-  - "update", "edit", "move", "reschedule", "rename" pass to Update Event
-  - "delete", "remove", "cancel" pass to Delete Event
-
-  Do not respond to the user directly.
-  Always pass control to the correct tool agent.`,
+ Pass this to ValidatorDbAgent return the response from the agent`,
   handoffs: subAgents,
 });

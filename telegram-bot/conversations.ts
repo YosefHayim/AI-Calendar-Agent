@@ -2,13 +2,14 @@ import { AGENTS, calendarRouterAgent } from "@/ai-agents/agents";
 
 import type { Context } from "grammy";
 import type { Conversation } from "@grammyjs/conversations";
+import { MyContext } from "./init-bot";
 import { activateAgent } from "@/utils/activate-agent";
 import { run } from "@openai/agents";
 import { userAndAiMessageProps } from "@/types";
 
 const userAndAiMessages: userAndAiMessageProps[] = [];
 
-export const insertEventToCalendar = async (conversation: Conversation, ctx: Context) => {
+export const insertEventToCalendar = async (conversation: Conversation, ctx: MyContext) => {
   let eventName;
   let eventDate;
   let eventTime;
@@ -48,7 +49,7 @@ export const insertEventToCalendar = async (conversation: Conversation, ctx: Con
   await ctx.reply(`Great, I will now proceed to insert the event, please wait...`);
   const result = await activateAgent(
     calendarRouterAgent,
-    `Insert this event into my calendar:\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
+    `Insert this event into user calendar:\nUser email: ${ctx.session.email}\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
   );
   await ctx.reply(result);
 };
