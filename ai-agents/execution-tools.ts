@@ -9,7 +9,7 @@ import { handleEvents } from "@/utils/handle-events";
 
 export const executionTools = {
   validateUser: asyncHandler(async (params: { email: string }) => {
-    const tokens = await getUserCalendarTokens(params.email);
+    const tokens = await getUserCalendarTokens({ email: params.email }, "email");
     return tokens;
   }),
   updateEvent: asyncHandler(async (params: calendar_v3.Schema$Event) => {

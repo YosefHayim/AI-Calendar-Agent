@@ -14,7 +14,7 @@ export const insertEventToCalendar = async (conversation: Conversation<Context, 
   let eventDate;
   let eventTime;
   let email;
-  console.log("session in the conversation", ctx.session);
+  
   await ctx.reply("Please provide the name of the event (minimum 3 letters): ");
   while (true) {
     eventName = (await conversation.waitFor("message:text")).message?.text;
