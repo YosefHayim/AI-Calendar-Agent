@@ -14,7 +14,7 @@ const fullEventParameters = z.object({
   end: eventTimeParameters,
 });
 
-export const EVENT_PARAMETERS = {
+export const eventParameters = {
   deleteEventParameters: fullEventParameters,
   eventTypeToolParameters: z.object({}),
   getEventParameters: z.object({}),
@@ -22,6 +22,6 @@ export const EVENT_PARAMETERS = {
   updateEventParameters: fullEventParameters,
 };
 
-export const VALIDATE_USER_PARAMETERS = z.object({
+export const validateEventParameter = z.object({
   email: z.string().email(),
 });

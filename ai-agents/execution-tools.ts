@@ -1,17 +1,16 @@
 import { ACTION, TIMEZONE } from "@/types";
-import { CALENDAR, SUPABASE } from "@/config/root-config";
 
+import { CALENDAR } from "@/config/root-config";
 import { asyncHandler } from "@/utils/async-handlers";
 import { calendar_v3 } from "googleapis";
 import errorTemplate from "@/utils/error-template";
 import { getUserCalendarTokens } from "@/utils/get-user-calendar-tokens";
 import { handleEvents } from "@/utils/handle-events";
-import { initCalendarWithUserTokens } from "@/utils/init-calendar-with-user-tokens";
 
 export const executionTools = {
   validateUser: asyncHandler(async (params: { email: string }) => {
     const tokens = await getUserCalendarTokens(params.email);
-    const calendar = await initCalendarWithUserTokens(tokens);
+    return tokens;
   }),
   updateEvent: asyncHandler(async (params: calendar_v3.Schema$Event) => {
     if (!params.start?.dateTime || !params.end?.dateTime) {
