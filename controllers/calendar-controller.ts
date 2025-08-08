@@ -4,17 +4,17 @@ import { Request } from "express";
 import { User } from "@supabase/supabase-js";
 import { getUserCalendarTokens } from "@/utils/get-user-calendar-tokens";
 import { handleEvents } from "@/utils/handle-events";
-import { reqResAsyncHandler } from "@/utils/async-handler";
+import { initCalendarWithUserTokens } from "@/utils/init-calendar-with-user-tokens";
+import { reqResAsyncHandler } from "@/utils/async-handlers";
 import { requestConfigBase } from "@/config/root-config";
 import sendR from "@/utils/send-response";
-import { setAuthSpecificUserAndCalendar } from "@/utils/set-credentials-oauth-specific-user";
 
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
   const tokenData = await getUserCalendarTokens(user, "email");
   if (!tokenData) return sendR(res, STATUS_RESPONSE.NOT_FOUND, "User token not found.");
 
-  const calendar = await setAuthSpecificUserAndCalendar(tokenData);
+  const calendar = await initCalendarWithUserTokens(tokenData);
   const r = await calendar.calendarList.list();
   const allCalendars = r.data.items?.map((item: any) => item.summary);
 
@@ -26,7 +26,7 @@ const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
   const tokenData = await getUserCalendarTokens(user, "email");
   if (!tokenData) return sendR(res, STATUS_RESPONSE.NOT_FOUND, "User token not found.");
 
-  const calendar = await setAuthSpecificUserAndCalendar(tokenData);
+  const calendar = await initCalendarWithUserTokens(tokenData);
   const r = await calendar.events.get({ ...requestConfigBase, eventId: req.params.eventId });
 
   sendR(res, STATUS_RESPONSE.SUCCESS, "Event retrieved successfully", r.data);

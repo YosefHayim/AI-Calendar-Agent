@@ -4,10 +4,10 @@ import { SUPABASE, requestConfigBase } from "@/config/root-config";
 import { Request } from "express";
 import { TOKEN_FIELDS } from "./storage";
 import { User } from "@supabase/supabase-js";
-import { asyncHandler } from "./async-handler";
+import { asyncHandler } from "./async-handlers";
 import errorTemplate from "./error-template";
 import { getEventDurationString } from "./get-event-duration-string";
-import { setAuthSpecificUserAndCalendar } from "./set-credentials-oauth-specific-user";
+import { initCalendarWithUserTokens } from "./init-calendar-with-user-tokens";
 
 export const handleEvents = asyncHandler(async (req: Request | null, action: ACTION, eventData?: SCHEMA_EVENT_PROPS, extra?: any): Promise<any> => {
   let user: User | undefined;
@@ -31,7 +31,7 @@ export const handleEvents = asyncHandler(async (req: Request | null, action: ACT
     throw new Error("No user credentials available for calendar operation.");
   }
 
-  const calendar = await setAuthSpecificUserAndCalendar(credentials);
+  const calendar = await initCalendarWithUserTokens(credentials);
   const calendarEvents = calendar.events;
   let result;
 

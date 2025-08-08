@@ -108,6 +108,7 @@ export const AGENTS = {
     instructions: `An agent that chat with the user and act as personal calendar assistant.`,
     tools: [AGENT_TOOLS.calendar_type],
   }),
+  
 };
 
 const subAgents = Object.values(AGENTS) as Agent[];

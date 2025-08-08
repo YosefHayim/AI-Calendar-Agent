@@ -1,7 +1,7 @@
 import { CONFIG, OAUTH2CLIENT, SCOPES, SCOPES_STRING, SUPABASE } from "@/config/root-config";
 import { PROVIDERS, STATUS_RESPONSE } from "@/types";
 import { Request, Response } from "express";
-import { asyncHandler, reqResAsyncHandler } from "@/utils/async-handler";
+import { asyncHandler, reqResAsyncHandler } from "@/utils/async-handlers";
 
 import jwt from "jsonwebtoken";
 import sendR from "@/utils/send-response";

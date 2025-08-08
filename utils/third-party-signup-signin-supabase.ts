@@ -2,7 +2,7 @@ import { CONFIG, SCOPES_STRING, SUPABASE } from "@/config/root-config";
 import { PROVIDERS, STATUS_RESPONSE } from "@/types";
 import { Request, Response } from "express";
 
-import { asyncHandler } from "./async-handler";
+import { asyncHandler } from "./async-handlers";
 import sendR from "./send-response";
 
 export const thirdPartySignInOrSignUp = asyncHandler(async (req: Request, res: Response, provider: PROVIDERS) => {

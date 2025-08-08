@@ -1,7 +1,7 @@
 import { ACTION, TIMEZONE } from "@/types";
 
 import { CALENDAR } from "@/config/root-config";
-import { asyncHandler } from "@/utils/async-handler";
+import { asyncHandler } from "@/utils/async-handlers";
 import { calendar_v3 } from "googleapis";
 import errorTemplate from "@/utils/error-template";
 import { handleEvents } from "@/utils/handle-events";
@@ -31,7 +31,6 @@ export const EXECUTION_TOOLS = {
     return handleEvents(ACTION.UPDATE, eventData);
   }),
   insertEvent: asyncHandler(async (params: any) => {
-    
     if (!params.start?.dateTime || !params.end?.dateTime) errorTemplate("Missing dates of start and end!", 404);
     if (params.start.timeZone !== params.end.timeZone && !(params.start.timeZone in TIMEZONE && params.end.timeZone in TIMEZONE))
       errorTemplate("Time zones must match!", 404);
