@@ -4,7 +4,6 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import { google } from "googleapis";
 import path from "path";
-import { setDefaultOpenAIKey } from "@openai/agents";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -22,11 +21,6 @@ export const CONFIG = {
   supabase_url: process.env.SUPABASE_URL,
   supabase_service_role_key: process.env.SUPABASE_SERVICE_ROLE_KEY,
 };
-
-if (!CONFIG.open_ai_api_key) {
-  throw new Error("OpenAI API key is not set in environment variables.");
-}
-setDefaultOpenAIKey(CONFIG.open_ai_api_key);
 
 export const SUPABASE = new SupabaseClient<Database>(CONFIG.supabase_url!, CONFIG.supabase_service_role_key!);
 

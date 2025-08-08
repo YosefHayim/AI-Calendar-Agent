@@ -122,17 +122,39 @@ export const calendarRouterAgent = new Agent({
   name: "calendar_router_agent",
   model: CURRENT_MODEL,
   handoffDescription: `
-  Get from the analyst calender type by event agent the appropriate calender type to the event.
-  after that, pass the information to the validation agents, and when you have received a positive response from the validation agents, 
-  pass the information to the correct agent based on the user intent.
+  Workflow:
 
-  Route user requests to the correct tool based on intent:
-  - "add", "insert", "schedule", "make", "create" pass to Insert Event
-  - "get", "find", "show", "list", "see" pass to Get Events
-  - "update", "edit", "move", "reschedule", "rename" pass to Update Event
-  - "delete", "remove", "cancel" pass to Delete Event
+  1. **User Validation**  
+     - Always first send the request to validate_user_agent.  
+     - If validation fails, stop the flow and return the validation failure response.  
+     - If validation passes, proceed.
 
-  Do not respond to the user directly.
-  Always pass control to the correct tool agent.`,
+  2. **Event Type Analysis**  
+     - Pass the request and extracted details to analyse_calendar_type_by_event_agent.  
+     - Use the returned calendar type for all subsequent CRUD operations.
+
+  3. **Route by Intent**  
+     - Determine the user's intent from the request.  
+       - "add", "insert", "schedule", "make", "create" → insert_event_agent  
+       - "get", "find", "show", "list", "see" → get_event_by_name_agent  
+       - "update", "edit", "move", "reschedule", "rename" → update_event_by_id_agent  
+       - "delete", "remove", "cancel" → delete_event_by_id_agent
+
+  4. **Validation of Event Fields (if applicable)**  
+     - For insert or update:  
+       - validate_date_event_agent → must return "true"  
+       - validate_duration_event_agent → must return "true"  
+       - validate_summary_event_agent → must return "true"  
+     - If any fail, stop and return the validation failure.
+
+  5. **Execute CRUD Operation**  
+     - Call the appropriate agent with the validated data and determined calendar type.
+
+  Rules:  
+  - Never skip the validation step.  
+  - Never skip event type analysis.  
+  - Do not respond directly to the user; always hand off to the next agent in the sequence.  
+  - The sequence is strictly: validate_user_agent → analyse_calendar_type_by_event_agent → (field validation if required) → CRUD agent.
+  `,
   handoffs: subAgents,
 });

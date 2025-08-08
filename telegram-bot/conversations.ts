@@ -9,10 +9,11 @@ import { userAndAiMessageProps } from "@/types";
 
 const userAndAiMessages: userAndAiMessageProps[] = [];
 
-export const insertEventToCalendar = async (conversation: Conversation, ctx: MyContext) => {
+export const insertEventToCalendar = async (conversation: Conversation<Context, MyContext>, ctx: MyContext) => {
   let eventName;
   let eventDate;
   let eventTime;
+  let email;
 
   await ctx.reply("Please provide the name of the event (minimum 3 letters): ");
   while (true) {
@@ -46,10 +47,12 @@ export const insertEventToCalendar = async (conversation: Conversation, ctx: MyC
     break;
   }
 
-  await ctx.reply(`Great, I will now proceed to insert the event, please wait...`);
+  await ctx.reply(`Provide your email address`);
+  email = (await conversation.waitFor("message:text")).message.text;
+
   const result = await activateAgent(
     calendarRouterAgent,
-    `Insert this event into user calendar:\nUser email: ${ctx.session.email}\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
+    `Insert this event into user calendar:\nUser email: ${email}\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
   );
   await ctx.reply(result);
 };
