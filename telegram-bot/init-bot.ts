@@ -1,7 +1,6 @@
 import { Bot, session, SessionFlavor, type Context } from "grammy";
 import { conversations, createConversation, type ConversationFlavor } from "@grammyjs/conversations";
 import { MenuFlavor } from "@grammyjs/menu";
-
 import { insertEventToCalendar, searchForEventByName, deleteEventByName, getCalendarList, updateEventByName, chatWithAgent } from "./conversations";
 
 import { CONFIG } from "@/config/root-config";

@@ -9,20 +9,25 @@ export const mainMenu = new Menu<MyContext>("calendar-operations")
   .row()
   .text("Search Event", async (ctx) => {
     await ctx.conversation.enter("searchForEventByName");
+    await ctx.menu.close();
   })
   .row()
   .text("Delete Event", async (ctx) => {
     await ctx.conversation.enter("deleteEventByName");
+    await ctx.menu.close();
   })
   .row()
   .text("Update Event", async (ctx) => {
     await ctx.conversation.enter("updateEventByName");
+    await ctx.menu.close();
   })
   .row()
   .text("List Calendars", async (ctx) => {
     await ctx.conversation.enter("getCalendarList");
+    await ctx.menu.close();
   })
   .row()
   .text("Chat with AI", async (ctx) => {
     await ctx.conversation.enter("chatWithAgent");
+    await ctx.menu.close();
   });
