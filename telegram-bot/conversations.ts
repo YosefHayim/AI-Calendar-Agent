@@ -17,7 +17,6 @@ export const insertEventToCalendar = async (conversation: Conversation<MyContext
   let email;
 
   const session = await conversation.external((ctx) => ctx.session!);
-  console.log("conversation session: ", session);
 
   await ctx.reply("Please provide the name of the event (minimum 3 letters): ");
   while (true) {
@@ -51,12 +50,10 @@ export const insertEventToCalendar = async (conversation: Conversation<MyContext
     break;
   }
 
-  await ctx.reply(`Provide your email address`);
-  email = (await conversation.waitFor("message:text")).message.text;
   await ctx.reply(`Proccessing the information...`);
   const result = await activateAgent(
     calendarRouterAgent,
-    `Insert this event into user calendar:\nUser email: ${email}\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
+    `Insert this event into user calendar:\nUser email: ${session.email}\nEvent name:${eventName}\nDate of the event: ${eventDate}\nTime range of the event: ${eventTime}`
   );
   await ctx.reply(result);
 };

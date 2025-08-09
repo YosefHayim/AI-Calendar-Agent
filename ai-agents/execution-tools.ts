@@ -1,17 +1,24 @@
 import { ACTION, TIMEZONE } from "@/types";
+import { CALENDAR, SUPABASE } from "@/config/root-config";
 
-import { CALENDAR } from "@/config/root-config";
+import { TOKEN_FIELDS } from "@/utils/storage";
 import { asyncHandler } from "@/utils/async-handlers";
 import { calendar_v3 } from "googleapis";
 import errorTemplate from "@/utils/error-template";
-import { getUserCalendarTokens } from "@/utils/get-user-calendar-tokens";
 import { handleEvents } from "@/utils/handle-events";
 
 export const executionTools = {
   validateUser: asyncHandler(async (params: { email: string }) => {
-    const tokens = await getUserCalendarTokens({ email: params.email }, "email");
-    return tokens;
+    console.log("validateUser:", params);
+
+    const { data, error } = await SUPABASE.from("calendars_of_users").select(TOKEN_FIELDS).eq("email", params.email.trim());
+
+    if (error) throw error;
+
+    console.log(data);
+    return data;
   }),
+
   updateEvent: asyncHandler(async (params: calendar_v3.Schema$Event) => {
     if (!params.start?.dateTime || !params.end?.dateTime) {
       errorTemplate("Missing dates of start and end!", 404);

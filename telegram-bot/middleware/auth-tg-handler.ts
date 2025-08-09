@@ -33,7 +33,6 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
   if (data?.email && session.messageCount === 1) {
     await ctx.reply(`Hello there ${data.first_name}`);
     session.email = data.email;
-    console.log("auth session set: ", session);
     await next();
     return;
   }
@@ -59,6 +58,5 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
 
     await ctx.reply(`Email has been saved successfully!`);
   }
-  console.log("auth session: ", session);
   await next();
 };

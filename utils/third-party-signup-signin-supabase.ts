@@ -20,11 +20,13 @@ export const thirdPartySignInOrSignUp = asyncHandler(async (req: Request, res: R
 
   if (data.url) {
     res.redirect(data.url);
+    return;
   }
 
   if (error) {
     console.error("error received:", error);
     console.error("Error signing up user:", error);
     sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to sign up user.", error);
+    return;
   }
 });

@@ -60,18 +60,19 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
 
 const signUpUserReg = asyncHandler(async (req: Request, res: Response) => {
   if (!req.body.email || !req.body.password) sendR(res, STATUS_RESPONSE.BAD_REQUEST, "Email and password are required.");
-  console.log(req.body);
   const { data, error } = await SUPABASE.auth.signUp({
-    email: "yosef@gmail.com",
-    password: "example1234",
+    email: req.body.email,
+    password: req.body.password,
   });
 
   if (error) {
     console.error("Error signing up regularly user:", error);
     sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to sign up user.", error);
+    return;
   }
   if (data) {
     sendR(res, STATUS_RESPONSE.SUCCESS, "User signed up successfully.", data);
+    return;
   }
 });
 
