@@ -24,8 +24,8 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
     session.userId = from.id;
     session.username = from.username;
     session.codeLang = from.language_code;
-    session.messageCount++;
   }
+  session.messageCount++;
 
   // Check if email already exists in DB
   const { data, error } = await SUPABASE.from("telegram_users").select("email,first_name").eq("chat_id", from.id).single();
