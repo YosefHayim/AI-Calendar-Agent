@@ -111,7 +111,27 @@ const signInUserReg = asyncHandler(async (req: Request, res: Response) => {
 
 const updateUserById = asyncHandler(async (req: Request, res: Response) => {});
 
+const verifyEmailByOpt = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.body.email || !req.body.token) {
+    sendR(res, STATUS_RESPONSE.BAD_REQUEST, "Email and token are required.");
+  }
+
+  const { data, error } = await SUPABASE.auth.verifyOtp({
+    type: "email",
+    email: req.body.email,
+    token: req.body.token,
+  });
+
+  if (error) {
+    console.error("Error verifying email:", error);
+    sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to verify email.", error);
+  }
+
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Email verified successfully.", data);
+});
+
 export const userController = {
+  verifyEmailByOpt,
   signUpUserReg,
   signUpOrSignInWithGoogle,
   signUpUserViaLinkedin,

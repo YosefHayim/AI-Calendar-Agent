@@ -8,6 +8,8 @@ router.get("/callback", userController.generateAuthGoogleUrl);
 
 router.get("/get-user", authHandler, userController.getUserInformation);
 
+router.post("/verify-user-by-email-otp", userController.verifyEmailByOpt);
+
 router.post("/signup", userController.signUpUserReg);
 
 router.post("/signin", userController.signInUserReg);
