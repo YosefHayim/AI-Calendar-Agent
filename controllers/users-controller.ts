@@ -28,7 +28,6 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
 
   try {
     const { tokens } = await OAUTH2CLIENT.getToken(code);
-    OAUTH2CLIENT.setCredentials(tokens);
 
     // 3. Token still valid
     OAUTH2CLIENT.setCredentials(tokens);

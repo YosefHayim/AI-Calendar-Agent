@@ -12,7 +12,7 @@ import sendR from "@/utils/send-response";
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
   const tokenData = await getUserCalendarTokens("email", user);
-  if (!tokenData) return sendR(res, STATUS_RESPONSE.NOT_FOUND, "User token not found.");
+  if (!tokenData) return sendR(res, STATUS_RESPONSE.NOT_FOUND, "User credentails not found.");
 
   const calendar = await initCalendarWithUserTokens(tokenData);
   const r = await calendar.calendarList.list();

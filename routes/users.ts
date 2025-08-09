@@ -4,9 +4,13 @@ import { userController } from "@/controllers/users-controller";
 
 const router = express.Router();
 
-router.get("/callback", userController.generateAuthGoogleUrl);
-
 router.get("/get-user", authHandler, userController.getUserInformation);
+
+router.delete("/:id", authHandler, userController.deActivateUser);
+
+router.patch("/:id", authHandler, userController.updateUserById);
+
+router.get("/callback", userController.generateAuthGoogleUrl);
 
 router.post("/verify-user-by-email-otp", userController.verifyEmailByOpt);
 
@@ -19,9 +23,5 @@ router.get("/signup/google", userController.signUpOrSignInWithGoogle);
 router.get("/signup/linkedin", userController.signUpUserViaLinkedin);
 
 router.get("/signup/github", userController.signUpUserViaGitHub);
-
-router.delete("/:id", authHandler, userController.deActivateUser);
-
-router.patch("/:id", authHandler, userController.updateUserById);
 
 export default router;
