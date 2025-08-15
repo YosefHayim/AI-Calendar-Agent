@@ -17,11 +17,28 @@
   "main": "app.ts",
   "scripts": {
     "dev": "nodemon",
-    "prune-imports": "biome check --write --unsafe --max-diagnostics 100000 .",
     "download-env": "doppler secrets download --no-file --format env > .env ",
     "get-env": "doppler run -- node server.js",
     "sort": "npx sort-package-json",
+    "biome": "biome check .",
+    "type-check": "tsc --noEmit",
+    "test": "node --test",
     "prepare": "husky install"
+  },
+  "ultracite": {
+    "tasks": {
+      "biome": "biome check --write"
+    },
+    "extensions": [
+      ".js",
+      ".ts",
+      ".mjs",
+      ".cjs",
+      ".mts",
+      ".cts",
+      ".json",
+      ".md"
+    ]
   },
   "dependencies": {
     "@googleapis/docs": "^4.0.1",
@@ -56,6 +73,7 @@
     "@types/validator": "^13.15.2",
     "globals": "^16.2.0",
     "husky": "^8.0.0",
+    "lint-staged": "^16.1.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.35.0",
