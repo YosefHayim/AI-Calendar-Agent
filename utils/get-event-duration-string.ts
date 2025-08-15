@@ -1,3 +1,6 @@
+const SECOND = 1000;
+const SIXTY_SECONDS = 60;
+
 export function getEventDurationString(startISO: string, endISO: string) {
   if (!(startISO && endISO)) {
     return null;
@@ -16,22 +19,22 @@ export function getEventDurationString(startISO: string, endISO: string) {
 
   const diffMs = end.getTime() - start.getTime();
 
-  const totalSeconds = Math.round(diffMs / 1000);
-  if (totalSeconds < 60) {
+  const totalSeconds = Math.round(diffMs / SECOND);
+  if (totalSeconds < SIXTY_SECONDS) {
     return `${totalSeconds}s`;
   }
 
-  const totalMinutes = Math.floor(totalSeconds / 60);
-  if (totalMinutes < 60) {
-    return `${totalMinutes}m`;
+  const totalSIXTY_SECONDSs = Math.floor(totalSeconds / SIXTY_SECONDS);
+  if (totalSIXTY_SECONDSs < SIXTY_SECONDS) {
+    return `${totalSIXTY_SECONDSs}m`;
   }
 
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
+  const hours = Math.floor(totalSIXTY_SECONDSs / SIXTY_SECONDS);
+  const SIXTY_SECONDSs = totalSIXTY_SECONDSs % SIXTY_SECONDS;
 
-  if (minutes === 0) {
+  if (SIXTY_SECONDSs === 0) {
     return `${hours}h`;
   }
 
-  return `${hours}h ${minutes}m`;
+  return `${hours}h ${SIXTY_SECONDSs}m`;
 }

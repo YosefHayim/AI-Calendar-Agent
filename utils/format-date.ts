@@ -1,17 +1,19 @@
 const formatDate = (date: Date | string | null | undefined): string => {
+  let parsedDate = new Date();
+
   if (!date) {
     return 'Invalid date';
   }
   if (typeof date === 'string') {
-    date = new Date(date);
+    parsedDate = new Date(date);
   } else if (!(date instanceof Date)) {
     return 'Invalid date';
   }
-  if (Number.isNaN(date.getTime())) {
+  if (Number.isNaN(parsedDate.getTime())) {
     return 'Invalid date';
   }
-  // Format the date to a readable string
-  return date.toLocaleDateString('en-US', {
+  // Format the parsedDate to a readable string
+  return parsedDate.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

@@ -9,7 +9,7 @@ import { authTgHandler } from "./middleware/auth-tg-handler";
 
 export type MyContext = Context & MenuFlavor & SessionFlavor<SessionData> & ConversationFlavor<Context>;
 
-const bot = new Bot<MyContext>(CONFIG.telegram_access_token!);
+const bot = new Bot<MyContext>(CONFIG.telegram_access_token || "");
 
 bot.use(
   session({

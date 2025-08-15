@@ -17,7 +17,7 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
     return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User credentials not found.');
   }
 
-  const calendar = await initCalendarWithUserTokens(tokenData);
+  const calendar = initCalendarWithUserTokens(tokenData);
   const r = await calendar.calendarList.list();
   const allCalendars = r.data.items?.map(
     (item: calendar_v3.Schema$CalendarListEntry) => item.summary
@@ -38,7 +38,7 @@ const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
     return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User token not found.');
   }
 
-  const calendar = await initCalendarWithUserTokens(tokenData);
+  const calendar = initCalendarWithUserTokens(tokenData);
   const r = await calendar.events.get({
     ...requestConfigBase,
     eventId: req.params.eventId,

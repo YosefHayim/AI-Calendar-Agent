@@ -23,8 +23,8 @@ export const CONFIG = {
 };
 
 export const SUPABASE = new SupabaseClient<Database>(
-  CONFIG.supabase_url,
-  CONFIG.supabase_service_role_key
+  CONFIG.supabase_url || '',
+  CONFIG.supabase_service_role_key || ''
 );
 
 export const OAUTH2CLIENT = new google.auth.OAuth2(

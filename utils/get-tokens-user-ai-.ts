@@ -4,7 +4,7 @@ import { CURRENT_MODEL } from '@/types';
 
 const pythonScript = path.resolve(__dirname, '..', 'utils', 'tokeniser.py');
 
-export const getTokensOfUserAndAI = (messages: any[]) => {
+export const getTokensOfUserAndAI = (messages: unknown[]) => {
   const payload = JSON.stringify({
     messages,
     role: 'user',

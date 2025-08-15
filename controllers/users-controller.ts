@@ -2,7 +2,7 @@ import { CONFIG, OAUTH2CLIENT, SCOPES, SUPABASE } from "@/config/root-config";
 import { PROVIDERS, STATUS_RESPONSE } from "@/types";
 import type { Request, Response } from "express";
 
-import { User } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
 import jwt from "jsonwebtoken";
 import { reqResAsyncHandler } from "@/utils/async-handlers";
 import sendR from "@/utils/send-response";
@@ -10,7 +10,7 @@ import { thirdPartySignInOrSignUp } from "@/utils/third-party-signup-signin-supa
 
 const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
   const code = req.query.code as string | undefined;
-  const postmanHeaders = req.headers["user-agent"];
+  const postmanHeaders = req.headers["user-agent"] || "";
 
   const url = OAUTH2CLIENT.generateAuthUrl({
     access_type: "offline",
@@ -37,19 +37,20 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
 
     const { id_token, refresh_token, expiry_date, access_token, token_type } = tokens;
 
-    const user = jwt.decode(tokens.id_token!) as jwt.JwtPayload;
+    const user = jwt.decode(tokens.id_token || "") as jwt.JwtPayload;
 
-    const { data, error } = await SUPABASE.from("")
+    const { data, error } = await SUPABASE.from("calendars_of_users")
       .insert({
         refresh_token,
+        user_id: "",
         expiry_date,
         access_token,
         token_type,
         id_token,
         scope: SCOPES.join(" "),
-        email: user.email!,
+        email: user.email,
       })
-      .eq("email", user.email!)
+      .eq("email", user.email)
       .select();
 
     if (error) {
@@ -91,12 +92,12 @@ const signUpUserViaGitHub = reqResAsyncHandler(async (req: Request, res: Respons
   await thirdPartySignInOrSignUp(req, res, PROVIDERS.GITHUB);
 });
 
-const getUserInformation = reqResAsyncHandler(async (req: Request, res: Response) => {
+const getUserInformation = (req: Request, res: Response) => {
   if (!(req as Request & { user?: User }).user) {
     return sendR(res, STATUS_RESPONSE.UNAUTHORIZED, "User not authenticated.");
   }
   sendR(res, STATUS_RESPONSE.SUCCESS, "User fetched successfully.", (req as Request & { user?: User }).user);
-});
+};
 
 // const deActivateUser = reqResAsyncHandler(
 //   async (_req: Request, _res: Response) => {}

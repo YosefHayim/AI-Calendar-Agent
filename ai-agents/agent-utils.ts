@@ -1,11 +1,16 @@
-import { type EventParametersProps, TIMEZONE } from "@/types";
+import { type EventParametersProps, TIMEZONE } from '@/types';
 
-export const formatEventData = (params: EventParametersProps): EventParametersProps => {
+export const formatEventData = (
+  params: EventParametersProps
+): EventParametersProps => {
   if (!(params.start?.dateTime && params.end?.dateTime)) {
-    throw new Error("Missing dates of start and end!");
+    throw new Error('Missing dates of start and end!');
   }
-  if (params.start?.timeZone !== params.end?.timeZone && !(params.start?.timeZone! in TIMEZONE && params?.end?.timeZone! in TIMEZONE)) {
-    throw new Error("Time zones must match!");
+  if (
+    params.start?.timeZone !== params.end?.timeZone &&
+    !(params.start?.timeZone! in TIMEZONE && params?.end?.timeZone! in TIMEZONE)
+  ) {
+    throw new Error('Time zones must match!');
   }
 
   const startDate = new Date(params?.start?.dateTime!);
@@ -17,12 +22,12 @@ export const formatEventData = (params: EventParametersProps): EventParametersPr
     start: {
       dateTime: startDate.toISOString(),
       timeZone: params.start?.timeZone,
-      date: startDate.toISOString().split("T")[0],
+      date: startDate.toISOString().split('T')[0],
     },
     end: {
       dateTime: endDate.toISOString(),
       timeZone: params.end?.timeZone || params.start?.timeZone,
-      date: endDate.toISOString().split("T")[0],
+      date: endDate.toISOString().split('T')[0],
     },
   };
 };

@@ -5,9 +5,13 @@ import { TOKEN_FIELDS } from './storage';
 
 export const getUserCalendarTokens = asyncHandler(
   async (matchBy: 'email', user?: User) => {
-    const { data, error } = await SUPABASE.from('calendars_of_users')
+    if (!user || typeof user.email !== 'string') {
+      return null;
+    }
+
+    const { data, error: _error } = await SUPABASE.from('calendars_of_users')
       .select(TOKEN_FIELDS)
-      .eq(matchBy, user?.email!);
+      .eq(matchBy, user.email);
     return data?.[0] || null;
   }
 );
