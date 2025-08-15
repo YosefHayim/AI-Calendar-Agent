@@ -1,6 +1,6 @@
 import type { calendar_v3 } from 'googleapis';
 import { CALENDAR, SUPABASE } from '@/config/root-config';
-import { null,ACTION } from '@/types';
+import { ACTION } from '@/types';
 import { asyncHandler } from '@/utils/async-handlers';
 import { handleEvents } from '@/utils/handle-events';
 import { TOKEN_FIELDS } from '@/utils/storage';

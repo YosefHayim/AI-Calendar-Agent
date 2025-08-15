@@ -1,5 +1,5 @@
 // async-handlers.ts
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from 'express';
 
 export const reqResAsyncHandler =
   <H extends (req: Request, res: Response, next: NextFunction) => Promise<unknown>>(fn: H) =>

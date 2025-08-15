@@ -19,16 +19,9 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
 
   const calendar = initCalendarWithUserTokens(tokenData);
   const r = await calendar.calendarList.list();
-  const allCalendars = r.data.items?.map(
-    (item: calendar_v3.Schema$CalendarListEntry) => item.summary
-  );
+  const allCalendars = r.data.items?.map((item: calendar_v3.Schema$CalendarListEntry) => item.summary);
 
-  sendR(
-    res,
-    STATUS_RESPONSE.SUCCESS,
-    'Successfully received your current calendars',
-    allCalendars
-  );
+  sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully received your current calendars', allCalendars);
 });
 
 const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
@@ -54,12 +47,7 @@ const getAllEvents = reqResAsyncHandler(async (req, res) => {
 
 const getAllFilteredEvents = reqResAsyncHandler(async (req, res) => {
   const r = await handleEvents(req, ACTION.GET, undefined, req.query);
-  sendR(
-    res,
-    STATUS_RESPONSE.SUCCESS,
-    'Successfully retrieved all filtered events',
-    r
-  );
+  sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully retrieved all filtered events', r);
 });
 
 const createEvent = reqResAsyncHandler(async (req, res) => {

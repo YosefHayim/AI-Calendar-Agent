@@ -1,15 +1,15 @@
-import { type ConversationFlavor, conversations } from "@grammyjs/conversations";
-import type { MenuFlavor } from "@grammyjs/menu";
-import { Bot, type Context, type SessionFlavor, session } from "grammy";
+import { type ConversationFlavor, conversations } from '@grammyjs/conversations';
+import type { MenuFlavor } from '@grammyjs/menu';
+import { Bot, type Context, type SessionFlavor, session } from 'grammy';
 
-import { CONFIG } from "@/config/root-config";
-import type { SessionData } from "@/types";
-import { mainMenu } from "./menus";
-import { authTgHandler } from "./middleware/auth-tg-handler";
+import { CONFIG } from '@/config/root-config';
+import type { SessionData } from '@/types';
+import { mainMenu } from './menus';
+import { authTgHandler } from './middleware/auth-tg-handler';
 
 export type MyContext = Context & MenuFlavor & SessionFlavor<SessionData> & ConversationFlavor<Context>;
 
-const bot = new Bot<MyContext>(CONFIG.telegram_access_token || "");
+const bot = new Bot<MyContext>(CONFIG.telegram_access_token || '');
 
 bot.use(
   session({
@@ -29,8 +29,8 @@ bot.use(authTgHandler);
 bot.use(conversations());
 bot.use(mainMenu);
 
-bot.command("start", async (ctx) => {
-  await ctx.reply("Welcome to the AI Calendar Assistant", {
+bot.command('start', async (ctx) => {
+  await ctx.reply('Welcome to the AI Calendar Assistant', {
     reply_markup: mainMenu,
   });
 });

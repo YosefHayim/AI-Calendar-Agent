@@ -1,7 +1,7 @@
-import type { MyContext } from "../init-bot";
-import type { NextFunction } from "grammy";
-import { SUPABASE } from "@/config/root-config";
-import isEmail from "validator/lib/isEmail";
+import type { NextFunction } from 'grammy';
+import isEmail from 'validator/lib/isEmail';
+import { SUPABASE } from '@/config/root-config';
+import type { MyContext } from '../init-bot';
 
 type TelegramUser = {
   id: number;
@@ -28,7 +28,7 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
     session.messageCount = 0;
   }
 
-  const { data, error: _error } = await SUPABASE.from("telegram_users").select("email,first_name").eq("chat_id", session.chatId).single();
+  const { data, error: _error } = await SUPABASE.from('telegram_users').select('email,first_name').eq('chat_id', session.chatId).single();
 
   if (data?.email && session.messageCount === 1) {
     await ctx.reply(`Hello there ${data.first_name}`);
@@ -39,8 +39,8 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
 
   // Check if email is already collected in this session
   if (!session.email) {
-    if (!isEmail(ctx.message?.text || "")) {
-      await ctx.reply("First time? Please provide your email to authorize:");
+    if (!isEmail(ctx.message?.text || '')) {
+      await ctx.reply('First time? Please provide your email to authorize:');
       return;
     }
 
@@ -48,7 +48,7 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
     session.email = emailMessage;
 
     if (from) {
-      await SUPABASE.from("telegram_users").insert({
+      await SUPABASE.from('telegram_users').insert({
         chat_id: from.id,
         username: from.username,
         first_name: from.first_name,
@@ -58,7 +58,7 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
       });
     }
 
-    await ctx.reply("Email has been saved successfully!");
+    await ctx.reply('Email has been saved successfully!');
   }
   await next();
 };

@@ -15,8 +15,7 @@ export const AGENT_TOOLS = {
   }),
   validate_event_fields: tool({
     name: 'validate_event_fields',
-    description:
-      'Validate/normalize summary, date/time, and duration; output RFC3339.',
+    description: 'Validate/normalize summary, date/time, and duration; output RFC3339.',
     parameters: eventParameters.insertEventParameters,
     execute: executionTools.validateEventFields,
   }),
