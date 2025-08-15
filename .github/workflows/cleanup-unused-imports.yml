@@ -50,7 +50,7 @@ jobs:
           EOF
 
       - name: Remove unused imports
-        run: pnpm biome check --write --apply-unsafe --max-diagnostics 100000 .
+        run: npm run prune-imports
 
       - name: Restore full Biome config
         run: |
