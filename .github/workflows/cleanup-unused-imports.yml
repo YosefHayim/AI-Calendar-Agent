@@ -1,0 +1,46 @@
+name: Cleanup unused imports (Biome)
+
+on:
+  push:
+    branches: ["**"]
+
+permissions:
+  contents: write
+
+jobs:
+  prune-imports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Remove unused imports (unsafe fixes)
+        run: pnpm biome check --write --unsafe --max-diagnostics 100000 .
+
+      - name: Commit changes (if any)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: prune unused imports via Biome [skip ci]"
+          file_pattern: |
+            **/*.js
+            **/*.mjs
+            **/*.cjs
+
+      - name: Verify (fail if issues remain)
+        run: pnpm biome check .
