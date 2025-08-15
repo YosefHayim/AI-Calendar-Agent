@@ -4,12 +4,14 @@ import { STATUS_RESPONSE } from '@/types';
 import sendR from '@/utils/send-response';
 
 const errorHandler = (
-  err: any,
+  err: Error,
   _req: Request,
   res: Response,
   _next: NextFunction
 ) => {
-  const status = err.status || STATUS_RESPONSE.INTERNAL_SERVER_ERROR;
+  const status =
+    (err as Error & { status?: number }).status ||
+    STATUS_RESPONSE.INTERNAL_SERVER_ERROR;
   sendR(res, status, err.message || 'Internal Server Error');
 };
 

@@ -6,7 +6,6 @@ import morgan from 'morgan';
 import { CONFIG } from '@/config/root-config';
 import errorHandler from '@/middlewares/error-handler';
 import calendarRoute from '@/routes/calendar-route';
-import conversationStatsRouter from '@/routes/conversation-stats';
 import usersRouter from '@/routes/users';
 import { startTelegramBot } from '@/telegram-bot/init-bot';
 import { ROUTES, STATUS_RESPONSE } from './types';
@@ -28,14 +27,9 @@ app.get('/', (_req, res) => {
 
 app.use(ROUTES.USERS, usersRouter);
 app.use(ROUTES.CALENDAR, calendarRoute);
-app.use(ROUTES.CONVERSATION_STATS, conversationStatsRouter);
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  if (CONFIG.node_env === 'production') {
-  } else {
-  }
-});
+app.listen(PORT);
 
 startTelegramBot();

@@ -1,5 +1,7 @@
 import type { Response } from 'express';
 
+const ERROR = 400;
+
 const sendR = (
   res: Response,
   status: number,
@@ -7,7 +9,7 @@ const sendR = (
   data?: unknown
 ) => {
   res.status(status).json({
-    status: status >= 400 ? 'error' : 'success',
+    status: status >= ERROR ? 'error' : 'success',
     message,
     data,
   });

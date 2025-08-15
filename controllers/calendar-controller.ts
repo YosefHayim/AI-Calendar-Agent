@@ -1,6 +1,7 @@
 import type { User } from '@supabase/supabase-js';
 
 import type { Request } from 'express';
+import type { calendar_v3 } from 'googleapis';
 import { requestConfigBase } from '@/config/root-config';
 import { ACTION, STATUS_RESPONSE } from '@/types';
 import { reqResAsyncHandler } from '@/utils/async-handlers';
@@ -13,12 +14,14 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
   const tokenData = await getUserCalendarTokens('email', user);
   if (!tokenData) {
-    return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User credentails not found.');
+    return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User credentials not found.');
   }
 
   const calendar = await initCalendarWithUserTokens(tokenData);
   const r = await calendar.calendarList.list();
-  const allCalendars = r.data.items?.map((item: any) => item.summary);
+  const allCalendars = r.data.items?.map(
+    (item: calendar_v3.Schema$CalendarListEntry) => item.summary
+  );
 
   sendR(
     res,
