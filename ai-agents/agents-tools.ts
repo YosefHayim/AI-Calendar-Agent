@@ -1,18 +1,24 @@
-import { eventParameters, validateEventParameter } from "./parameters-tools";
-
+import { Database } from "@/database.types";
 import { TOOLS_DESCRIPTION } from "./description-tools";
+import { eventParameters } from "./parameters-tools";
 import { executionTools } from "./execution-tools";
 import { tool } from "@openai/agents";
 
 export const AGENT_TOOLS = {
-  validate_user: tool({
+  validate_user_db: tool({
     name: "validate_user",
     description: TOOLS_DESCRIPTION.validateUser,
-    parameters: validateEventParameter,
+    parameters: eventParameters.validateUserDbParameters,
     execute: executionTools.validateUser,
     errorFunction: async (params, error) => {
       return `Failed to validate user from database query Error: ${error}`;
     },
+  }),
+  validate_event_fields: tool({
+    name: "validate_event_fields",
+    description: "Validate/normalize summary, date/time, and duration; output RFC3339.",
+    parameters: eventParameters.insertEventParameters,
+    execute: executionTools.validateEventFields,
   }),
   insert_event: tool({
     name: "insert_event",

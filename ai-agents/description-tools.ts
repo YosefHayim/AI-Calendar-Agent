@@ -1,19 +1,23 @@
 export const TOOLS_DESCRIPTION = {
-  validateUser: `Validate if the user is signed up.`,
+  validateUser: `Validates whether a user is registered in the system by querying the database. Requires a unique identifier (e.g., userId or email). Returns a boolean and optional user metadata if found. Does not create, update, or delete any records.`,
 
-  deleteEvent: `Delete a calendar event by its ID. Once deleted, the event is permanently removed. Example request:
+  deleteEvent: `Deletes a calendar event permanently using its ID. Requires "eventId" in the request body. Once deleted, the event cannot be recovered.
+Example:
 {
   "eventId": "abc123def456"
 }`,
 
-  eventType: `Returns all the calendars list associated with the users account via API request to google api calendar.`,
+  eventType: `Retrieves the list of all calendars associated with the authenticated user's account via the Google Calendar API. No input parameters required unless filtering is implemented.`,
 
-  getEvent: `Retrieve details of a calendar event using the event ID. Example request:
+  getEvent: `Fetches details of a specific calendar event using its ID. Requires "eventId" in the request.
+Example:
 {
   "eventId": "abc123def456"
 }`,
 
-  insertEvent: `Insert an event into the calendar. Must follow the parameters provided the structure is json format example to a request {
+  insertEvent: `Creates a new event in the calendar. Requires JSON payload with event summary, description, start/end time in RFC3339 format, time zone, and optional location. Returns the created event object.
+Example:
+{
   "summary": "Quick Standup Meeting",
   "location": "Online - Google Meet",
   "description": "Daily standup to sync team updates.",
@@ -27,7 +31,8 @@ export const TOOLS_DESCRIPTION = {
   }
 }`,
 
-  updateEvent: `Update an existing calendar event. Requires the event ID and updated fields in JSON format. Example request:
+  updateEvent: `Updates details of an existing calendar event. Requires "eventId" and an "updates" object containing the fields to modify. Supports changes to summary, description, start/end time, and location. Returns the updated event object.
+Example:
 {
   "eventId": "abc123def456",
   "updates": {

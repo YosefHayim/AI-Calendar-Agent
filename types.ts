@@ -1,5 +1,6 @@
 import { AGENTS } from "@/ai-agents/agents";
 import { AGENT_TOOLS } from "@/ai-agents/agents-tools";
+import { Database } from "./database.types";
 import { calendar_v3 } from "googleapis";
 
 export enum GOOGLE_CALENDAR_SCOPES {
@@ -19,6 +20,8 @@ export enum PROVIDERS {
   GITHUB = "github",
   LINKEDIN = "linkedin",
 }
+
+export type UserSchema = Database["public"]["Tables"]["calendars_of_users"]["Row"];
 
 export interface SessionData {
   chatId: number;

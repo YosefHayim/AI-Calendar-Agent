@@ -8,10 +8,17 @@ setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 
 export const AGENTS = {
   validateUserAuth: new Agent({
-    name: "validate_user_agent",
+    name: "validate_user_db_agent",
     model: CURRENT_MODEL,
     instructions: `An agent that sends a request to database and expects in return a response from database that is not error.`,
-    tools: [AGENT_TOOLS.validate_user],
+    tools: [AGENT_TOOLS.validate_user_db],
+  }),
+  validateEventFields: new Agent({
+    name: "validate_event_fields_agent",
+    model: CURRENT_MODEL,
+    instructions: `Validate and normalize summary, start/end, and duration. 
+Return RFC3339 datetimes and duration minutes. Default summary "Untitled Event"; default start=now; default duration=60m.`,
+    tools: [AGENT_TOOLS.validate_event_fields],
   }),
   insertEvent: new Agent({
     name: "insert_event_agent",
@@ -77,39 +84,27 @@ export const calendarRouterAgent = new Agent({
   name: "calendar_router_agent",
   model: CURRENT_MODEL,
   handoffDescription: `
-  Workflow:
-
-  1. **User Validation**  
-     - Always first send the request to validate_user_agent.  
-     - If validation fails, stop the flow and return the validation failure response.  
-     - If validation passes, proceed.
-
-  2. **Event Type Analysis**  
-     - Pass the request and extracted details to analyse_calendar_type_by_event_agent.  
-     - Use the returned calendar type for all subsequent CRUD operations.
-
-  3. **Route by Intent**  
-     - Determine the user's intent from the request.  
-       - "add", "insert", "schedule", "make", "create" → insert_event_agent  
-       - "get", "find", "show", "list", "see" → get_event_by_name_agent  
-       - "update", "edit", "move", "reschedule", "rename" → update_event_by_id_agent  
-       - "delete", "remove", "cancel" → delete_event_by_id_agent
-
-  4. **Validation of Event Fields (if applicable)**  
-     - For insert or update:  
-       - validate_date_event_agent → must return "true"  
-       - validate_duration_event_agent → must return "true"  
-       - validate_summary_event_agent → must return "true"  
-     - If any fail, stop and return the validation failure.
-
-  5. **Execute CRUD Operation**  
-     - Call the appropriate agent with the validated data and determined calendar type.
-
-  Rules:  
-  - Never skip the validation step.  
-  - Never skip event type analysis.  
-  - Do not respond directly to the user; always hand off to the next agent in the sequence.  
-  - The sequence is strictly: validate_user_agent → analyse_calendar_type_by_event_agent → (field validation if required) → CRUD agent.
+  Router for Google Calendar ops.
+  
+  Sequence:
+  validate_user_agent → analyse_calendar_type_by_event_agent → route by intent → execute.
+  If user not in DB → return "not authorized, please sign up".
+  If calendar not authorized → return reauth callback URL.
+  Pass calendar type to all CRUD calls. Insert/Update may normalize fields (RFC3339 dates).
+  
+  Intent → agent:
+  - create/add/insert/schedule/make → insert_event_agent
+  - get/find/show/list/see → get_event_by_name_agent
+  - update/edit/move/reschedule/rename → update_event_by_id_agent
+  - delete/remove/cancel → delete_event_by_id_agent
+  - calendars/list calendars/which calendar → calendar_list_agent
+  - general chat/help → chat_with_agent
+  
+  Update/Delete resolution:
+  If no event ID, first call get_event_by_name_agent to resolve an ID (prefer exact title+time match), then call the mapped agent.
+  
+  Rules:
+  Never skip validation or calendar-type analysis. No direct user replies; always hand off in the above order.
   `,
   handoffs: subAgents,
 });

@@ -12,11 +12,33 @@ export const executionTools = {
     console.log("validateUser:", params);
 
     const { data, error } = await SUPABASE.from("calendars_of_users").select(TOKEN_FIELDS).eq("email", params.email.trim());
-
     if (error) throw error;
-
-    console.log(data);
     return data;
+  }),
+  validateEventFields: asyncHandler(async (params) => {
+    if (!params.start?.dateTime || !params.end?.dateTime) {
+      errorTemplate("Missing dates of start and end!", 404);
+    }
+
+    const startDate = new Date(params.start?.dateTime!);
+    const endDate = new Date(params.end?.dateTime!);
+
+    const eventData: calendar_v3.Schema$Event = {
+      summary: params.summary,
+      description: params.description,
+      start: {
+        dateTime: startDate.toISOString(),
+        timeZone: params.start?.timeZone,
+        date: startDate.toISOString().split("T")[0],
+      },
+      end: {
+        dateTime: endDate.toISOString(),
+        timeZone: params.end?.timeZone || params.start?.timeZone,
+        date: endDate.toISOString().split("T")[0],
+      },
+    };
+
+    return eventData;
   }),
 
   updateEvent: asyncHandler(async (params: calendar_v3.Schema$Event) => {

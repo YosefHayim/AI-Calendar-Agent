@@ -11,17 +11,20 @@ export type MyContext = Context & MenuFlavor & SessionFlavor<SessionData> & Conv
 
 const bot = new Bot<MyContext>(CONFIG.telegram_access_token!);
 
-function initialSession(): SessionData {
-  return {
-    chatId: 0,
-    username: undefined,
-    userId: 0,
-    codeLang: undefined,
-    messageCount: 0,
-    email: undefined,
-  };
-}
-bot.use(session({ initial: initialSession }));
+bot.use(
+  session({
+    initial: (): SessionData => {
+      return {
+        chatId: 0,
+        codeLang: undefined,
+        email: undefined,
+        messageCount: 0,
+        userId: 0,
+        username: undefined,
+      };
+    },
+  })
+);
 bot.use(authTgHandler);
 bot.use(conversations());
 bot.use(mainMenu);
