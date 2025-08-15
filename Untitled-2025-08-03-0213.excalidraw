@@ -260,10 +260,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        -706.666666666667,
-        0
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "40otzCHXeJd3pHvdKzwZS",
@@ -501,10 +498,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        229.33329264322947,
-        133.33333333333303
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "xSpHwoJ-zI33xNADfSdi1",
@@ -619,10 +613,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        560.0002034505205,
-        15.99995930989553
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "PQ-S8k-FanjeudckQ1zfW",
@@ -729,10 +720,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        -200.00020345052053,
-        -87.99997965494731
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "cRbHgjmkLN0rVqbWch6XL",
@@ -827,10 +815,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        -247.9998779296875,
-        106.66666666666697
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "U7_dJC0imkf2LqIFWYm4L",
@@ -7015,7 +7000,7 @@
       "y": -13612.174835551157,
       "strokeColor": "#000000",
       "backgroundColor": "#ffffff",
-      "width": 243.43078136303848,
+      "width": 243.4307813630385,
       "height": 100.81948761079619,
       "seed": 220637477,
       "groupIds": [
@@ -7251,7 +7236,7 @@
       "version": 1066,
       "versionNonce": 1407503467,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1755255324748,
       "link": null,
       "locked": false,
@@ -7605,7 +7590,7 @@
       "version": 201,
       "versionNonce": 1229713189,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1755255699178,
       "link": null,
       "locked": false,
@@ -7958,7 +7943,7 @@
       "strokeColor": "#495057",
       "backgroundColor": "#ced4da",
       "width": 509.14339805492665,
-      "height": 590.6430360957999,
+      "height": 590.6430360957997,
       "seed": 28338955,
       "groupIds": [
         "F3L4Pl7FGdRQyruNd3QtF",
@@ -8713,7 +8698,7 @@
       "version": 353,
       "versionNonce": 1790224613,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1755255475295,
       "link": null,
       "locked": false,
@@ -9945,10 +9930,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        1975.999755859375,
-        1120
-      ]
+      "lastCommittedPoint": null
     }
   ],
   "appState": {
