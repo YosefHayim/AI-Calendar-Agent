@@ -3,23 +3,25 @@ import isEmail from 'validator/lib/isEmail';
 import { SUPABASE } from '@/config/root-config';
 import type { MyContext } from '../init-bot';
 
-interface TelegramUser {
+type TelegramUser = {
   id: number;
   is_bot: boolean;
   first_name: string;
   email: string;
   username: string;
   language_code: string;
-}
+};
 
 export const authTgHandler = async (
   ctx: MyContext,
   next: NextFunction
-): Promise<TelegramUser | void | undefined> => {
+): Promise<TelegramUser | undefined | undefined> => {
   const from = ctx?.from;
   const session = ctx?.session;
 
-  if (!(from && session)) return await next();
+  if (!(from && session)) {
+    return await next();
+  }
 
   if (session.messageCount === 0) {
     session.chatId = from.id;

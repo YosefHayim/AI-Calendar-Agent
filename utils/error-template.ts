@@ -15,7 +15,7 @@ const errorTemplate = (
     });
   }
 
-  throw Error(message, { cause: { status } });
+  throw new Error(message, { cause: { status } });
 };
 
 export default errorTemplate;

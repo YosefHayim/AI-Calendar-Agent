@@ -11,7 +11,9 @@ export const executionTools = {
     const { data, error } = await SUPABASE.from('calendars_of_users')
       .select(TOKEN_FIELDS)
       .eq('email', email.trim().toLowerCase());
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
     return data;
   }),
 

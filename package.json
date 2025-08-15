@@ -20,23 +20,9 @@
     "download-env": "doppler secrets download --no-file --format env > .env ",
     "get-env": "doppler run -- node server.js",
     "sort": "npx sort-package-json",
-    "biome": "biome check .",
+    "lint": "npx ultracite lint",
+    "format": "npx ultracite format --unsafe",
     "prepare": "husky install"
-  },
-  "ultracite": {
-    "tasks": {
-      "biome": "biome check --write"
-    },
-    "extensions": [
-      ".js",
-      ".ts",
-      ".mjs",
-      ".cjs",
-      ".mts",
-      ".cts",
-      ".json",
-      ".md"
-    ]
   },
   "dependencies": {
     "@googleapis/docs": "^4.0.1",

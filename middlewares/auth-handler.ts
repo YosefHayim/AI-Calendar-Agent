@@ -8,19 +8,21 @@ import sendR from '@/utils/send-response';
 export const authHandler = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token)
+    if (!token) {
       return sendR(res, STATUS_RESPONSE.UNAUTHORIZED, 'Missing access token.');
+    }
 
     const {
       data: { user },
     } = await SUPABASE.auth.getUser(token);
 
-    if (!user)
+    if (!user) {
       return sendR(
         res,
         STATUS_RESPONSE.UNAUTHORIZED,
         'User is not authenticated.'
       );
+    }
 
     (req as Request & { user: User }).user = user;
     next();

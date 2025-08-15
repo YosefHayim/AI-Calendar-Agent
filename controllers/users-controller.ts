@@ -21,8 +21,9 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
   // 1. No code yet: send user to consent screen
   if (!code) {
     // If from Postman, just send the URL back instead of redirecting
-    if (postmanHeaders?.includes('Postman'))
+    if (postmanHeaders?.includes('Postman')) {
       return sendR(res, STATUS_RESPONSE.SUCCESS, url);
+    }
     return res.redirect(url);
   }
 
@@ -68,8 +69,9 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
 });
 
 const signUpUserReg = asyncHandler(async (req: Request, res: Response) => {
-  if (!(req.body.email && req.body.password))
+  if (!(req.body.email && req.body.password)) {
     sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Email and password are required.');
+  }
   const { data, error } = await SUPABASE.auth.signUp({
     email: req.body.email,
     password: req.body.password,
@@ -107,8 +109,9 @@ const signUpUserViaGitHub = asyncHandler(
 );
 
 const getUserInformation = asyncHandler(async (req, res) => {
-  if (!req.user)
+  if (!req.user) {
     return sendR(res, STATUS_RESPONSE.UNAUTHORIZED, 'User not authenticated.');
+  }
   sendR(res, STATUS_RESPONSE.SUCCESS, 'User fetched successfully.', req.user);
 });
 
@@ -117,8 +120,9 @@ const deActivateUser = asyncHandler(
 );
 
 const signInUserReg = asyncHandler(async (req: Request, res: Response) => {
-  if (!(req.body.email && req.body.password))
+  if (!(req.body.email && req.body.password)) {
     sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Email and password are required ');
+  }
 
   const { data, error } = await SUPABASE.auth.signInWithPassword({
     email: req.body.email,

@@ -2,12 +2,12 @@ import type { calendar_v3 } from 'googleapis';
 import type { AGENTS } from '@/ai-agents/agents';
 import type { AGENT_TOOLS } from '@/ai-agents/agents-tools';
 
-export interface EventParametersProps {
+export type EventParametersProps = {
   summary?: string | null | undefined;
   description?: string | null | undefined;
   start?: calendar_v3.Schema$EventDateTime | undefined;
   end?: calendar_v3.Schema$EventDateTime | undefined;
-}
+};
 
 export enum GOOGLE_CALENDAR_SCOPES {
   APP_CREATED = 'https://www.googleapis.com/auth/calendar.app.created',
@@ -27,16 +27,16 @@ export enum PROVIDERS {
   LINKEDIN = 'linkedin',
 }
 
-export interface SessionData {
+export type SessionData = {
   chatId: number;
   username: string | undefined;
   userId: number;
   codeLang: string | undefined;
   messageCount: number;
   email: string | undefined;
-}
+};
 
-export interface tokens {
+export type tokens = {
   access_token: string;
   refresh_token: string;
   scopes: string;
@@ -44,7 +44,7 @@ export interface tokens {
   id_token: string;
   expiry_date: number;
   refresh_token_expires_in: number;
-}
+};
 
 export enum ROUTES {
   USERS = '/api/users',
@@ -66,10 +66,10 @@ export enum STATUS_RESPONSE {
   SERVICE_UNAVAILABLE = 503,
 }
 
-export interface userAndAiMessageProps {
+export type userAndAiMessageProps = {
   role: 'user' | 'assistant';
   content: string | undefined;
-}
+};
 
 export enum MODELS {
   // Reasoning models
