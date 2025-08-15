@@ -7,7 +7,7 @@ import { CURRENT_MODEL } from "@/types";
 setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
 
 export const AGENTS = {
-  validateUser: new Agent({
+  validateUserAuth: new Agent({
     name: "validate_user_agent",
     model: CURRENT_MODEL,
     instructions: `An agent that sends a request to database and expects in return a response from database that is not error.`,
@@ -24,13 +24,13 @@ export const AGENTS = {
     - Omit location if missing.`,
     tools: [AGENT_TOOLS.insert_event],
   }),
-  getEventByName: new Agent({
+  getEventByIdOrName: new Agent({
     name: "get_event_by_name_agent",
     model: CURRENT_MODEL,
     instructions: `An agent that retrieve one or more events from the user's calendar by matching their title or keywords.`,
     tools: [AGENT_TOOLS.get_event],
   }),
-  updateEventById: new Agent({
+  updateEventByIdOrName: new Agent({
     name: "update_event_by_id_agent",
     model: CURRENT_MODEL,
     instructions: `An agent that update an existing calendar event.
@@ -44,69 +44,24 @@ export const AGENTS = {
   If a field is not specified, keep the original value.`,
     tools: [AGENT_TOOLS.update_event],
   }),
-  deleteEventById: new Agent({
+  deleteEventByIdOrName: new Agent({
     name: "delete_event_by_id_agent",
     model: CURRENT_MODEL,
     instructions: `An agent that delete a calendar event based on the title or other identifying detail.`,
     tools: [AGENT_TOOLS.delete_event],
   }),
-  calendarList: new Agent({
+  getCalendarList: new Agent({
     name: "calendar_list_agent",
     model: CURRENT_MODEL,
     instructions: `An agent that returns the list of calendars associated with the user's account via google api calendar.`,
     tools: [AGENT_TOOLS.calendar_type],
   }),
-  analyseCalendarTypeByEvent: new Agent({
+  analysesCalendarTypeByEventInformation: new Agent({
     name: "analyse_calendar_type_by_event_agent",
     model: CURRENT_MODEL,
     instructions: `An agent that analyse the event details and return the calendar type that best fits the event.
     If the event is not suitable for any calendar type, return a default calendar type.`,
     tools: [AGENT_TOOLS.event_type],
-  }),
-  validateDateEvent: new Agent({
-    name: "validate_date_event_agent",
-    model: CURRENT_MODEL,
-    instructions: `An agent that validate the date of an event.
-    The agent MUST return ONLY "true" if the date is valid and understood, otherwise it MUST return ONLY "false".
-    No other text or explanation is allowed.
-    `,
-  }),
-  validateDurationEvent: new Agent({
-    name: "validate_duration_event_agent",
-    model: CURRENT_MODEL,
-    instructions: `An agent that validate the duration of an event.
-    The agent MUST return ONLY "true" if the duration is valid and understood, otherwise it MUST return ONLY "false".
-    No other text or explanation is allowed.`,
-  }),
-  validateSummaryEvent: new Agent({
-    name: "validate_summary_event_agent",
-    model: CURRENT_MODEL,
-    instructions: `An agent that validate the name of the event.
-    The agent MUST return ONLY "true" if the summary is valid and understood, otherwise it MUST return ONLY "false".
-    No other text or explanation is allowed.
-    `,
-  }),
-  searchForEventByName: new Agent({
-    name: "search_for_event_by_name_agent",
-    model: CURRENT_MODEL,
-    instructions: `An agent that search for events by name.
-    The agent MUST return the events that match the name provided by the user.
-    If no events are found, return a message that declares that.`,
-    tools: [AGENT_TOOLS.get_event],
-  }),
-  updateEventByName: new Agent({
-    name: "update_event_by_name_agent",
-    model: CURRENT_MODEL,
-    instructions: `An agent that update an event by name.
-    The agent MUST return the updated event if the update was successful, otherwise it MUST return an error message.
-    If no events are found, return a message that declares that.`,
-    tools: [AGENT_TOOLS.update_event],
-  }),
-  deleteEventByName: new Agent({
-    name: "delete_event_by_name_agent",
-    model: CURRENT_MODEL,
-    instructions: `An agent that delete an event by name.`,
-    tools: [AGENT_TOOLS.delete_event],
   }),
   chatWithAgent: new Agent({
     name: "chat_with_agent",
