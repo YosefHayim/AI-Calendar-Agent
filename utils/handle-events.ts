@@ -36,7 +36,7 @@ export const handleEvents = asyncHandler(async (req: Request | null, action: ACT
 
   const calendar = initCalendarWithUserTokens(credentials);
   const calendarEvents = calendar.events;
-  let result: Promise<calendar_v3.Schema$Events>;
+  let result: calendar_v3.Schema$Event | calendar_v3.Schema$Events | calendar_v3.GaxiosResponse<void>;
 
   if ((action === ACTION.UPDATE || action === ACTION.DELETE) && !eventData?.id) {
     throw errorTemplate("Event ID is required for update or delete action", STATUS_RESPONSE.BAD_REQUEST);
@@ -55,7 +55,7 @@ export const handleEvents = asyncHandler(async (req: Request | null, action: ACT
         ?.map((event: calendar_v3.Schema$Event) => ({
           eventId: event.id || "No ID",
           summary: event.summary || "Untitled Event",
-          durationOfEvent: getEventDurationString(event.start.date || event.start?.dateTime, event.end.date || event.end?.dateTime),
+          durationOfEvent: getEventDurationString(event.start?.date || event.start?.dateTime, event.end?.date || event.end?.dateTime),
           description: event.description || null,
           location: event.location || null,
           start: event.start.date || event.start?.dateTime,

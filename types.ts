@@ -9,7 +9,7 @@ export type EventParametersProps = {
   end?: calendar_v3.Schema$EventDateTime | undefined;
 };
 
-export const enum GOOGLE_CALENDAR_SCOPES {
+export enum GOOGLE_CALENDAR_SCOPES {
   APP_CREATED = "https://www.googleapis.com/auth/calendar.app.created",
   EVENTS = "https://www.googleapis.com/auth/calendar.events",
   FULL_ACCESS = "https://www.googleapis.com/auth/calendar",
@@ -21,7 +21,7 @@ export const enum GOOGLE_CALENDAR_SCOPES {
   FREEBUSY = "https://www.googleapis.com/auth/calendar.freebusy",
 }
 
-export const enum PROVIDERS {
+export enum PROVIDERS {
   GOOGLE = "google",
   GITHUB = "github",
   LINKEDIN = "linkedin",
@@ -46,14 +46,14 @@ export type TokensProps = {
   refresh_token_expires_in: number | null;
 };
 
-export const enum ROUTES {
+export enum ROUTES {
   USERS = "/api/users",
   CALENDAR = "/api/calendars",
   TELEGRAM_USERS = "/api/telegram-users",
   CONVERSATION_STATS = "/api/conversation-stats",
 }
 
-export const enum STATUS_RESPONSE {
+export enum STATUS_RESPONSE {
   SUCCESS = 200,
   CREATED = 201,
   BAD_REQUEST = 400,
@@ -71,7 +71,7 @@ export type userAndAiMessageProps = {
   content: string | undefined;
 };
 
-export const enum MODELS {
+export enum MODELS {
   // Reasoning models
   O4_MINI = "o4-mini",
   O3 = "o3",
@@ -141,7 +141,7 @@ export const enum MODELS {
   DAVINCI_002 = "davinci-002",
 }
 
-export const enum ACTION {
+export enum ACTION {
   GET = "get",
   INSERT = "insert",
   UPDATE = "update",
@@ -150,7 +150,7 @@ export const enum ACTION {
 
 export type SCHEMA_EVENT_PROPS = calendar_v3.Schema$Event;
 
-export const enum TIMEZONE {
+export enum TIMEZONE {
   // Africa
   AFRICA_ABIDJAN = "Africa/Abidjan",
   AFRICA_ACCRA = "Africa/Accra",
