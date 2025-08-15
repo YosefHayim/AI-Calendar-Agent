@@ -1,11 +1,15 @@
-import { Response } from "express";
+import type { Response } from 'express';
 
-const errorTemplate = (message: string, status: number, res?: Response): void => {
+const errorTemplate = (
+  message: string,
+  status: number,
+  res?: Response
+): void => {
   const error = new Error(message, { cause: { status } });
 
   if (res) {
     res?.status(status).json({
-      status: "error",
+      status: 'error',
       code: status,
       message: error.message,
     });

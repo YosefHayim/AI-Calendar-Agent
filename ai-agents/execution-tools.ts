@@ -1,15 +1,16 @@
-import { CALENDAR, SUPABASE } from "@/config/root-config";
-
-import { ACTION } from "@/types";
-import { TOKEN_FIELDS } from "@/utils/storage";
-import { asyncHandler } from "@/utils/async-handlers";
-import { calendar_v3 } from "googleapis";
-import { formatEventData } from "./agent-utils";
-import { handleEvents } from "@/utils/handle-events";
+import type { calendar_v3 } from 'googleapis';
+import { CALENDAR, SUPABASE } from '@/config/root-config';
+import { ACTION } from '@/types';
+import { asyncHandler } from '@/utils/async-handlers';
+import { handleEvents } from '@/utils/handle-events';
+import { TOKEN_FIELDS } from '@/utils/storage';
+import { formatEventData } from './agent-utils';
 
 export const executionTools = {
   validateUser: asyncHandler(async ({ email }: { email: string }) => {
-    const { data, error } = await SUPABASE.from("calendars_of_users").select(TOKEN_FIELDS).eq("email", email.trim().toLowerCase());
+    const { data, error } = await SUPABASE.from('calendars_of_users')
+      .select(TOKEN_FIELDS)
+      .eq('email', email.trim().toLowerCase());
     if (error) throw error;
     return data;
   }),
@@ -39,7 +40,9 @@ export const executionTools = {
     return allCalendars;
   }),
 
-  deleteEvent: asyncHandler(async (params: calendar_v3.Params$Resource$Events$Delete) => {
-    return handleEvents(ACTION.DELETE, params.eventId);
-  }),
+  deleteEvent: asyncHandler(
+    async (params: calendar_v3.Params$Resource$Events$Delete) => {
+      return handleEvents(ACTION.DELETE, params.eventId);
+    }
+  ),
 };

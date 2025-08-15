@@ -17,6 +17,7 @@
   "main": "app.ts",
   "scripts": {
     "dev": "nodemon",
+    "remove-unused-imports": "biome check --write .",
     "download-env": "doppler secrets download --no-file --format env > .env ",
     "get-env": "doppler run -- node server.js",
     "sort": "npx sort-package-json"

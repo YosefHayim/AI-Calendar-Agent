@@ -1,10 +1,11 @@
 export function getEventDurationString(startISO: string, endISO: string) {
-  if (!startISO || !endISO) return null;
+  if (!(startISO && endISO)) return null;
 
   const start = new Date(startISO);
   const end = new Date(endISO);
 
-  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return null;
+  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start)
+    return null;
 
   const diffMs = end.getTime() - start.getTime();
 

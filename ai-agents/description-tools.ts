@@ -1,5 +1,6 @@
 export const TOOLS_DESCRIPTION = {
-  validateUser: `Validates whether a user is registered in the system by querying the database. Requires a unique identifier (e.g., userId or email). Returns a boolean and optional user metadata if found. Does not create, update, or delete any records.`,
+  validateUser:
+    'Validates whether a user is registered in the system by querying the database. Requires a unique identifier (e.g., userId or email). Returns a boolean and optional user metadata if found. Does not create, update, or delete any records.',
 
   deleteEvent: `Deletes a calendar event permanently using its ID. Requires "eventId" in the request body. Once deleted, the event cannot be recovered.
 Example:

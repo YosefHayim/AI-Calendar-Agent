@@ -1,8 +1,8 @@
-import { MyContext } from "../init-bot";
-import { NextFunction } from "grammy";
-import { SUPABASE } from "@/config/root-config";
-import { User } from "@supabase/supabase-js";
-import isEmail from "validator/lib/isEmail";
+import { User } from '@supabase/supabase-js';
+import type { NextFunction } from 'grammy';
+import isEmail from 'validator/lib/isEmail';
+import { SUPABASE } from '@/config/root-config';
+import type { MyContext } from '../init-bot';
 
 interface TelegramUser {
   id: number;
@@ -13,11 +13,14 @@ interface TelegramUser {
   language_code: string;
 }
 
-export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise<TelegramUser | void | undefined> => {
+export const authTgHandler = async (
+  ctx: MyContext,
+  next: NextFunction
+): Promise<TelegramUser | void | undefined> => {
   const from = ctx?.from;
   const session = ctx?.session;
 
-  if (!from || !session) return await next();
+  if (!(from && session)) return await next();
 
   if (session.messageCount === 0) {
     session.chatId = from.id;
@@ -28,7 +31,10 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
   session.messageCount++;
 
   // Check if email already exists in DB
-  const { data, error } = await SUPABASE.from("telegram_users").select("email,first_name").eq("chat_id", from.id).single();
+  const { data, error } = await SUPABASE.from('telegram_users')
+    .select('email,first_name')
+    .eq('chat_id', from.id)
+    .single();
 
   if (data?.email && session.messageCount === 1) {
     await ctx.reply(`Hello there ${data.first_name}`);
@@ -39,15 +45,15 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
 
   // Check if email is already collected in this session
   if (!session.email) {
-    if (!isEmail(ctx.message?.text || "")) {
-      await ctx.reply("First time? Please provide your email to authorize:");
+    if (!isEmail(ctx.message?.text || '')) {
+      await ctx.reply('First time? Please provide your email to authorize:');
       return;
     }
 
     const emailMessage = ctx.message!.text!;
     session.email = emailMessage;
 
-    await SUPABASE.from("telegram_users").insert({
+    await SUPABASE.from('telegram_users').insert({
       chat_id: from.id,
       username: from.username,
       first_name: from.first_name,
@@ -56,7 +62,7 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
       email: emailMessage,
     });
 
-    await ctx.reply(`Email has been saved successfully!`);
+    await ctx.reply('Email has been saved successfully!');
   }
   await next();
 };
