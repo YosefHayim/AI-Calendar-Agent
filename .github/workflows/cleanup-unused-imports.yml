@@ -14,24 +14,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
+        with: { version: 10 }
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
 
-      - name: Install deps
-        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
-      # Only prune unused imports, allow unsafe fixes
+      # Swap in prune-only config
+      - name: Prepare Biome prune config
+        run: |
+          mv biome.json biome.full.json
+          cp biome.prune.json biome.json
+
+      # Run unsafe prune (only noUnusedImports due to prune config)
       - name: Remove unused imports
-        run: pnpm biome check --config-path biome.prune.json --write --unsafe --max-diagnostics 100000 .
+        run: pnpm biome check --write --unsafe --max-diagnostics 100000 .
+
+      # Restore full config
+      - name: Restore full Biome config
+        run: mv -f biome.full.json biome.json
 
       - name: Commit changes (if any)
         id: autocommit
@@ -43,17 +50,16 @@ jobs:
             **/*.mjs
             **/*.cjs
 
-      # Show which files changed in the job summary
+      # Job summary: which files changed
       - name: Summarize changed files
         if: steps.autocommit.outputs.changes_detected == 'true'
         run: |
           echo "### Files updated" >> $GITHUB_STEP_SUMMARY
-          git diff --name-status HEAD^ HEAD >> $GITHUB_STEP_SUMMARY
+          git show --name-status --pretty=oneline ${{ steps.autocommit.outputs.commit_hash }} | tail -n +2 >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "#### Diffstat" >> $GITHUB_STEP_SUMMARY
-          git diff --stat HEAD^ HEAD >> $GITHUB_STEP_SUMMARY
-          # also keep a patch as an artifact
-          git diff HEAD^ HEAD > pruned.patch
+          git show --stat ${{ steps.autocommit.outputs.commit_hash }} >> $GITHUB_STEP_SUMMARY
+          git show ${{ steps.autocommit.outputs.commit_hash }} > pruned.patch
 
       - name: Upload diff artifact
         if: steps.autocommit.outputs.changes_detected == 'true'
@@ -62,27 +68,29 @@ jobs:
           name: pruned-diff
           path: pruned.patch
 
-      # Comment on PR with the file list (when in PRs)
+      # PR comment with changed files
       - name: Comment PR with changed files
         if: steps.autocommit.outputs.changes_detected == 'true' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
-            const {data: files} = await github.rest.repos.compareCommits({
+            const commit = process.env.COMMIT;
+            const {data: files} = await github.rest.repos.getCommit({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              base: process.env.GITHUB_SHA + '^',
-              head: process.env.GITHUB_SHA,
+              ref: commit,
             });
             const list = files.files.map(f => `- ${f.status.toUpperCase()} ${f.filename}`).join('\n');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: `**Biome prune:** files updated\n\n${list}`
+              body: `**Biome prune:** files updated in ${commit}\n\n${list}`
             });
+        env:
+          COMMIT: ${{ steps.autocommit.outputs.commit_hash }}
 
-      # Optional: strict check for the rest of rules, but don't block pruning
+      # Optional: run full check (non-blocking)
       - name: Biome check (full)
         run: pnpm biome check .
         continue-on-error: true
