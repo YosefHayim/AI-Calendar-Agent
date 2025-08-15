@@ -1,22 +1,22 @@
 export const TOOLS_DESCRIPTION = {
-  validateUser:
-    'Validates whether a user is registered in the system by querying the database. Requires a unique identifier (e.g., userId or email). Returns a boolean and optional user metadata if found. Does not create, update, or delete any records.',
+	validateUser:
+		"Validates whether a user is registered in the system by querying the database. Requires a unique identifier (e.g., userId or email). Returns a boolean and optional user metadata if found. Does not create, update, or delete any records.",
 
-  deleteEvent: `Deletes a calendar event permanently using its ID. Requires "eventId" in the request body. Once deleted, the event cannot be recovered.
+	deleteEvent: `Deletes a calendar event permanently using its ID. Requires "eventId" in the request body. Once deleted, the event cannot be recovered.
 Example:
 {
   "eventId": "abc123def456"
 }`,
 
-  eventType: `Retrieves the list of all calendars associated with the authenticated user's account via the Google Calendar API. No input parameters required unless filtering is implemented.`,
+	eventType: `Retrieves the list of all calendars associated with the authenticated user's account via the Google Calendar API. No input parameters required unless filtering is implemented.`,
 
-  getEvent: `Fetches details of a specific calendar event using its ID. Requires "eventId" in the request.
+	getEvent: `Fetches details of a specific calendar event using its ID. Requires "eventId" in the request.
 Example:
 {
   "eventId": "abc123def456"
 }`,
 
-  insertEvent: `Creates a new event in the calendar. Requires JSON payload with event summary, description, start/end time in RFC3339 format, time zone, and optional location. Returns the created event object.
+	insertEvent: `Creates a new event in the calendar. Requires JSON payload with event summary, description, start/end time in RFC3339 format, time zone, and optional location. Returns the created event object.
 Example:
 {
   "summary": "Quick Standup Meeting",
@@ -32,7 +32,7 @@ Example:
   }
 }`,
 
-  updateEvent: `Updates details of an existing calendar event. Requires "eventId" and an "updates" object containing the fields to modify. Supports changes to summary, description, start/end time, and location. Returns the updated event object.
+	updateEvent: `Updates details of an existing calendar event. Requires "eventId" and an "updates" object containing the fields to modify. Supports changes to summary, description, start/end time, and location. Returns the updated event object.
 Example:
 {
   "eventId": "abc123def456",

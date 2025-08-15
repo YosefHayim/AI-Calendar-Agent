@@ -1,117 +1,18 @@
-name: Cleanup unused imports (Biome)
+name: Prune Imports
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
-
-permissions:
-  contents: write
-  pull-requests: write
+    branches: [main]
 
 jobs:
-  prune-imports:
+  biome-prune:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-
-      - uses: pnpm/action-setup@v4
-        with: { version: 10 }
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
-      - name: Prepare Biome prune config
-        run: |
-          set -euo pipefail
-          CONFIG=""
-          if [ -f biome.json ]; then CONFIG="biome.json"; fi
-          if [ -f biome.jsonc ]; then CONFIG="biome.jsonc"; fi
-          if [ -z "${CONFIG}" ]; then echo "No biome.json/jsonc found"; exit 1; fi
-          mv "${CONFIG}" "${CONFIG}.full"
-          # Minimal prune-only config: remove unused vars/imports + organize imports
-          cat > "${CONFIG}" <<'EOF'
-          {
-            "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
-            "linter": {
-              "enabled": true,
-              "rules": { "suspicious": { "noUnusedVariables": "error" } }
-            },
-            "assist": {
-              "actions": {
-                "source": { "organizeImports": "on" }
-              }
-            },
-            "formatter": { "enabled": true }
-          }
-          EOF
-
-      - name: Remove unused imports
-        run: npm run prune-imports
-
-      - name: Restore full Biome config
-        run: |
-          CONFIG=""
-          if [ -f biome.json.full ]; then CONFIG="biome.json"; fi
-          if [ -f biome.jsonc.full ]; then CONFIG="biome.jsonc"; fi
-          mv "${CONFIG}.full" "${CONFIG}"
-
-      - name: Commit changes (if any)
-        id: autocommit
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore: prune unused imports via Biome [skip ci]"
-          file_pattern: |
-            **/*.ts
-            **/*.tsx
-            **/*.js
-            **/*.jsx
-            **/*.mjs
-            **/*.cjs
-
-      - name: Summarize changed files
-        if: steps.autocommit.outputs.changes_detected == 'true'
-        run: |
-          echo "### Files updated" >> $GITHUB_STEP_SUMMARY
-          git show --name-status --pretty=oneline ${{ steps.autocommit.outputs.commit_hash }} | tail -n +2 >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "#### Diffstat" >> $GITHUB_STEP_SUMMARY
-          git show --stat ${{ steps.autocommit.outputs.commit_hash }} >> $GITHUB_STEP_SUMMARY
-          git show ${{ steps.autocommit.outputs.commit_hash }} > pruned.patch
-
-      - name: Upload diff artifact
-        if: steps.autocommit.outputs.changes_detected == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: pruned-diff
-          path: pruned.patch
-
-      - name: Comment PR with changed files
-        if: steps.autocommit.outputs.changes_detected == 'true' && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const commit = process.env.COMMIT;
-            const { data } = await github.rest.repos.getCommit({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: commit,
-            });
-            const list = (data.files || []).map(f => `- ${f.status.toUpperCase()} ${f.filename}`).join('\n') || '(no file list)';
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: `**Biome prune:** files updated in ${commit}\n\n${list}`
-            });
-        env:
-          COMMIT: ${{ steps.autocommit.outputs.commit_hash }}
-
-      - name: Biome check (full)
-        run: pnpm biome check .
-        continue-on-error: true
+      - run: pnpm install
+      - run: pnpm prune-imports

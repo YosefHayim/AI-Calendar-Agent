@@ -1,7 +1,7 @@
 {
-  "watch": ["app.ts", "src", "telegram-bot"],
-  "ignore": ["node_modules"],
-  "ext": "ts,json",
-  "exec": "ts-node -r tsconfig-paths/register app.ts",
-  "legacyWatch": true
+	"watch": ["app.ts", "src", "telegram-bot"],
+	"ignore": ["node_modules"],
+	"ext": "ts,json",
+	"exec": "ts-node -r tsconfig-paths/register app.ts",
+	"legacyWatch": true
 }

@@ -1,67 +1,69 @@
 {
-  "name": "ai-calendar-server",
-  "version": "1.0.0",
-  "description": "AI Calendar assistant",
-  "keywords": [],
-  "homepage": "https://github.com/YosefHayim/AI-Calendar-Server#readme",
-  "bugs": {
-    "url": "https://github.com/YosefHayim/AI-Calendar-Server/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/YosefHayim/AI-Calendar-Server.git"
-  },
-  "license": "ISC",
-  "author": "",
-  "type": "commonjs",
-  "main": "app.ts",
-  "scripts": {
-    "dev": "nodemon",
-    "prune-imports": "biome check --write --unsafe --max-diagnostics 100000 .",
-    "download-env": "doppler secrets download --no-file --format env > .env ",
-    "get-env": "doppler run -- node server.js",
-    "sort": "npx sort-package-json"
-  },
-  "dependencies": {
-    "@googleapis/docs": "^4.0.1",
-    "@grammyjs/commands": "^1.1.0",
-    "@grammyjs/conversations": "^2.1.0",
-    "@grammyjs/menu": "^1.3.1",
-    "@openai/agents": "^0.0.9",
-    "@supabase/supabase-js": "^2.53.0",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "googleapis": "^105.0.0",
-    "grammy": "^1.37.0",
-    "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0",
-    "nodemon": "^3.1.10",
-    "stripe": "^18.4.0",
-    "tsconfig-paths": "^4.2.0",
-    "validator": "^13.15.15",
-    "zod": "^3.25.67"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.0.6",
-    "@eslint/js": "^9.29.0",
-    "@types/cookie-parser": "^1.4.9",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/morgan": "^1.9.10",
-    "@types/node": "^24.0.3",
-    "@types/validator": "^13.15.2",
-    "globals": "^16.2.0",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.35.0",
-    "ultracite": "5.0.32"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "supabase"
-    ]
-  }
+	"name": "ai-calendar-server",
+	"version": "1.0.0",
+	"description": "AI Calendar assistant",
+	"keywords": [],
+	"homepage": "https://github.com/YosefHayim/AI-Calendar-Server#readme",
+	"bugs": {
+		"url": "https://github.com/YosefHayim/AI-Calendar-Server/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/YosefHayim/AI-Calendar-Server.git"
+	},
+	"license": "ISC",
+	"author": "",
+	"type": "commonjs",
+	"main": "app.ts",
+	"scripts": {
+		"dev": "nodemon",
+		"prune-imports": "biome check --write --unsafe --max-diagnostics 100000 .",
+		"download-env": "doppler secrets download --no-file --format env > .env ",
+		"get-env": "doppler run -- node server.js",
+		"sort": "npx sort-package-json",
+		"prepare": "husky install"
+	},
+	"dependencies": {
+		"@googleapis/docs": "^4.0.1",
+		"@grammyjs/commands": "^1.1.0",
+		"@grammyjs/conversations": "^2.1.0",
+		"@grammyjs/menu": "^1.3.1",
+		"@openai/agents": "^0.0.9",
+		"@supabase/supabase-js": "^2.53.0",
+		"cookie-parser": "^1.4.7",
+		"cors": "^2.8.5",
+		"dotenv": "^16.5.0",
+		"express": "^5.1.0",
+		"googleapis": "^105.0.0",
+		"grammy": "^1.37.0",
+		"jsonwebtoken": "^9.0.2",
+		"morgan": "^1.10.0",
+		"nodemon": "^3.1.10",
+		"stripe": "^18.4.0",
+		"tsconfig-paths": "^4.2.0",
+		"validator": "^13.15.15",
+		"zod": "^3.25.67"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.0.6",
+		"@eslint/js": "^9.29.0",
+		"@types/cookie-parser": "^1.4.9",
+		"@types/cors": "^2.8.19",
+		"@types/express": "^5.0.3",
+		"@types/jsonwebtoken": "^9.0.10",
+		"@types/morgan": "^1.9.10",
+		"@types/node": "^24.0.3",
+		"@types/validator": "^13.15.2",
+		"globals": "^16.2.0",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.8.3",
+		"typescript-eslint": "^8.35.0",
+		"ultracite": "5.0.32",
+		"husky": "^8.0.0"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"supabase"
+		]
+	}
 }
