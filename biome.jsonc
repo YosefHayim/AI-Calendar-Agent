@@ -1,6 +1,6 @@
-// biome.jsonc
 {
-	"$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
-	"linter": { "enabled": true },
-	"formatter": { "enabled": true }
+  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "extends": [
+    "ultracite"
+  ]
 }
