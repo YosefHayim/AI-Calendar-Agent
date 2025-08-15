@@ -14,12 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: { fetch-depth: 0 }
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
+        with: { version: 10 }
 
       - uses: actions/setup-node@v4
         with:
@@ -28,23 +26,41 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Swap in prune-only Biome config (noUnusedImports enabled there)
       - name: Prepare Biome prune config
         run: |
-          if [ -f biome.json ]; then mv biome.json biome.full.json; fi
-          cp biome.prune.json biome.json
+          set -euo pipefail
+          CONFIG=""
+          if [ -f biome.json ]; then CONFIG="biome.json"; fi
+          if [ -f biome.jsonc ]; then CONFIG="biome.jsonc"; fi
+          if [ -z "${CONFIG}" ]; then echo "No biome.json/jsonc found"; exit 1; fi
+          mv "${CONFIG}" "${CONFIG}.full"
+          # Minimal prune-only config: remove unused vars/imports + organize imports
+          cat > "${CONFIG}" <<'EOF'
+          {
+            "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+            "linter": {
+              "enabled": true,
+              "rules": {
+                "suspicious": { "noUnusedVariables": "error" }
+              }
+            },
+            "organizeImports": { "enabled": true },
+            "formatter": { "enabled": true }
+          }
+          EOF
 
       - name: Remove unused imports
-        run: pnpm biome check --write --unsafe --max-diagnostics 100000 .
+        run: pnpm biome check --write --apply-unsafe --max-diagnostics 100000 .
 
       - name: Restore full Biome config
         run: |
-          if [ -f biome.full.json ]; then mv -f biome.full.json biome.json; fi
+          CONFIG=""
+          if [ -f biome.json.full ]; then CONFIG="biome.json"; fi
+          if [ -f biome.jsonc.full ]; then CONFIG="biome.jsonc"; fi
+          mv "${CONFIG}.full" "${CONFIG}"
 
-      # Commit back only when we have permission to push (push events or same-repo PRs)
       - name: Commit changes (if any)
         id: autocommit
-        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: prune unused imports via Biome [skip ci]"
@@ -94,7 +110,6 @@ jobs:
         env:
           COMMIT: ${{ steps.autocommit.outputs.commit_hash }}
 
-      # Optional: run full check (non-blocking)
       - name: Biome check (full)
         run: pnpm biome check .
         continue-on-error: true
