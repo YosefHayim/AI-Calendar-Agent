@@ -1,11 +1,11 @@
-import type { Database } from "@/database.types";
-import { GOOGLE_CALENDAR_SCOPES } from "@/types";
-import { SupabaseClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
-import { google } from "googleapis";
-import path from "node:path";
+import path from 'node:path';
+import { SupabaseClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+import { google } from 'googleapis';
+import type { Database } from '@/database.types';
+import { GOOGLE_CALENDAR_SCOPES } from '@/types';
 
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 export const CONFIG = {
   open_ai_api_key: process.env.OPEN_API_KEY,
@@ -22,20 +22,20 @@ export const CONFIG = {
   supabase_service_role_key: process.env.SUPABASE_SERVICE_ROLE_KEY,
 };
 
-export const SUPABASE = new SupabaseClient<Database>(CONFIG.supabase_url || "", CONFIG.supabase_service_role_key || "");
+export const SUPABASE = new SupabaseClient<Database>(CONFIG.supabase_url || '', CONFIG.supabase_service_role_key || '');
 
 export const OAUTH2CLIENT = new google.auth.OAuth2(CONFIG.client_id, CONFIG.client_secret, CONFIG.redirect_url_dev);
 
 export const CALENDAR = google.calendar({
-  version: "v3",
+  version: 'v3',
   auth: OAUTH2CLIENT,
 });
 
 export const requestConfigBase = {
-  calendarId: "primary",
-  sendUpdates: "all",
+  calendarId: 'primary',
+  sendUpdates: 'all',
   supportsAttachments: true,
 };
 
-export const SCOPES = Object.values(GOOGLE_CALENDAR_SCOPE);
-export const SCOPES_STRING = Object.values(GOOGLE_CALENDAR_SCOPES).join(" ");
+export const SCOPES = Object.values(GOOGLE_CALENDAR_SCOPES);
+export const SCOPES_STRING = Object.values(GOOGLE_CALENDAR_SCOPES).join(' ');

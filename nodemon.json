@@ -1,6 +1,6 @@
 {
-  "watch": ["app.ts"],
-  "ignore": ["node_modules"],
+  "watch": ["."],
+  "ignore": ["node_modules", ".git", "dist", "build"],
   "ext": "ts,json",
   "exec": "ts-node -r tsconfig-paths/register app.ts",
   "legacyWatch": true

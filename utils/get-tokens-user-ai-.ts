@@ -10,17 +10,13 @@ export const getTokensOfUserAndAI = (messages: unknown[]) => {
     role: 'user',
     model: CURRENT_MODEL,
   });
-  const userTokens = JSON.parse(
-    execSync(`python ${pythonScript}`, { input: payload }).toString().trim()
-  ).tokens;
+  const userTokens = JSON.parse(execSync(`python ${pythonScript}`, { input: payload }).toString().trim()).tokens;
 
   const payloadAI = JSON.stringify({
     messages,
     role: 'assistant',
     model: CURRENT_MODEL,
   });
-  const aiTokens = JSON.parse(
-    execSync(`python ${pythonScript}`, { input: payloadAI }).toString().trim()
-  ).tokens;
+  const aiTokens = JSON.parse(execSync(`python ${pythonScript}`, { input: payloadAI }).toString().trim()).tokens;
   return { userTokens, aiTokens };
 };

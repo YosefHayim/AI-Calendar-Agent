@@ -3,14 +3,13 @@ import { CONFIG } from '@/config/root-config';
 import { CURRENT_MODEL } from '@/types';
 import { AGENT_TOOLS } from './agents-tools';
 
-setDefaultOpenAIKey(CONFIG.open_ai_api_key!);
+setDefaultOpenAIKey(CONFIG.open_ai_api_key || '');
 
 export const AGENTS = {
   validateUserAuth: new Agent({
     name: 'validate_user_db_agent',
     model: CURRENT_MODEL,
-    instructions:
-      'An agent that sends a request to database and expects in return a response from database that is not error.',
+    instructions: 'An agent that sends a request to database and expects in return a response from database that is not error.',
     tools: [AGENT_TOOLS.validate_user_db],
   }),
   validateEventFields: new Agent({
@@ -54,8 +53,7 @@ Return RFC3339 datetimes and duration minutes. Default summary "Untitled Event";
   deleteEventByIdOrName: new Agent({
     name: 'delete_event_by_id_agent',
     model: CURRENT_MODEL,
-    instructions:
-      'An agent that delete a calendar event based on the title or other identifying detail.',
+    instructions: 'An agent that delete a calendar event based on the title or other identifying detail.',
     tools: [AGENT_TOOLS.delete_event],
   }),
   getCalendarList: new Agent({
@@ -74,8 +72,7 @@ Return RFC3339 datetimes and duration minutes. Default summary "Untitled Event";
   chatWithAgent: new Agent({
     name: 'chat_with_agent',
     model: CURRENT_MODEL,
-    instructions:
-      'An agent that chat with the user and act as personal calendar assistant.',
+    instructions: 'An agent that chat with the user and act as personal calendar assistant.',
     tools: [AGENT_TOOLS.calendar_type],
   }),
 };

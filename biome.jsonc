@@ -1,4 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
-  "extends": ["ultracite"]
+  "extends": ["ultracite"],
+  "formatter": { "lineWidth": 160 },
+  "linter": {
+    "rules": {
+      "style": {
+        "noEnum": "off"
+      },
+      "complexity": {
+        "noExcessiveLinesPerFunction": "off"
+      }
+    }
+  }
 }
