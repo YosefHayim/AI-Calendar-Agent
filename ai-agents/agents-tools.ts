@@ -8,9 +8,9 @@ export const AGENT_TOOLS = {
   validate_user_db: tool({
     name: "validate_user",
     description: TOOLS_DESCRIPTION.validateUser,
-    parameters: eventParameters.validateUserDbParameters,
+    parameters: eventParameters.validateUserDbParamater,
     execute: executionTools.validateUser,
-    errorFunction: async (params, error) => {
+    errorFunction: async (_, error) => {
       return `Failed to validate user from database query Error: ${error}`;
     },
   }),
@@ -25,7 +25,7 @@ export const AGENT_TOOLS = {
     description: TOOLS_DESCRIPTION.insertEvent,
     parameters: eventParameters.insertEventParameters,
     execute: executionTools.insertEvent,
-    errorFunction: async (params, error) => {
+    errorFunction: async (_, error) => {
       return `Failed to insert event. Please check event details or calendar API access. Error: ${error}`;
     },
   } as const),
@@ -61,7 +61,7 @@ export const AGENT_TOOLS = {
     description: TOOLS_DESCRIPTION.eventType,
     parameters: eventParameters.getEventParameters,
     errorFunction: async (_, error) => {
-      return `Failed to determine event type. Please try again. Error: ${error}`;
+      return `Failed to determine calendar type. Please try again. Error: ${error}`;
     },
     execute: executionTools.getCalendarTypes,
   } as const),
@@ -70,6 +70,9 @@ export const AGENT_TOOLS = {
     name: "event_type",
     description: TOOLS_DESCRIPTION.eventType,
     parameters: eventParameters.getEventParameters,
+    errorFunction: async (_, error) => {
+      return `Failed to determine event type. Please try again. Error: ${error}`;
+    },
     execute: executionTools.getCalendarTypes,
   } as const),
 };

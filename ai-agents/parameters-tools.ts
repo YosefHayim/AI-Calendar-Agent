@@ -14,25 +14,11 @@ const fullEventParameters = z.object({
   end: eventTimeParameters,
 });
 
-const validateUserDbParameters = z.object({
-  access_token: z.string(),
-  created_at: z.string().datetime(),
-  email: z.string().email().nullable(),
-  expiry_date: z.number(),
-  id: z.number(),
-  id_token: z.string().nullable(),
-  is_active: z.boolean(),
-  refresh_token: z.string(),
-  refresh_token_expires_in: z.number(),
-  scope: z.string(),
-  token_type: z.string(),
-});
-
 export const eventParameters = {
-  deleteEventParameters: fullEventParameters,
-  eventTypeToolParameters: z.object({}),
   getEventParameters: z.object({}),
+  eventTypeToolParameters: z.object({}),
+  validateUserDbParamater: z.object({ email: z.string() }),
+  deleteEventParameters: fullEventParameters,
   insertEventParameters: fullEventParameters,
   updateEventParameters: fullEventParameters,
-  validateUserDbParameters,
 };

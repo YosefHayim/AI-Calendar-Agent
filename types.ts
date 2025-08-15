@@ -1,7 +1,13 @@
 import { AGENTS } from "@/ai-agents/agents";
 import { AGENT_TOOLS } from "@/ai-agents/agents-tools";
-import { Database } from "./database.types";
 import { calendar_v3 } from "googleapis";
+
+export interface EventParametersProps {
+  summary?: string | null | undefined;
+  description?: string | null | undefined;
+  start?: calendar_v3.Schema$EventDateTime | undefined;
+  end?: calendar_v3.Schema$EventDateTime | undefined;
+}
 
 export enum GOOGLE_CALENDAR_SCOPES {
   APP_CREATED = "https://www.googleapis.com/auth/calendar.app.created",
@@ -20,8 +26,6 @@ export enum PROVIDERS {
   GITHUB = "github",
   LINKEDIN = "linkedin",
 }
-
-export type UserSchema = Database["public"]["Tables"]["calendars_of_users"]["Row"];
 
 export interface SessionData {
   chatId: number;
