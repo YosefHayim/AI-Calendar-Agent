@@ -1,4 +1,3 @@
-import { Database } from "@/database.types";
 import { TOOLS_DESCRIPTION } from "./description-tools";
 import { eventParameters } from "./parameters-tools";
 import { executionTools } from "./execution-tools";
