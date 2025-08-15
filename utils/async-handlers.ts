@@ -1,17 +1,13 @@
-import type { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from "express";
 
-export const reqResAsyncHandler = (
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
-) => {
+export const reqResAsyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    fn(req, res, next)
-      .catch(next)
-      .catch((_error) => {});
+    fn(req, res, next).catch(next).catch(Error);
   };
 };
 
-export const asyncHandler = (fn: (...args: any) => Promise<any>) => {
-  return (...args: any) => {
-    return fn(...args).catch((_error) => {});
+export const asyncHandler = (fn: (...args: unknown[]) => Promise<unknown>) => {
+  return (...args: unknown[]) => {
+    return fn(...args).catch(Error);
   };
 };

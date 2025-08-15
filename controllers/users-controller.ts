@@ -1,19 +1,21 @@
-import type { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { CONFIG, OAUTH2CLIENT, SCOPES, SUPABASE } from '@/config/root-config';
-import { PROVIDERS, STATUS_RESPONSE } from '@/types';
-import { asyncHandler, reqResAsyncHandler } from '@/utils/async-handlers';
-import sendR from '@/utils/send-response';
-import { thirdPartySignInOrSignUp } from '@/utils/third-party-signup-signin-supabase';
+import { CONFIG, OAUTH2CLIENT, SCOPES, SUPABASE } from "@/config/root-config";
+import { PROVIDERS, STATUS_RESPONSE } from "@/types";
+import type { Request, Response } from "express";
+
+import { User } from "@supabase/supabase-js";
+import jwt from "jsonwebtoken";
+import { reqResAsyncHandler } from "@/utils/async-handlers";
+import sendR from "@/utils/send-response";
+import { thirdPartySignInOrSignUp } from "@/utils/third-party-signup-signin-supabase";
 
 const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
   const code = req.query.code as string | undefined;
-  const postmanHeaders = req.headers['user-agent'];
+  const postmanHeaders = req.headers["user-agent"];
 
   const url = OAUTH2CLIENT.generateAuthUrl({
-    access_type: 'offline',
+    access_type: "offline",
     scope: SCOPES,
-    prompt: 'consent',
+    prompt: "consent",
     include_granted_scopes: true,
     redirect_uri: CONFIG.redirect_url_dev,
   });
@@ -21,7 +23,7 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
   // 1. No code yet: send user to consent screen
   if (!code) {
     // If from Postman, just send the URL back instead of redirecting
-    if (postmanHeaders?.includes('Postman')) {
+    if (postmanHeaders?.includes("Postman")) {
       return sendR(res, STATUS_RESPONSE.SUCCESS, url);
     }
     return res.redirect(url);
@@ -33,44 +35,38 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
     // 3. Token still valid
     OAUTH2CLIENT.setCredentials(tokens);
 
-    const user = jwt.decode(tokens.id_token!);
+    const { id_token, refresh_token, expiry_date, access_token, token_type } = tokens;
 
-    const { data, error } = await SUPABASE.from('calendars_of_users')
+    const user = jwt.decode(tokens.id_token!) as jwt.JwtPayload;
+
+    const { data, error } = await SUPABASE.from("")
       .insert({
-        ...tokens,
-        scope: SCOPES.join(' '),
-        //@ts-expect-error
-        email: user.email,
+        refresh_token,
+        expiry_date,
+        access_token,
+        token_type,
+        id_token,
+        scope: SCOPES.join(" "),
+        email: user.email!,
       })
-      //@ts-expect-error
-      .eq('email', user.email)
+      .eq("email", user.email!)
       .select();
 
     if (error) {
-      return sendR(
-        res,
-        STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
-        'Failed to store new tokens.',
-        error
-      );
+      return sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to store new tokens.", error);
     }
 
-    sendR(res, STATUS_RESPONSE.SUCCESS, 'Existing token is still valid.', {
+    sendR(res, STATUS_RESPONSE.SUCCESS, "Existing token is still valid.", {
       data,
     });
   } catch (error) {
-    sendR(
-      res,
-      STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
-      'Failed to process OAuth token exchange.',
-      error
-    );
+    sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to process OAuth token exchange.", error);
   }
 });
 
-const signUpUserReg = asyncHandler(async (req: Request, res: Response) => {
+const signUpUserReg = reqResAsyncHandler(async (req: Request, res: Response) => {
   if (!(req.body.email && req.body.password)) {
-    sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Email and password are required.');
+    sendR(res, STATUS_RESPONSE.BAD_REQUEST, "Email and password are required.");
   }
   const { data, error } = await SUPABASE.auth.signUp({
     email: req.body.email,
@@ -78,50 +74,37 @@ const signUpUserReg = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (error) {
-    sendR(
-      res,
-      STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
-      'Failed to sign up user.',
-      error
-    );
+    sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to sign up user.", error);
     return;
   }
   if (data) {
-    sendR(res, STATUS_RESPONSE.SUCCESS, 'User signed up successfully.', data);
+    sendR(res, STATUS_RESPONSE.SUCCESS, "User signed up successfully.", data);
     return;
   }
 });
 
-const signUpOrSignInWithGoogle = asyncHandler(
-  async (req: Request, res: Response) => {
-    await thirdPartySignInOrSignUp(req, res, PROVIDERS.GOOGLE);
-  }
-);
-
-const signUpUserViaLinkedin = asyncHandler(
-  async (_req: Request, _res: Response) => {}
-);
-
-const signUpUserViaGitHub = asyncHandler(
-  async (req: Request, res: Response) => {
-    await thirdPartySignInOrSignUp(req, res, PROVIDERS.GITHUB);
-  }
-);
-
-const getUserInformation = asyncHandler(async (req, res) => {
-  if (!req.user) {
-    return sendR(res, STATUS_RESPONSE.UNAUTHORIZED, 'User not authenticated.');
-  }
-  sendR(res, STATUS_RESPONSE.SUCCESS, 'User fetched successfully.', req.user);
+const signUpOrSignInWithGoogle = reqResAsyncHandler(async (req: Request, res: Response) => {
+  await thirdPartySignInOrSignUp(req, res, PROVIDERS.GOOGLE);
 });
 
-const deActivateUser = asyncHandler(
-  async (_req: Request, _res: Response) => {}
-);
+const signUpUserViaGitHub = reqResAsyncHandler(async (req: Request, res: Response) => {
+  await thirdPartySignInOrSignUp(req, res, PROVIDERS.GITHUB);
+});
 
-const signInUserReg = asyncHandler(async (req: Request, res: Response) => {
+const getUserInformation = reqResAsyncHandler(async (req: Request, res: Response) => {
+  if (!(req as Request & { user?: User }).user) {
+    return sendR(res, STATUS_RESPONSE.UNAUTHORIZED, "User not authenticated.");
+  }
+  sendR(res, STATUS_RESPONSE.SUCCESS, "User fetched successfully.", (req as Request & { user?: User }).user);
+});
+
+// const deActivateUser = reqResAsyncHandler(
+//   async (_req: Request, _res: Response) => {}
+// );
+
+const signInUserReg = reqResAsyncHandler(async (req: Request, res: Response) => {
   if (!(req.body.email && req.body.password)) {
-    sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Email and password are required ');
+    sendR(res, STATUS_RESPONSE.BAD_REQUEST, "Email and password are required ");
   }
 
   const { data, error } = await SUPABASE.auth.signInWithPassword({
@@ -130,53 +113,39 @@ const signInUserReg = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (error) {
-    sendR(
-      res,
-      STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
-      'Failed to fetch user by email.',
-      error
-    );
+    sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to fetch user by email.", error);
   }
 
-  sendR(res, STATUS_RESPONSE.SUCCESS, 'User signin successfully.', data);
+  sendR(res, STATUS_RESPONSE.SUCCESS, "User signin successfully.", data);
 });
 
-const updateUserById = asyncHandler(
-  async (_req: Request, _res: Response) => {}
-);
-
-const verifyEmailByOpt = asyncHandler(async (req: Request, res: Response) => {
+const verifyEmailByOpt = reqResAsyncHandler(async (req: Request, res: Response) => {
   if (!(req.body.email && req.body.token)) {
-    sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Email and token are required.');
+    sendR(res, STATUS_RESPONSE.BAD_REQUEST, "Email and token are required.");
   }
 
   const { data, error } = await SUPABASE.auth.verifyOtp({
-    type: 'email',
+    type: "email",
     email: req.body.email,
     token: req.body.token,
   });
 
   if (error) {
-    sendR(
-      res,
-      STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
-      'Failed to verify email.',
-      error
-    );
+    sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, "Failed to verify email.", error);
   }
 
-  sendR(res, STATUS_RESPONSE.SUCCESS, 'Email verified successfully.', data);
+  sendR(res, STATUS_RESPONSE.SUCCESS, "Email verified successfully.", data);
 });
 
 export const userController = {
   verifyEmailByOpt,
   signUpUserReg,
   signUpOrSignInWithGoogle,
-  signUpUserViaLinkedin,
+  // signUpUserViaLinkedin,
   signUpUserViaGitHub,
   signInUserReg,
   getUserInformation,
-  deActivateUser,
-  updateUserById,
+  // deActivateUser,
+  // updateUserById,
   generateAuthGoogleUrl,
 };
