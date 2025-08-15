@@ -1,15 +1,6 @@
+// biome.jsonc
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
-  "extends": ["ultracite"],
-  "linter": {
-    "rules": {
-      "correctness": { "noUnusedImports": "error" },
-      "style": "off",
-      "complexity": "off",
-      "performance": "off",
-      "suspicious": "off",
-      "nursery": "off",
-      "a11y": "off"
-    }
-  }
+  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+  "linter": { "enabled": true },
+  "formatter": { "enabled": true }
 }
