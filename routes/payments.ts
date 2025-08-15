@@ -1,3 +1,3 @@
 import express from 'express';
 
-const router = express.Router();
+const _router = express.Router();

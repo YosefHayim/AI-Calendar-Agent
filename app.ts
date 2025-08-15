@@ -13,7 +13,7 @@ import { ROUTES, STATUS_RESPONSE } from './types';
 
 const app = express();
 const PORT = CONFIG.port;
-const BASE_URL = CONFIG.base_url;
+const _BASE_URL = CONFIG.base_url;
 
 app.use(cors());
 app.use(express.json());
@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.status(STATUS_RESPONSE.SUCCESS).send('Server is running.');
 });
 
@@ -34,11 +34,8 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   if (CONFIG.node_env === 'production') {
-    console.log('Server is running on Production environment');
   } else {
-    console.log('Server is running on Development environment');
   }
-  console.log(`Server is running on ${BASE_URL}:${PORT}`);
 });
 
 startTelegramBot();

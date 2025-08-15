@@ -23,7 +23,6 @@ export const authHandler = asyncHandler(
       );
 
     (req as Request & { user: User }).user = user;
-    console.log(`Current user: ${user.email}`);
     next();
   }
 );

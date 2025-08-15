@@ -111,8 +111,6 @@ export const handleEvents = asyncHandler(
           STATUS_RESPONSE.BAD_REQUEST
         );
     }
-
-    console.log(`Calendar action: ${action}, Result:`, result);
     return result;
   }
 );

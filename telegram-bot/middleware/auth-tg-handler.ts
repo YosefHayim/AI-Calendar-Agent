@@ -1,4 +1,3 @@
-import { User } from '@supabase/supabase-js';
 import type { NextFunction } from 'grammy';
 import isEmail from 'validator/lib/isEmail';
 import { SUPABASE } from '@/config/root-config';
@@ -16,7 +15,7 @@ interface TelegramUser {
 export const authTgHandler = async (
   ctx: MyContext,
   next: NextFunction
-): Promise<TelegramUser | void | undefined> => {
+): Promise<TelegramUser | undefined | undefined> => {
   const from = ctx?.from;
   const session = ctx?.session;
 

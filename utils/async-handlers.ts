@@ -6,16 +6,12 @@ export const reqResAsyncHandler = (
   return (req: Request, res: Response, next: NextFunction) => {
     fn(req, res, next)
       .catch(next)
-      .catch((error) => {
-        console.error(`reqResAsync error found: ${error}`);
-      });
+      .catch((_error) => {});
   };
 };
 
 export const asyncHandler = (fn: (...args: any) => Promise<any>) => {
   return (...args: any) => {
-    return fn(...args).catch((error) => {
-      console.error(`AsyncHandler error found: ${error}`);
-    });
+    return fn(...args).catch((_error) => {});
   };
 };

@@ -7,7 +7,7 @@ const formatDate = (date: Date | string | null | undefined): string => {
   } else if (!(date instanceof Date)) {
     return 'Invalid date';
   }
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     return 'Invalid date';
   }
   // Format the date to a readable string

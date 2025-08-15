@@ -5,11 +5,10 @@ import sendR from '@/utils/send-response';
 
 const errorHandler = (
   err: any,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
-  console.error(err.stack);
   const status = err.status || STATUS_RESPONSE.INTERNAL_SERVER_ERROR;
   sendR(res, status, err.message || 'Internal Server Error');
 };

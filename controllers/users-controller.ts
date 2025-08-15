@@ -1,12 +1,6 @@
 import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import {
-  CONFIG,
-  OAUTH2CLIENT,
-  SCOPES,
-  SCOPES_STRING,
-  SUPABASE,
-} from '@/config/root-config';
+import { CONFIG, OAUTH2CLIENT, SCOPES, SUPABASE } from '@/config/root-config';
 import { PROVIDERS, STATUS_RESPONSE } from '@/types';
 import { asyncHandler, reqResAsyncHandler } from '@/utils/async-handlers';
 import sendR from '@/utils/send-response';
@@ -52,7 +46,6 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
       .select();
 
     if (error) {
-      console.error('Error inserting tokens into database:', error);
       return sendR(
         res,
         STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
@@ -65,7 +58,6 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
       data,
     });
   } catch (error) {
-    console.error('generateAuthUrl error:', error);
     sendR(
       res,
       STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
@@ -84,7 +76,6 @@ const signUpUserReg = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (error) {
-    console.error('Error signing up regularly user:', error);
     sendR(
       res,
       STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
@@ -106,7 +97,7 @@ const signUpOrSignInWithGoogle = asyncHandler(
 );
 
 const signUpUserViaLinkedin = asyncHandler(
-  async (req: Request, res: Response) => {}
+  async (_req: Request, _res: Response) => {}
 );
 
 const signUpUserViaGitHub = asyncHandler(
@@ -121,7 +112,9 @@ const getUserInformation = asyncHandler(async (req, res) => {
   sendR(res, STATUS_RESPONSE.SUCCESS, 'User fetched successfully.', req.user);
 });
 
-const deActivateUser = asyncHandler(async (req: Request, res: Response) => {});
+const deActivateUser = asyncHandler(
+  async (_req: Request, _res: Response) => {}
+);
 
 const signInUserReg = asyncHandler(async (req: Request, res: Response) => {
   if (!(req.body.email && req.body.password))
@@ -133,7 +126,6 @@ const signInUserReg = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (error) {
-    console.error('Error signing up regularly user by email:', error);
     sendR(
       res,
       STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
@@ -145,7 +137,9 @@ const signInUserReg = asyncHandler(async (req: Request, res: Response) => {
   sendR(res, STATUS_RESPONSE.SUCCESS, 'User signin successfully.', data);
 });
 
-const updateUserById = asyncHandler(async (req: Request, res: Response) => {});
+const updateUserById = asyncHandler(
+  async (_req: Request, _res: Response) => {}
+);
 
 const verifyEmailByOpt = asyncHandler(async (req: Request, res: Response) => {
   if (!(req.body.email && req.body.token)) {
@@ -159,7 +153,6 @@ const verifyEmailByOpt = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (error) {
-    console.error('Error verifying email:', error);
     sendR(
       res,
       STATUS_RESPONSE.INTERNAL_SERVER_ERROR,

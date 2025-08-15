@@ -6,7 +6,7 @@ import { asyncHandler } from './async-handlers';
 import sendR from './send-response';
 
 export const thirdPartySignInOrSignUp = asyncHandler(
-  async (req: Request, res: Response, provider: PROVIDERS) => {
+  async (_req: Request, res: Response, provider: PROVIDERS) => {
     const { data, error } = await SUPABASE.auth.signInWithOAuth({
       provider,
       options: {
@@ -28,8 +28,6 @@ export const thirdPartySignInOrSignUp = asyncHandler(
     }
 
     if (error) {
-      console.error('error received:', error);
-      console.error('Error signing up user:', error);
       sendR(
         res,
         STATUS_RESPONSE.INTERNAL_SERVER_ERROR,

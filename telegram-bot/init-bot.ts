@@ -1,7 +1,6 @@
 import {
   type ConversationFlavor,
   conversations,
-  createConversation,
 } from '@grammyjs/conversations';
 import type { MenuFlavor } from '@grammyjs/menu';
 import { Bot, type Context, type SessionFlavor, session } from 'grammy';
@@ -43,6 +42,5 @@ bot.command('start', async (ctx) => {
 });
 
 export const startTelegramBot = async () => {
-  console.log('Telegram bot is running...');
   await bot.start();
 };

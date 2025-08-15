@@ -8,7 +8,6 @@ export const getUserCalendarTokens = asyncHandler(
     const { data, error } = await SUPABASE.from('calendars_of_users')
       .select(TOKEN_FIELDS)
       .eq(matchBy, user?.email!);
-    console.log(`getUserCalendarTokens: ${data}`);
     return data?.[0] || null;
   }
 );

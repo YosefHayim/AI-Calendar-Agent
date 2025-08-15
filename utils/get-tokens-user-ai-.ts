@@ -22,6 +22,5 @@ export const getTokensOfUserAndAI = (messages: any[]) => {
   const aiTokens = JSON.parse(
     execSync(`python ${pythonScript}`, { input: payloadAI }).toString().trim()
   ).tokens;
-  console.log(`User tokens: ${userTokens}, AI tokens: ${aiTokens}`);
   return { userTokens, aiTokens };
 };

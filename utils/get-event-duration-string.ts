@@ -4,7 +4,11 @@ export function getEventDurationString(startISO: string, endISO: string) {
   const start = new Date(startISO);
   const end = new Date(endISO);
 
-  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start)
+  if (
+    Number.isNaN(start.getTime()) ||
+    Number.isNaN(end.getTime()) ||
+    end <= start
+  )
     return null;
 
   const diffMs = end.getTime() - start.getTime();

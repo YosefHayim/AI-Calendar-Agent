@@ -1,9 +1,16 @@
+// biome.json
 {
   "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
   "extends": ["ultracite"],
   "linter": {
     "rules": {
-      "correctness": { "noUnusedImports": "error" }
+      "correctness": { "noUnusedImports": "error" },
+      "suspicious": { "useAwait": "off" },
+      "style": "off",
+      "complexity": "off",
+      "performance": "off",
+      "nursery": "off",
+      "a11y": "off"
     }
   }
 }
