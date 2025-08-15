@@ -40,11 +40,13 @@ jobs:
             "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
             "linter": {
               "enabled": true,
-              "rules": {
-                "suspicious": { "noUnusedVariables": "error" }
+              "rules": { "suspicious": { "noUnusedVariables": "error" } }
+            },
+            "assist": {
+              "actions": {
+                "source": { "organizeImports": "on" }
               }
             },
-            "organizeImports": { "enabled": true },
             "formatter": { "enabled": true }
           }
           EOF
