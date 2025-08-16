@@ -11,6 +11,11 @@ export type MyContext = Context & MenuFlavor & SessionFlavor<SessionData> & Conv
 
 const bot = new Bot<MyContext>(CONFIG.telegram_access_token || '');
 
+bot.catch((err) => {
+  const ctx = err.ctx;
+  console.error(`Error while handling update ${ctx.update.update_id}:`, err.error);
+});
+
 bot.use(
   session({
     initial: (): SessionData => {

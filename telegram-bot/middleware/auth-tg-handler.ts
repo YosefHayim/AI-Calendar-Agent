@@ -1,63 +1,61 @@
-import type { MyContext } from '../init-bot';
-import type { NextFunction } from 'grammy';
-import { SUPABASE } from '@/config/root-config';
+import type { MiddlewareFn } from 'grammy';
 import isEmail from 'validator/lib/isEmail';
+import { SUPABASE } from '@/config/root-config';
+import type { MyContext } from '../init-bot';
 
-type TelegramUser = {
-  id: number;
-  is_bot: boolean;
-  first_name: string;
-  email: string;
-  username: string;
-  language_code: string;
-};
+export const authTgHandler: MiddlewareFn<MyContext> = async (ctx, next) => {
+  const from = ctx.from;
+  const session = ctx.session;
 
-export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise<TelegramUser | undefined> => {
-  const from = ctx?.from;
-  const session = ctx?.session;
-
-  if (!(from && !session)) {
-    await next();
+  if (!(from && session)) {
+    return next();
   }
 
-  if (from && session) {
+  // Initialize session once
+  if (!session.chatId) {
     session.chatId = from.id;
     session.userId = from.id;
-    session.username = from.username;
-    session.codeLang = from.language_code;
+    session.username = from.username ?? '';
+    session.codeLang = from.language_code ?? 'en';
     session.messageCount = 0;
   }
 
-  const { data, error: _error } = await SUPABASE.from('telegram_users').select('email,first_name').eq('chat_id', session.chatId).single();
+  // Try to load from DB
+  const { data } = await SUPABASE.from('telegram_users').select('email,first_name').eq('chat_id', session.chatId).single();
 
-  if (data?.email && session.messageCount === 1) {
-    await ctx.reply(`Hello there ${data.first_name}`);
-    session.email = data.email;
-    await next();
-    return;
+  if (data?.email) {
+    if (!session.email) {
+      session.email = data.email;
+    }
+    if (session.messageCount === 0) {
+      await ctx.reply(`Hello there ${data.first_name}`);
+    }
+    session.messageCount++;
+    return next(); // single exit with next()
   }
 
+  // Ask for email if missing
   if (!session.email) {
-    if (!isEmail(ctx.message?.text || '')) {
+    const text = ctx.message?.text?.trim();
+    if (!(text && isEmail(text))) {
       await ctx.reply('First time? Please provide your email to authorize:');
-      return;
+      return; // do NOT call next()
     }
 
-    const emailMessage = ctx.message?.text;
-    session.email = emailMessage;
-
-    if (from) {
-      await SUPABASE.from('telegram_users').insert({
-        chat_id: from.id,
-        username: from.username,
-        first_name: from.first_name,
-        language_code: from.language_code,
-        user_id: from.id,
-        email: emailMessage,
-      });
-    }
-
+    // Save email
+    session.email = text;
+    await SUPABASE.from('telegram_users').upsert({
+      chat_id: from.id,
+      user_id: from.id,
+      username: from.username,
+      first_name: from.first_name,
+      language_code: from.language_code,
+      email: text,
+    });
     await ctx.reply('Email has been saved successfully!');
+    session.messageCount++;
+    return next();
   }
-  await next();
+
+  return next();
 };

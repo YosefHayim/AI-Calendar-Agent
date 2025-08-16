@@ -18,7 +18,6 @@
   "scripts": {
     "dev": "nodemon",
     "download-env": "doppler secrets download --no-file --format env > .env ",
-    "get-env": "doppler run -- node server.js",
     "sort": "npx sort-package-json",
     "lint": "npx ultracite lint",
     "format": "npx ultracite format --unsafe",
