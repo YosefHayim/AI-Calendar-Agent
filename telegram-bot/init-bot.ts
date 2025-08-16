@@ -1,4 +1,4 @@
-import { type ConversationFlavor, conversations, createConversation } from '@grammyjs/conversations';
+import { type ConversationFlavor, conversations } from '@grammyjs/conversations';
 import { run } from '@grammyjs/runner';
 import { Bot, type Context, type SessionFlavor, session } from 'grammy';
 import { CONFIG } from '@/config/root-config';
@@ -31,7 +31,7 @@ bot.use(
 
 bot.use(authTgHandler);
 bot.use(conversations());
-bot.use(createConversation('scheduleEvent'));
+// bot.use(createConversation('scheduleEvent'));
 
 bot.command('schedule', (ctx) => ctx.conversation.enter('scheduleEvent'));
 

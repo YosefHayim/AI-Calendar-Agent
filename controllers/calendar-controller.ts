@@ -47,6 +47,7 @@ const getAllEvents = reqResAsyncHandler(async (req, res) => {
 
 const getAllFilteredEvents = reqResAsyncHandler(async (req, res) => {
   const r = await eventsHandler(req, ACTION.GET, undefined, req.query);
+
   sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully retrieved all filtered events', r);
 });
 

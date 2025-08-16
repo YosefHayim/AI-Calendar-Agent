@@ -1,7 +1,8 @@
-import type { User } from '@supabase/supabase-js';
 import type { NextFunction, Request, Response } from 'express';
-import { SUPABASE } from '@/config/root-config';
+
 import { STATUS_RESPONSE } from '@/types';
+import { SUPABASE } from '@/config/root-config';
+import type { User } from '@supabase/supabase-js';
 import { asyncHandler } from '@/utils/async-handlers';
 import sendR from '@/utils/send-response';
 
