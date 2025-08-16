@@ -1,7 +1,7 @@
-import type { NextFunction } from 'grammy';
-import isEmail from 'validator/lib/isEmail';
-import { SUPABASE } from '@/config/root-config';
 import type { MyContext } from '../init-bot';
+import type { NextFunction } from 'grammy';
+import { SUPABASE } from '@/config/root-config';
+import isEmail from 'validator/lib/isEmail';
 
 type TelegramUser = {
   id: number;
@@ -37,7 +37,6 @@ export const authTgHandler = async (ctx: MyContext, next: NextFunction): Promise
     return;
   }
 
-  // Check if email is already collected in this session
   if (!session.email) {
     if (!isEmail(ctx.message?.text || '')) {
       await ctx.reply('First time? Please provide your email to authorize:');
