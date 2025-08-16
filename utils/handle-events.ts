@@ -10,7 +10,7 @@ import { initCalendarWithUserTokens } from './init-calendar-with-user-tokens';
 import { TOKEN_FIELDS } from './storage';
 
 export const eventsHandler = asyncHandler(
-  async (req?: Request | null, action?: ACTION, eventData?: SCHEMA_EVENT_PROPS | Record<string, string> , extra?: Record<string, unknown>): Promise<unknown> => {
+  async (req?: Request | null, action?: ACTION, eventData?: SCHEMA_EVENT_PROPS | Record<string, string>, extra?: Record<string, unknown>): Promise<unknown> => {
     let user: User | undefined;
     let credentials!: TokensProps;
 
@@ -26,7 +26,7 @@ export const eventsHandler = asyncHandler(
         throw new Error(`Could not fetch credentials for user: ${error?.message || 'No data'}`);
       }
 
-      credentials = data[0];
+      credentials = data[0] as TokensProps;
     }
 
     // Fallback: if no credentials, throw
