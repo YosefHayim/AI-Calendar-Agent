@@ -1,3 +1,4 @@
+import { run } from '@grammyjs/runner';
 import { Bot, type Context, type SessionFlavor, session } from 'grammy';
 
 import { CONFIG } from '@/config/root-config';
@@ -29,7 +30,8 @@ bot.use(
 );
 
 bot.use(authTgHandler);
+bot.use(hydrateReply);
 
-export const startTelegramBot = async () => {
-  await bot.start();
+export const startTelegramBot = () => {
+  run(bot);
 };
