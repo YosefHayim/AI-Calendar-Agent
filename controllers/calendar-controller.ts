@@ -1,13 +1,13 @@
-import type { User } from '@supabase/supabase-js';
+import { ACTION, STATUS_RESPONSE } from '@/types';
 
 import type { Request } from 'express';
+import type { User } from '@supabase/supabase-js';
 import type { calendar_v3 } from 'googleapis';
-import { requestConfigBase } from '@/config/root-config';
-import { ACTION, STATUS_RESPONSE } from '@/types';
-import { reqResAsyncHandler } from '@/utils/async-handlers';
+import { eventsHandler } from '@/utils/handle-events';
 import { getUserCalendarTokens } from '@/utils/get-user-calendar-tokens';
-import { handleEvents } from '@/utils/handle-events';
 import { initCalendarWithUserTokens } from '@/utils/init-calendar-with-user-tokens';
+import { reqResAsyncHandler } from '@/utils/async-handlers';
+import { requestConfigBase } from '@/config/root-config';
 import sendR from '@/utils/send-response';
 
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
@@ -41,22 +41,22 @@ const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
 });
 
 const getAllEvents = reqResAsyncHandler(async (req, res) => {
-  const r = await handleEvents(req, ACTION.GET);
+  const r = await eventsHandler(req, ACTION.GET);
   sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully retrieved all events', r);
 });
 
 const getAllFilteredEvents = reqResAsyncHandler(async (req, res) => {
-  const r = await handleEvents(req, ACTION.GET, undefined, req.query);
+  const r = await eventsHandler(req, ACTION.GET, undefined, req.query);
   sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully retrieved all filtered events', r);
 });
 
 const createEvent = reqResAsyncHandler(async (req, res) => {
-  const r = await handleEvents(req, ACTION.INSERT, req.body);
+  const r = await eventsHandler(req, ACTION.INSERT, req.body);
   sendR(res, STATUS_RESPONSE.CREATED, 'Event created successfully', r);
 });
 
 const updateEvent = reqResAsyncHandler(async (req, res) => {
-  const r = await handleEvents(req, ACTION.UPDATE, {
+  const r = await eventsHandler(req, ACTION.UPDATE, {
     id: req.params.eventId,
     ...req.body,
   });
@@ -64,7 +64,7 @@ const updateEvent = reqResAsyncHandler(async (req, res) => {
 });
 
 const deleteEvent = reqResAsyncHandler(async (req, res) => {
-  const r = await handleEvents(req, ACTION.DELETE, { id: req.params.eventId });
+  const r = await eventsHandler(req, ACTION.DELETE, { id: req.params.eventId });
   sendR(res, STATUS_RESPONSE.NOT_FOUND, 'Event deleted successfully', r);
 });
 

@@ -1,9 +1,10 @@
-import type { calendar_v3 } from 'googleapis';
 import { CALENDAR, SUPABASE } from '@/config/root-config';
+
 import { ACTION } from '@/types';
-import { asyncHandler } from '@/utils/async-handlers';
-import { handleEvents } from '@/utils/handle-events';
 import { TOKEN_FIELDS } from '@/utils/storage';
+import { asyncHandler } from '@/utils/async-handlers';
+import type { calendar_v3 } from 'googleapis';
+import { eventsHandler } from '@/utils/handle-events';
 import { formatEventData } from './agent-utils';
 
 export const executionTools = {
@@ -22,16 +23,16 @@ export const executionTools = {
 
   updateEvent: asyncHandler((params: calendar_v3.Schema$Event) => {
     const eventData: calendar_v3.Schema$Event = formatEventData(params);
-    return handleEvents(null, ACTION.UPDATE, eventData);
+    return eventsHandler(null, ACTION.UPDATE, eventData);
   }),
 
   insertEvent: asyncHandler((params: calendar_v3.Schema$Event) => {
     const eventData: calendar_v3.Schema$Event = formatEventData(params);
-    return handleEvents(null, ACTION.INSERT, eventData);
+    return eventsHandler(null, ACTION.INSERT, eventData);
   }),
 
   getEvent: asyncHandler(() => {
-    return handleEvents(null, ACTION.GET);
+    return eventsHandler(null, ACTION.GET);
   }),
 
   getCalendarTypes: asyncHandler(async () => {
@@ -40,7 +41,11 @@ export const executionTools = {
     return allCalendars;
   }),
 
-  deleteEvent: asyncHandler((params: calendar_v3.Params$Resource$Events$Delete) => {
-    return handleEvents(null, ACTION.DELETE, params.eventId);
+  deleteEvent: asyncHandler((params:Record<string, string>) => {
+    if (!params.eventId) throw new Error('Event ID or name is missing to delete event.')
+    const eventData = {
+      eventId:params.eventId
+    }
+    return eventsHandler(null, ACTION.DELETE, eventData);
   }),
 };
