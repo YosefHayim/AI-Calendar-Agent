@@ -50,7 +50,6 @@ export enum ROUTES {
   USERS = '/api/users',
   CALENDAR = '/api/calendars',
   TELEGRAM_USERS = '/api/telegram-users',
-  CONVERSATION_STATS = '/api/conversation-stats',
 }
 
 export enum STATUS_RESPONSE {

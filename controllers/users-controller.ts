@@ -8,7 +8,7 @@ import { reqResAsyncHandler } from '@/utils/async-handlers';
 import sendR from '@/utils/send-response';
 import { thirdPartySignInOrSignUp } from '@/utils/third-party-signup-signin-supabase';
 
-const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
+const generateAuthGoogleUrl = reqResAsyncHandler(async (req: Request, res: Response) => {
   const code = req.query.code as string | undefined;
   const postmanHeaders = req.headers['user-agent'] || '';
 
@@ -35,22 +35,21 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req, res) => {
     // 3. Token still valid
     OAUTH2CLIENT.setCredentials(tokens);
 
-    const { id_token, refresh_token, expiry_date, access_token, token_type } = tokens;
+    const { id_token, refresh_token, expiry_date, access_token, token_type, scope } = tokens;
 
-    const user = jwt.decode(tokens.id_token || '') as jwt.JwtPayload;
+    const { email } = jwt.decode(id_token || '') as { email: string };
 
     const { data, error } = await SUPABASE.from('calendars_of_users')
-      .insert({
+      .update({
         refresh_token,
-        user_id: '',
         expiry_date,
         access_token,
         token_type,
         id_token,
-        scope: SCOPES.join(' '),
-        email: user.email,
+        scope,
+        email,
       })
-      .eq('email', user.email)
+      .eq('email', email)
       .select();
 
     if (error) {

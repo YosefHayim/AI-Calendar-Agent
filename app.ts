@@ -13,7 +13,6 @@ import usersRouter from '@/routes/users';
 
 const app = express();
 const PORT = CONFIG.port;
-const _BASE_URL = CONFIG.base_url;
 
 app.use(cors());
 app.use(express.json());
@@ -33,9 +32,8 @@ app.use(errorHandler);
 
 app.listen(PORT, (error?: Error) => {
   if (error) {
-    throw error
+    throw error;
   }
-  console.log('Server is running...')
 });
 
 startTelegramBot();
