@@ -57,7 +57,6 @@ export const eventsHandler = asyncHandler(
             durationOfEvent: getEventDurationString(event.start?.date || (event.start?.dateTime as string), event.end?.date || (event.end?.dateTime as string)),
             description: event.description || null,
             location: event.location || null,
-            start: event.start?.date || event.start?.dateTime,
           })) ||
           [].sort(
             (a: { start: string | null | undefined }, b: { start: string | null | undefined }) =>
