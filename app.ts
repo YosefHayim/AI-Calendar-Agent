@@ -1,14 +1,15 @@
-import path from 'node:path';
+import { ROUTES, STATUS_RESPONSE } from './types';
+
+import { CONFIG } from '@/config/root-config';
+import calendarRoute from '@/routes/calendar-route';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import errorHandler from '@/middlewares/error-handler';
 import express from 'express';
 import morgan from 'morgan';
-import { CONFIG } from '@/config/root-config';
-import errorHandler from '@/middlewares/error-handler';
-import calendarRoute from '@/routes/calendar-route';
-import usersRouter from '@/routes/users';
+import path from 'node:path';
 import { startTelegramBot } from '@/telegram-bot/init-bot';
-import { ROUTES, STATUS_RESPONSE } from './types';
+import usersRouter from '@/routes/users';
 
 const app = express();
 const PORT = CONFIG.port;
@@ -30,6 +31,11 @@ app.use(ROUTES.CALENDAR, calendarRoute);
 
 app.use(errorHandler);
 
-app.listen(PORT);
+app.listen(PORT, (error?: Error) => {
+  if (error) {
+    throw error
+  }
+  console.log('Server is running...')
+});
 
 startTelegramBot();

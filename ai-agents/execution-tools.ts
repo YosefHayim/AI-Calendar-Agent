@@ -41,11 +41,13 @@ export const executionTools = {
     return allCalendars;
   }),
 
-  deleteEvent: asyncHandler((params:Record<string, string>) => {
-    if (!params.eventId) throw new Error('Event ID or name is missing to delete event.')
-    const eventData = {
-      eventId:params.eventId
+  deleteEvent: asyncHandler((params: Record<string, string>) => {
+    if (!params.eventId) {
+      throw new Error('Event ID or name is missing to delete event.');
     }
+    const eventData = {
+      Id: params.eventId,
+    };
     return eventsHandler(null, ACTION.DELETE, eventData);
   }),
 };

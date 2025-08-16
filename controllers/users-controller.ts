@@ -1,8 +1,9 @@
-import type { User } from '@supabase/supabase-js';
-import type { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
 import { CONFIG, OAUTH2CLIENT, SCOPES, SUPABASE } from '@/config/root-config';
 import { PROVIDERS, STATUS_RESPONSE } from '@/types';
+import type { Request, Response } from 'express';
+
+import type { User } from '@supabase/supabase-js';
+import jwt from 'jsonwebtoken';
 import { reqResAsyncHandler } from '@/utils/async-handlers';
 import sendR from '@/utils/send-response';
 import { thirdPartySignInOrSignUp } from '@/utils/third-party-signup-signin-supabase';
@@ -98,9 +99,19 @@ const getUserInformation = (req: Request, res: Response) => {
   sendR(res, STATUS_RESPONSE.SUCCESS, 'User fetched successfully.', (req as Request & { user?: User }).user);
 };
 
-// const deActivateUser = reqResAsyncHandler(
-//   async (_req: Request, _res: Response) => {}
-// );
+const deActivateUser = reqResAsyncHandler(async (req: Request, res: Response) => {
+  const { data, error } = await SUPABASE.from('calendars_of_users').select('email').eq('email', req.body.email);
+  if (error) {
+    return sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to find user.', error);
+  }
+  if (data && data.length > 0) {
+    const { error: updateError } = await SUPABASE.from('calendars_of_users').update({ is_active: false }).eq('email', req.body.email);
+    if (updateError) {
+      return sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to deactivate user.', updateError);
+    }
+    return sendR(res, STATUS_RESPONSE.SUCCESS, 'User deactivated successfully.');
+  }
+});
 
 const signInUserReg = reqResAsyncHandler(async (req: Request, res: Response) => {
   if (!(req.body.email && req.body.password)) {
@@ -141,11 +152,9 @@ export const userController = {
   verifyEmailByOpt,
   signUpUserReg,
   signUpOrSignInWithGoogle,
-  // signUpUserViaLinkedin,
   signUpUserViaGitHub,
   signInUserReg,
   getUserInformation,
-  // deActivateUser,
-  // updateUserById,
+  deActivateUser,
   generateAuthGoogleUrl,
 };

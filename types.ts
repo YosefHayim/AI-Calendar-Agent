@@ -37,13 +37,13 @@ export type SessionData = {
 };
 
 export type TokensProps = {
-  access_token: string | null;
-  refresh_token: string | null;
-  scope: string | undefined;
-  token_type: string | null;
-  id_token: string | null;
-  expiry_date: number | null;
-  refresh_token_expires_in: number | null;
+  access_token?: string | null;
+  refresh_token?: string | null;
+  scope?: string;
+  token_type?: string | null;
+  id_token?: string | null;
+  expiry_date?: number | null;
+  refresh_token_expires_in?: number | null;
 };
 
 export enum ROUTES {

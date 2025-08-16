@@ -1,7 +1,8 @@
 import { Agent, setDefaultOpenAIKey } from '@openai/agents';
+
+import { AGENT_TOOLS } from './agents-tools';
 import { CONFIG } from '@/config/root-config';
 import { CURRENT_MODEL } from '@/types';
-import { AGENT_TOOLS } from './agents-tools';
 
 setDefaultOpenAIKey(CONFIG.open_ai_api_key || '');
 
@@ -16,7 +17,7 @@ export const AGENTS = {
     name: 'validate_event_fields_agent',
     model: CURRENT_MODEL,
     instructions: `Validate and normalize summary, start/end, and duration. 
-Return RFC3339 datetimes and duration minutes. Default summary "Untitled Event"; default start=now; default duration=60m.`,
+    Return RFC3339 datetimes and duration minutes. Default summary "Untitled Event"; default start=now; default duration=60m.`,
     tools: [AGENT_TOOLS.validate_event_fields],
   }),
   insertEvent: new Agent({
@@ -41,11 +42,11 @@ Return RFC3339 datetimes and duration minutes. Default summary "Untitled Event";
     model: CURRENT_MODEL,
     instructions: `An agent that update an existing calendar event.
   
-  Handle updates to:
-  - Summary
-  - Date
-  - Location
-  - Duration 
+    Handle updates to:
+    - Summary
+    - Date
+    - Location
+    - Duration 
   
   If a field is not specified, keep the original value.`,
     tools: [AGENT_TOOLS.update_event],

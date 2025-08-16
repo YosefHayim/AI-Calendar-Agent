@@ -1,13 +1,13 @@
-import { ACTION, STATUS_RESPONSE } from '@/types';
+import type { User } from '@supabase/supabase-js';
 
 import type { Request } from 'express';
-import type { User } from '@supabase/supabase-js';
 import type { calendar_v3 } from 'googleapis';
-import { eventsHandler } from '@/utils/handle-events';
-import { getUserCalendarTokens } from '@/utils/get-user-calendar-tokens';
-import { initCalendarWithUserTokens } from '@/utils/init-calendar-with-user-tokens';
-import { reqResAsyncHandler } from '@/utils/async-handlers';
 import { requestConfigBase } from '@/config/root-config';
+import { ACTION, STATUS_RESPONSE, type TokensProps } from '@/types';
+import { reqResAsyncHandler } from '@/utils/async-handlers';
+import { getUserCalendarTokens } from '@/utils/get-user-calendar-tokens';
+import { eventsHandler } from '@/utils/handle-events';
+import { initCalendarWithUserTokens } from '@/utils/init-calendar-with-user-tokens';
 import sendR from '@/utils/send-response';
 
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
@@ -17,7 +17,7 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
     return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User credentials not found.');
   }
 
-  const calendar = initCalendarWithUserTokens(tokenData);
+  const calendar = initCalendarWithUserTokens(tokenData as TokensProps);
   const r = await calendar.calendarList.list();
   const allCalendars = r.data.items?.map((item: calendar_v3.Schema$CalendarListEntry) => item.summary);
 
@@ -31,7 +31,7 @@ const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
     return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User token not found.');
   }
 
-  const calendar = initCalendarWithUserTokens(tokenData);
+  const calendar = initCalendarWithUserTokens(tokenData as TokensProps);
   const r = await calendar.events.get({
     ...requestConfigBase,
     eventId: req.params.eventId,

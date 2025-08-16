@@ -1,7 +1,7 @@
-import { tool } from '@openai/agents';
 import { TOOLS_DESCRIPTION } from './description-tools';
-import { executionTools } from './execution-tools';
 import { eventParameters } from './parameters-tools';
+import { executionTools } from './execution-tools';
+import { tool } from '@openai/agents';
 
 export const AGENT_TOOLS = {
   validate_user_db: tool({
@@ -49,7 +49,7 @@ export const AGENT_TOOLS = {
   delete_event: tool({
     name: 'delete_event',
     description: TOOLS_DESCRIPTION.deleteEvent,
-    parameters: eventParameters.deleteEventParameters,
+    parameters: eventParameters.deleteEventParameter,
     execute: executionTools.deleteEvent,
     errorFunction: (_, error) => {
       return `Failed to delete event. Please check event details or calendar API access. Error: ${error}`;
