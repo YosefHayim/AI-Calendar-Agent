@@ -1,13 +1,13 @@
+import { type ConversationFlavor, conversations, createConversation } from '@grammyjs/conversations';
 import { run } from '@grammyjs/runner';
 import { Bot, type Context, type SessionFlavor, session } from 'grammy';
-
 import { CONFIG } from '@/config/root-config';
 import type { SessionData } from '@/types';
 import { authTgHandler } from './middleware/auth-tg-handler';
 
-export type MyContext = Context & SessionFlavor<SessionData>;
+export type GlobalContext = Context & SessionFlavor<SessionData> & ConversationFlavor<Context>;
 
-const bot = new Bot<MyContext>(CONFIG.telegram_access_token || '');
+const bot = new Bot<GlobalContext>(CONFIG.telegram_access_token || '');
 
 bot.catch((err) => {
   const ctx = err.ctx;
@@ -30,7 +30,10 @@ bot.use(
 );
 
 bot.use(authTgHandler);
-bot.use(hydrateReply);
+bot.use(conversations());
+bot.use(createConversation('scheduleEvent'));
+
+bot.command('schedule', (ctx) => ctx.conversation.enter('scheduleEvent'));
 
 export const startTelegramBot = () => {
   run(bot);
