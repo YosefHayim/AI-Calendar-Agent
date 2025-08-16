@@ -1,6 +1,6 @@
+import type { calendar_v3 } from 'googleapis';
 import type { AGENTS } from '@/ai-agents/agents';
 import type { AGENT_TOOLS } from '@/ai-agents/agents-tools';
-import type { calendar_v3 } from 'googleapis';
 
 export type EventParametersProps = {
   summary?: string | null | undefined;

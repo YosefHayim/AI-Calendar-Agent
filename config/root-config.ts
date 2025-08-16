@@ -1,9 +1,9 @@
-import type { Database } from '@/database.types';
-import { GOOGLE_CALENDAR_SCOPES } from '@/types';
+import path from 'node:path';
 import { SupabaseClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { google } from 'googleapis';
-import path from 'node:path';
+import type { Database } from '@/database.types';
+import { GOOGLE_CALENDAR_SCOPES } from '@/types';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 

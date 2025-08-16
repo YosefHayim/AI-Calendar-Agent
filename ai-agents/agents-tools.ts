@@ -1,7 +1,7 @@
-import { TOOLS_DESCRIPTION } from './description-tools';
-import { eventParameters } from './parameters-tools';
-import { executionTools } from './execution-tools';
 import { tool } from '@openai/agents';
+import { TOOLS_DESCRIPTION } from './description-tools';
+import { executionTools } from './execution-tools';
+import { eventParameters } from './parameters-tools';
 
 export const AGENT_TOOLS = {
   validate_user_db: tool({

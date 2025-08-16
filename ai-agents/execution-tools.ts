@@ -1,10 +1,9 @@
-import { CALENDAR, SUPABASE } from '@/config/root-config';
-
-import { ACTION } from '@/types';
-import { TOKEN_FIELDS } from '@/utils/storage';
-import { asyncHandler } from '@/utils/async-handlers';
 import type { calendar_v3 } from 'googleapis';
+import { CALENDAR, SUPABASE } from '@/config/root-config';
+import { ACTION } from '@/types';
+import { asyncHandler } from '@/utils/async-handlers';
 import { eventsHandler } from '@/utils/handle-events';
+import { TOKEN_FIELDS } from '@/utils/storage';
 import { formatEventData } from './agent-utils';
 
 export const executionTools = {
