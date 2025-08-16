@@ -29,7 +29,6 @@ export const eventsHandler = asyncHandler(
       credentials = data[0] as TokensProps;
     }
 
-    // Fallback: if no credentials, throw
     if (!credentials) {
       throw new Error('No user credentials available for calendar operation.');
     }
@@ -51,20 +50,20 @@ export const eventsHandler = asyncHandler(
           ...extra,
         });
 
-        result = events.data.items
-          ?.map((event: calendar_v3.Schema$Event) => ({
+        const totalEventsFound =
+          events.data.items?.map((event: calendar_v3.Schema$Event) => ({
             eventId: event.id || 'No ID',
             summary: event.summary || 'Untitled Event',
             durationOfEvent: getEventDurationString(event.start?.date || (event.start?.dateTime as string), event.end?.date || (event.end?.dateTime as string)),
             description: event.description || null,
             location: event.location || null,
             start: event.start?.date || event.start?.dateTime,
-          }))
-          .sort(
+          })) ||
+          [].sort(
             (a: { start: string | null | undefined }, b: { start: string | null | undefined }) =>
               new Date(a.start as string).getTime() - new Date(b.start as string).getTime()
           );
-
+        result = { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };
         break;
       }
 
