@@ -1,9 +1,8 @@
-import { CONFIG, OAUTH2CLIENT, SCOPES, SUPABASE } from '@/config/root-config';
-import { PROVIDERS, STATUS_RESPONSE } from '@/types';
-import type { Request, Response } from 'express';
-
 import type { User } from '@supabase/supabase-js';
+import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { CONFIG, OAUTH2CLIENT, SCOPES, SUPABASE } from '@/config/root-config';
+import { PROVIDERS, STATUS_RESPONSE, type TokensProps } from '@/types';
 import { reqResAsyncHandler } from '@/utils/async-handlers';
 import sendR from '@/utils/send-response';
 import { thirdPartySignInOrSignUp } from '@/utils/third-party-signup-signin-supabase';
@@ -32,15 +31,13 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req: Request, res: Respo
   try {
     const { tokens } = await OAUTH2CLIENT.getToken(code);
 
-    // 3. Token still valid
-    OAUTH2CLIENT.setCredentials(tokens);
-
-    const { id_token, refresh_token, expiry_date, access_token, token_type, scope } = tokens;
+    const { id_token, refresh_token, refresh_token_expires_in, expiry_date, access_token, token_type, scope } = tokens as TokensProps;
 
     const { email } = jwt.decode(id_token || '') as { email: string };
 
     const { data, error } = await SUPABASE.from('calendars_of_users')
       .update({
+        refresh_token_expires_in,
         refresh_token,
         expiry_date,
         access_token,
