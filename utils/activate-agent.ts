@@ -7,14 +7,12 @@ export const activateAgent = asyncHandler(async (agentKey: AGENTS_LIST, prompt: 
   const agent = AGENTS[agentKey];
 
   if (!agent) {
-    return 'The provided agent is not valid.';
+    throw new Error('The provided agent is not valid.');
   }
 
   if (!prompt) {
-    return `Please provide the prompt for the agent: ${agent.name}`;
+    throw new Error(`Please provide the prompt for the agent: ${agent.name}`);
   }
 
-  const agentResponse = await run(agent, prompt);
-
-  return agentResponse;
+  return await run(agent, prompt);
 });
