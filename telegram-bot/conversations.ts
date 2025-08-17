@@ -1,7 +1,10 @@
 import type { Conversation } from '@grammyjs/conversations';
+import type { Context } from 'grammy';
 import type { GlobalContext } from './init-bot';
 
-export const scheduleEvent = async (conversation: Conversation, ctx: GlobalContext) => {
+export const scheduleEvent = async (conversation: Conversation<GlobalContext>, ctx: Context) => {
+  const session = await conversation.external((ctx) => ctx.session);
+
   await ctx.reply('Event title?');
   const titleMsg = await conversation.waitFor(':text', { maxMilliseconds: 60_000 }).catch(() => null);
   if (!titleMsg) {
