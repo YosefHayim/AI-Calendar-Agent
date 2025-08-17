@@ -1,10 +1,10 @@
 import type { Conversation } from '@grammyjs/conversations';
 import type { Context } from 'grammy';
+import { calendarRouterAgent } from '@/ai-agents/agents';
 import { activateAgent } from '@/utils/activate-agent';
-import { asyncHandler } from '@/utils/async-handlers';
 import type { GlobalContext } from './init-bot';
 
-export const scheduleEvent = asyncHandler(async (conversation: Conversation<GlobalContext>, ctx: Context) => {
+export const scheduleEvent = async (conversation: Conversation<GlobalContext>, ctx: Context) => {
   {
     const session = await conversation.external((ctx) => ctx.session);
 
@@ -26,9 +26,10 @@ export const scheduleEvent = asyncHandler(async (conversation: Conversation<Glob
       return ctx.reply('Timed out. Use /schedule to try again.');
     }
 
-    const responseOfAgent = await activateAgent('validateUserAuth', `Please validate the user and return the response from db${session.email}`);
-    console.log(responseOfAgent.rawResponses);
+    const { finalOutput } = await activateAgent(calendarRouterAgent, `Please provide me the calendars the user has: ${session.email}`);
+
+    await ctx.reply(finalOutput || 'No output recieved from AI Agent.');
 
     return ctx.reply('Event created ✅');
   }
-});
+};
