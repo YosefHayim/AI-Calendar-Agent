@@ -9,27 +9,34 @@ export const scheduleEvent = async (conversation: Conversation<GlobalContext>, c
     const session = await conversation.external((externalCtx) => externalCtx.session);
 
     await ctx.reply('Summary of the event:');
-    const titleMsg = await conversation.waitFor(':text', { maxMilliseconds: 60_000 }).catch(() => null);
-    if (!titleMsg) {
+    const titleMsg = await conversation.waitFor(':text', { maxMilliseconds: 15_000 }).catch(() => null);
+    if (!titleMsg?.message?.text) {
       return ctx.reply('Timed out. Use /schedule to try again.');
     }
+    const summary = titleMsg.message.text.trim();
 
     await ctx.reply('Date?');
-    const dateMsg = await conversation.waitFor(':text', { maxMilliseconds: 60_000 }).catch(() => null);
-    if (!dateMsg) {
+    const dateMsg = await conversation.waitFor(':text', { maxMilliseconds: 15_000 }).catch(() => null);
+    if (!dateMsg?.message?.text) {
       return ctx.reply('Timed out. Use /schedule to try again.');
     }
+    const date = dateMsg.message.text.trim();
 
     await ctx.reply('Duration of the event?');
-    const durationMsg = await conversation.waitFor(':text', { maxMilliseconds: 60_000 }).catch(() => null);
-    if (!durationMsg) {
+    const durationMsg = await conversation.waitFor(':text', { maxMilliseconds: 15_000 }).catch(() => null);
+    if (!durationMsg?.message?.text) {
       return ctx.reply('Timed out. Use /schedule to try again.');
     }
+    const duration = durationMsg.message.text.trim();
 
-    const { finalOutput } = await activateAgent(calendarRouterAgent, `Please provide me the calendars the user has: ${session.email}`);
+    const { finalOutput } = await activateAgent(
+      calendarRouterAgent,
+      `Please insert the event details of the user ${session.email} into his calendar:
+    Event summary: ${summary}
+    Event date: ${date}
+    Event duration: ${duration}`
+    );
 
-    await ctx.reply(finalOutput || 'No output recieved from AI Agent.');
-
-    return ctx.reply('Event created ✅');
+    await ctx.reply(finalOutput || 'No output received from AI Agent.');
   }
 };
