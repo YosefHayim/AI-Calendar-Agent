@@ -1,3 +1,4 @@
+import type { User } from '@supabase/supabase-js';
 import type { calendar_v3 } from 'googleapis';
 import type { AGENTS } from '@/ai-agents/agents';
 import type { AGENT_TOOLS } from '@/ai-agents/agents-tools';
@@ -8,6 +9,8 @@ export type EventParametersProps = {
   start?: calendar_v3.Schema$EventDateTime | undefined;
   end?: calendar_v3.Schema$EventDateTime | undefined;
 };
+
+export type AuthedRequest = Request & { user: User };
 
 export type GoogleIdTokenPayloadProps = {
   iss: string;

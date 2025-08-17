@@ -1,18 +1,17 @@
 import type { User } from '@supabase/supabase-js';
-
 import type { Request } from 'express';
 import type { calendar_v3 } from 'googleapis';
 import { requestConfigBase } from '@/config/root-config';
 import { ACTION, STATUS_RESPONSE, type TokensProps } from '@/types';
 import { reqResAsyncHandler } from '@/utils/async-handlers';
-import { getUserCalendarTokens } from '@/utils/get-user-calendar-tokens';
+import { fetchCredentialsByEmail } from '@/utils/get-user-calendar-tokens';
 import { eventsHandler } from '@/utils/handle-events';
 import { initCalendarWithUserTokens } from '@/utils/init-calendar-with-user-tokens';
 import sendR from '@/utils/send-response';
 
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
-  const tokenData = await getUserCalendarTokens('email', user);
+  const tokenData = await fetchCredentialsByEmail(user.email || '');
   if (!tokenData) {
     return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User credentials not found in order to retrieve all calendars.');
   }
@@ -26,7 +25,7 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
 
 const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
-  const tokenData = await getUserCalendarTokens('email', user);
+  const tokenData = await fetchCredentialsByEmail(user.email || '');
   if (!tokenData) {
     return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User token not found.');
   }

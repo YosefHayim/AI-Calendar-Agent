@@ -1,13 +1,13 @@
-import type { User } from '@supabase/supabase-js';
 import { SUPABASE } from '@/config/root-config';
+import type { TokensProps } from '@/types';
 import { asyncHandler } from './async-handlers';
 import { TOKEN_FIELDS } from './storage';
 
-export const getUserCalendarTokens = asyncHandler(async (matchBy: 'email', user?: User) => {
-  if (!user || typeof user.email !== 'string') {
-    return null;
-  }
+export const fetchCredentialsByEmail = asyncHandler(async (email: string): Promise<TokensProps> => {
+  const { data, error } = await SUPABASE.from('calendars_of_users').select(TOKEN_FIELDS).eq('email', email).single();
 
-  const { data, error: _error } = await SUPABASE.from('calendars_of_users').select(TOKEN_FIELDS).eq(matchBy, user.email);
-  return data?.[0] || null;
+  if (error || !data) {
+    throw new Error(`Could not fetch credentials for ${email}: ${error?.message || 'No data'}`);
+  }
+  return data as TokensProps;
 });
