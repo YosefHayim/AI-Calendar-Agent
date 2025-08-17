@@ -14,7 +14,7 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
   const tokenData = await getUserCalendarTokens('email', user);
   if (!tokenData) {
-    return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User credentials not found.');
+    return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User credentials not found in order to retrieve all calendars.');
   }
 
   const calendar = initCalendarWithUserTokens(tokenData as TokensProps);
@@ -29,6 +29,10 @@ const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
   const tokenData = await getUserCalendarTokens('email', user);
   if (!tokenData) {
     return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User token not found.');
+  }
+
+  if (!req.params.eventId) {
+    return sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Event ID is required in order to get specific event.');
   }
 
   const calendar = initCalendarWithUserTokens(tokenData as TokensProps);
@@ -57,6 +61,10 @@ const createEvent = reqResAsyncHandler(async (req, res) => {
 });
 
 const updateEvent = reqResAsyncHandler(async (req, res) => {
+  if (!req.params.eventId) {
+    return sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Event ID is required in order to update event.');
+  }
+
   const r = await eventsHandler(req, ACTION.UPDATE, {
     id: req.params.eventId,
     ...req.body,
@@ -65,6 +73,9 @@ const updateEvent = reqResAsyncHandler(async (req, res) => {
 });
 
 const deleteEvent = reqResAsyncHandler(async (req, res) => {
+  if (!req.params.eventId) {
+    return sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Event ID is required in order to delete event.');
+  }
   const r = await eventsHandler(req, ACTION.DELETE, { id: req.params.eventId });
   sendR(res, STATUS_RESPONSE.NOT_FOUND, 'Event deleted successfully', r);
 });
