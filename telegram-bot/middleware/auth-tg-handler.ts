@@ -1,7 +1,7 @@
-import type { GlobalContext } from '../init-bot';
 import type { MiddlewareFn } from 'grammy';
-import { SUPABASE } from '@/config/root-config';
 import isEmail from 'validator/lib/isEmail';
+import { SUPABASE } from '@/config/root-config';
+import type { GlobalContext } from '../init-bot';
 
 export const authTgHandler: MiddlewareFn<GlobalContext> = async (ctx, next) => {
   const from = ctx.from;

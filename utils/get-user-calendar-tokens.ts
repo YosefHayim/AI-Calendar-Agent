@@ -1,7 +1,7 @@
-import { SUPABASE } from '@/config/root-config';
-import { TOKEN_FIELDS } from './storage';
 import type { User } from '@supabase/supabase-js';
+import { SUPABASE } from '@/config/root-config';
 import { asyncHandler } from './async-handlers';
+import { TOKEN_FIELDS } from './storage';
 
 export const getUserCalendarTokens = asyncHandler(async (matchBy: 'email', user?: User) => {
   if (!user || typeof user.email !== 'string') {
