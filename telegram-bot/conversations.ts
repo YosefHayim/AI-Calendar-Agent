@@ -6,7 +6,7 @@ import type { GlobalContext } from './init-bot';
 
 export const scheduleEvent = async (conversation: Conversation<GlobalContext>, ctx: Context) => {
   {
-    const session = await conversation.external((ctx) => ctx.session);
+    const session = await conversation.external((externalCtx) => externalCtx.session);
 
     await ctx.reply('Summary of the event:');
     const titleMsg = await conversation.waitFor(':text', { maxMilliseconds: 60_000 }).catch(() => null);
