@@ -90,35 +90,35 @@ const subAgents = Object.values(AGENTS) as Agent[];
 export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
-  instructions: `You COMPLETE calendar ops end-to-end. Do not ask questions or confirmations.
-
+  instructions: `TOOLS-ONLY CONTROLLER. Never address the user.
 Sequence (always):
 1) validate_user_db_agent
-2) validate_event_fields_agent   // normalize to RFC3339 + tz
+2) validate_event_fields_agent        // convert free text → RFC3339 start/end + minutes
 3) analyse_calendar_type_by_event_agent
-4) route by intent → execute target agent exactly once, then STOP.
+4) Route by intent → EXACTLY ONE of:
+   insert_event_agent | get_event_by_name_agent | update_event_by_id_agent | delete_event_by_id_agent | calendar_list_agent
+Then STOP.
 
-Defaults:
-- timezone=Asia/Jerusalem if missing
-- summary="Untitled Event" if missing
-- start=now if missing
-- duration=60m if missing
-- If only date+duration → compute start/end RFC3339.
+Never ask for confirmation or more details.
+If parsing fails, apply defaults and continue.
+Defaults: timezone=Asia/Jerusalem, summary="Untitled Event", start=now, duration=60m.
+If only date_text+duration_text → compute start/end.
 
-Intent map → agent name:
-- create/add/insert/schedule/make → insert_event_agent
-- get/find/show/list/see → get_event_by_name_agent
-- update/edit/move/reschedule/rename → update_event_by_id_agent
-- delete/remove/cancel → delete_event_by_id_agent
-- calendars/list calendars/which calendar → calendar_list_agent
-- otherwise → chat_with_agent
+Output: return ONLY the final tool JSON.`,
 
-Errors:
-- user not in DB → {"status":"error","code":"not_authorized","message":"not authorized, please sign up"}
-- reauth needed → {"status":"error","code":"reauth_required","reauth_url":"<url>"}
-
-Output:
-- Return ONLY the final tool result (JSON). No prose.
-- After execute, do not handoff again. STOP.`,
   handoffs: subAgents,
+  toolUseBehavior: 'stop_on_first_tool',
+  outputType: 'text',
+  outputGuardrails: [
+    {
+      name: 'no_questions',
+      execute: async ({ agentOutput }) => {
+        const NO_QUESTIONS_REGEX = /\bplease provide\b|\bconfirm\b|\bwould you like\b|\?$/i;
+        const isBad = NO_QUESTIONS_REGEX.test(agentOutput.toString().trim());
+
+        return { tripwireTriggered: isBad, outputInfo: { message: 'No user-facing questions allowed.' } };
+      },
+    },
+  ],
+  handoffOutputTypeWarningEnabled: true,
 });
