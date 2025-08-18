@@ -25,7 +25,7 @@ export const formatEventData = (params: Partial<Event>): Event => {
   // Validate required fields
   // Build final event payload
   const event: Event = {
-    id: params.id, // required for update/delete
+    id: params.id || crypto.randomUUID(), // required for update/delete
     summary: params.summary,
     description: params.description,
     location: params.location,
