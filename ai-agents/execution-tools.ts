@@ -1,8 +1,10 @@
 import type { calendar_v3 } from 'googleapis';
-import { CALENDAR, SUPABASE } from '@/config/root-config';
+import { SUPABASE } from '@/config/root-config';
 import { ACTION } from '@/types';
 import { asyncHandler } from '@/utils/async-handlers';
+import { fetchCredentialsByEmail } from '@/utils/get-user-calendar-tokens';
 import { eventsHandler } from '@/utils/handle-events';
+import { initCalendarWithUserTokens } from '@/utils/init-calendar-with-user-tokens';
 import { TOKEN_FIELDS } from '@/utils/storage';
 import { formatEventData } from './agent-utils';
 
@@ -20,33 +22,35 @@ export const executionTools = {
     return eventData;
   }),
 
-  updateEvent: asyncHandler((params: calendar_v3.Schema$Event) => {
+  updateEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
     const eventData: calendar_v3.Schema$Event = formatEventData(params);
-    return eventsHandler(null, ACTION.UPDATE, eventData);
+    return eventsHandler(null, ACTION.UPDATE, eventData, { email: params.email });
   }),
 
-  insertEvent: asyncHandler((params: calendar_v3.Schema$Event) => {
+  insertEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
     const eventData: calendar_v3.Schema$Event = formatEventData(params);
-    return eventsHandler(null, ACTION.INSERT, eventData);
+    return eventsHandler(null, ACTION.INSERT, eventData, { email: params.email });
   }),
 
-  getEvent: asyncHandler(() => {
-    return eventsHandler(null, ACTION.GET);
+  getEvent: asyncHandler((params: { email: string }) => {
+    return eventsHandler(null, ACTION.GET, {}, { email: params.email });
   }),
 
-  getCalendarTypes: asyncHandler(async () => {
+  getCalendarTypes: asyncHandler(async (params: { email: string }) => {
+    const tokenProps = await fetchCredentialsByEmail(params.email);
+    const CALENDAR = initCalendarWithUserTokens(tokenProps);
     const r = await CALENDAR.calendarList.list();
     const allCalendars = r.data.items?.map((item) => item.summary);
     return allCalendars;
   }),
 
-  deleteEvent: asyncHandler((params: Record<string, string>) => {
+  deleteEvent: asyncHandler((params: Record<string, string> & { email: string }) => {
     if (!params.eventId) {
       throw new Error('Event ID or name is missing to delete event.');
     }
     const eventData = {
       Id: params.eventId,
     };
-    return eventsHandler(null, ACTION.DELETE, eventData);
+    return eventsHandler(null, ACTION.DELETE, eventData, { email: params.email });
   }),
 };

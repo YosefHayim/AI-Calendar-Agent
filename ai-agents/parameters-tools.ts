@@ -16,8 +16,23 @@ const fullEventParameters = z.object({
 });
 
 export const eventParameters = {
-  getEventParameters: z.object({}).describe('Parameters for retrieving an event.'),
-  eventTypeToolParameters: z.object({}).describe('Parameters for determining event type.'),
+  getEventParameters: z
+    .object({
+      email: z
+        .string({ description: 'Unique identifier for the user. Email address is a must.' })
+        .refine((value) => validator.isEmail(value), {
+          message: 'Invalid email address.',
+        })
+        .describe('The email address of the user to validate.'),
+    })
+    .describe('Parameters for retrieving an event.'),
+  eventTypeToolParameters: z
+    .object({
+      email: z.string({ description: 'Unique identifier for the user. Email address is a must.' }).refine((value) => validator.isEmail(value), {
+        message: 'Invalid email address.',
+      }),
+    })
+    .describe('Parameters for determining event type.'),
   validateUserDbParamater: z
     .object({
       email: z
@@ -31,8 +46,30 @@ export const eventParameters = {
   deleteEventParameter: z
     .object({
       eventId: z.string().describe('The unique ID of the event to be deleted.'),
+      email: z
+        .string({ description: 'Unique identifier for the user. Email address is a must.' })
+        .refine((value) => validator.isEmail(value), {
+          message: 'Invalid email address.',
+        })
+        .describe('The email address of the user to validate.'),
     })
     .describe('Parameter for deleting an event.'),
-  insertEventParameters: fullEventParameters.describe('Parameters for inserting a new event.'),
-  updateEventParameters: fullEventParameters.describe('Parameters for updating an existing event.'),
+  insertEventParameters: fullEventParameters
+    .extend({
+      email: z
+        .string({ description: 'Unique identifier for the user. Email address is a must.' })
+        .refine((value) => validator.isEmail(value), {
+          message: 'Invalid email address.',
+        })
+        .describe('The email address of the user to validate.'),
+    })
+    .describe('Parameters for inserting a new event.'),
+  updateEventParameters: fullEventParameters
+    .extend({
+      email: z
+        .string()
+        .refine((value) => validator.isEmail(value), { message: 'Invalid email address.' })
+        .describe('The email address of the user to validate.'),
+    })
+    .describe('Parameters for updating an existing event.'),
 };
