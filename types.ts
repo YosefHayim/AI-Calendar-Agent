@@ -172,7 +172,7 @@ export enum ACTION {
 export type SCHEMA_EVENT_PROPS = calendar_v3.Schema$Event;
 
 export enum TIMEZONE {
-  // Africa
+  DEFAULT = 'Etc/UTC',
   AFRICA_ABIDJAN = 'Africa/Abidjan',
   AFRICA_ACCRA = 'Africa/Accra',
   AFRICA_ADDIS_ABABA = 'Africa/Addis_Ababa',
