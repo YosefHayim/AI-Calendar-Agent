@@ -31,10 +31,16 @@ export const scheduleEvent = async (conversation: Conversation<GlobalContext>, c
 
     const { finalOutput } = await activateAgent(
       calendarRouterAgent,
-      `Please insert the event details of the user ${session.email} into his calendar:
-    Event summary: ${summary}
-    Event date: ${date}
-    Event duration: ${duration}`
+      `{
+  "action": "insert_event",
+  "user_email": ${session.email},
+  "event": {
+    "summary": ${summary},          // free text ok
+    "date_text": ${date},           // e.g. "aug 19 2025"
+    "duration_text": ${duration},   // e.g. "1am 2am" or "1h"
+    "timezone": "Asia/Jerusalem"
+  }
+}`
     );
 
     await ctx.reply(finalOutput || 'No output received from AI Agent.');

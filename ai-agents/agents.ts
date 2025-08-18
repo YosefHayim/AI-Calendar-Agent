@@ -15,19 +15,27 @@ export const AGENTS = {
   validateEventFields: new Agent({
     name: 'validate_event_fields_agent',
     model: CURRENT_MODEL,
-    instructions: `Validate and normalize summary, start/end, and duration. 
-    Return RFC3339 datetimes and duration minutes. Default summary "Untitled Event"; default start=now; default duration=60m.`,
+    instructions: `Normalize free-text event fields to a strict schema without asking for more info.
+  
+  Input may contain: summary?, date_text?, start_text?, end_text?, duration_text?, timezone?
+  Rules:
+  - timezone: default "Asia/Jerusalem"
+  - Parse to RFC3339. If only date_text + duration_text → compute start/end (start=parsed date/time or now).
+  - duration_minutes must be integer.
+  - If summary missing → "Untitled Event"
+  
+  Output ONLY compact JSON:
+  {"summary": "...", "start": "RFC3339", "end": "RFC3339", "duration_minutes": 60, "timezone":"..."}
+  
+  Never handoff. Never ask questions.`,
     tools: [AGENT_TOOLS.validate_event_fields],
   }),
   insertEvent: new Agent({
     name: 'insert_event_agent',
     model: CURRENT_MODEL,
-    instructions: `An agent that insert a new event into the user's calendar.
-    If any required detail is missing, use:
-    - Default Summary title: "Untitled Event"
-    - Date : todays date formatted according to RFC3339.
-    - Default duration: current time + 1 hour.
-    - Omit location if missing.`,
+    instructions: `Insert the event using provided normalized fields.
+  If any required field is missing, compute it ONCE using defaults and proceed.
+  Do not handoff back. Return ONLY the tool’s JSON result.`,
     tools: [AGENT_TOOLS.insert_event],
   }),
   getEventByIdOrName: new Agent({
@@ -82,28 +90,35 @@ const subAgents = Object.values(AGENTS) as Agent[];
 export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
-  handoffDescription: `
-  Router for Google Calendar ops.
-  
-  Sequence:
-  validate_user_agent → analyse_calendar_type_by_event_agent → route by intent → execute.
-  If user not in DB → return "not authorized, please sign up".
-  If calendar not authorized → return reauth callback URL.
-  Pass calendar type to all CRUD calls. Insert/Update may normalize fields (RFC3339 dates).
-  
-  Intent → agent:
-  - create/add/insert/schedule/make → insert_event_agent
-  - get/find/show/list/see → get_event_by_name_agent
-  - update/edit/move/reschedule/rename → update_event_by_id_agent
-  - delete/remove/cancel → delete_event_by_id_agent
-  - calendars/list calendars/which calendar → calendar_list_agent
-  - general chat/help → chat_with_agent
-  
-  Update/Delete resolution:
-  If no event ID, first call get_event_by_name_agent to resolve an ID (prefer exact title+time match), then call the mapped agent.
-  
-  Rules:
-  Never skip validation or calendar-type analysis. No direct user replies; always hand off in the above order.
-  `,
+  instructions: `You COMPLETE calendar ops end-to-end. Do not ask questions or confirmations.
+
+Sequence (always):
+1) validate_user_db_agent
+2) validate_event_fields_agent   // normalize to RFC3339 + tz
+3) analyse_calendar_type_by_event_agent
+4) route by intent → execute target agent exactly once, then STOP.
+
+Defaults:
+- timezone=Asia/Jerusalem if missing
+- summary="Untitled Event" if missing
+- start=now if missing
+- duration=60m if missing
+- If only date+duration → compute start/end RFC3339.
+
+Intent map → agent name:
+- create/add/insert/schedule/make → insert_event_agent
+- get/find/show/list/see → get_event_by_name_agent
+- update/edit/move/reschedule/rename → update_event_by_id_agent
+- delete/remove/cancel → delete_event_by_id_agent
+- calendars/list calendars/which calendar → calendar_list_agent
+- otherwise → chat_with_agent
+
+Errors:
+- user not in DB → {"status":"error","code":"not_authorized","message":"not authorized, please sign up"}
+- reauth needed → {"status":"error","code":"reauth_required","reauth_url":"<url>"}
+
+Output:
+- Return ONLY the final tool result (JSON). No prose.
+- After execute, do not handoff again. STOP.`,
   handoffs: subAgents,
 });
