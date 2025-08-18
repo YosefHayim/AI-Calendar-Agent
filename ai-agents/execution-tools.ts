@@ -48,9 +48,7 @@ export const executionTools = {
     if (!params.eventId) {
       throw new Error('Event ID or name is missing to delete event.');
     }
-    const eventData = {
-      Id: params.eventId,
-    };
+    const eventData = { id: params.eventId };
     return eventsHandler(null, ACTION.DELETE, eventData, { email: params.email });
   }),
 };

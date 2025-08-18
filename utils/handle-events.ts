@@ -8,10 +8,10 @@ import { getEventDurationString } from './get-event-duration-string';
 import { fetchCredentialsByEmail } from './get-user-calendar-tokens';
 import { initCalendarWithUserTokens } from './init-calendar-with-user-tokens';
 
+// eventsandler
 export const eventsHandler = asyncHandler(
-  async (req?: Request | null, action?: ACTION, eventData?: SCHEMA_EVENT_PROPS | Record<string, string>, extra?: Record<string, unknown>): Promise<unknown> => {
+  async (req?: Request | null, action?: ACTION, eventData?: SCHEMA_EVENT_PROPS | Record<string, string>, extra?: Record<string, string>) => {
     const email = (req as AuthedRequest | undefined)?.user?.email ?? (typeof extra?.email === 'string' ? (extra.email as string) : undefined);
-
     if (!email) {
       throw errorTemplate('Email is required to resolve calendar credentials', STATUS_RESPONSE.BAD_REQUEST);
     }
@@ -28,13 +28,13 @@ export const eventsHandler = asyncHandler(
 
     switch (action) {
       case ACTION.GET: {
+        const { email: _omit, ...listExtra } = extra ?? {};
         const events = await calendarEvents.list({
           ...requestConfigBase,
           prettyPrint: true,
           maxResults: 2500,
-          ...extra,
+          ...listExtra,
         });
-
         const items = events.data.items ?? [];
         const totalEventsFound = items
           .map((event: calendar_v3.Schema$Event) => {
@@ -49,38 +49,20 @@ export const eventsHandler = asyncHandler(
               start: startRaw as string | null,
             };
           })
-          .sort((a, b) => {
-            const ta = a.start ? new Date(a.start).getTime() : 0;
-            const tb = b.start ? new Date(b.start).getTime() : 0;
-            return ta - tb;
-          });
+          .sort((a, b) => (a.start ? new Date(a.start).getTime() : 0) - (b.start ? new Date(b.start).getTime() : 0));
 
         result = { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };
         break;
       }
-
       case ACTION.INSERT:
-        result = await calendarEvents.insert({
-          ...requestConfigBase,
-          requestBody: eventData,
-        });
+        result = await calendarEvents.insert({ ...requestConfigBase, requestBody: eventData });
         break;
-
       case ACTION.UPDATE:
-        result = await calendarEvents.update({
-          ...requestConfigBase,
-          eventId: eventData?.id || '',
-          requestBody: eventData,
-        });
+        result = await calendarEvents.update({ ...requestConfigBase, eventId: eventData?.id || ('' as string), requestBody: eventData });
         break;
-
       case ACTION.DELETE:
-        result = await calendarEvents.delete({
-          ...requestConfigBase,
-          eventId: eventData?.id || '',
-        });
+        result = await calendarEvents.delete({ ...requestConfigBase, eventId: eventData?.id || ('' as string) });
         break;
-
       default:
         throw errorTemplate('Unsupported calendar action', STATUS_RESPONSE.BAD_REQUEST);
     }
