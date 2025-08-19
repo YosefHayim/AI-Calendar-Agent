@@ -17,9 +17,11 @@ export const executionTools = {
     return data;
   }),
 
-  validateEventFields: asyncHandler((params: calendar_v3.Schema$Event) => {
-    const eventData = formatEventData(params);
-    return eventData;
+  validateEventFields: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
+    return {
+      ...formatEventData(params),
+      email: params.email,
+    };
   }),
 
   updateEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {

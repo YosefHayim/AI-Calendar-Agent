@@ -107,7 +107,6 @@ If only date_text+duration_text → compute start/end.
 Output: return ONLY the final tool JSON.`,
 
   handoffs: subAgents,
-  toolUseBehavior: 'stop_on_first_tool',
   outputType: 'text',
   outputGuardrails: [
     {
