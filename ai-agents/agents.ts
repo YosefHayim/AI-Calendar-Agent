@@ -111,7 +111,7 @@ Output: return ONLY the final tool JSON.`,
   outputGuardrails: [
     {
       name: 'no_questions',
-      execute: async ({ agentOutput }) => {
+      execute: ({ agentOutput }) => {
         const NO_QUESTIONS_REGEX = /\bplease provide\b|\bconfirm\b|\bwould you like\b|\?$/i;
         const isBad = NO_QUESTIONS_REGEX.test(agentOutput.toString().trim());
 
