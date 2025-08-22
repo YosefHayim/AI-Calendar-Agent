@@ -1,4 +1,5 @@
 import type { calendar_v3 } from 'googleapis';
+import isEmail from 'validator/lib/isEmail';
 import { SUPABASE } from '@/config/root-config';
 import { ACTION } from '@/types';
 import { asyncHandler } from '@/utils/async-handlers';
@@ -18,6 +19,10 @@ export const executionTools = {
   }),
 
   validateEventFields: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
+    if (!isEmail(params.email)) {
+      throw new Error('Invalid email address.');
+    }
+
     return {
       ...formatEventData(params),
       email: params.email,

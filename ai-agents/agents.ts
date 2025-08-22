@@ -15,19 +15,70 @@ export const AGENTS = {
   validateEventFields: new Agent({
     name: 'validate_event_fields_agent',
     model: CURRENT_MODEL,
-    instructions: `Normalize free-text event fields to a strict schema without asking for more info.
-  
-  Input may contain: summary?, date_text?, start_text?, end_text?, duration_text?, timezone?
-  Rules:
-  - timezone: default "Asia/Jerusalem"
-  - Parse to RFC3339. If only date_text + duration_text → compute start/end (start=parsed date/time or now).
-  - duration_minutes must be integer.
-  - If summary missing → "Untitled Event"
-  
-  Output ONLY compact JSON:
-  {"summary": "...", "start": "RFC3339", "end": "RFC3339", "duration_minutes": 60, "timezone":"..."}
-  
-  Never handoff. Never ask questions.`,
+    instructions: `You convert free-text event details into a Google Calendar event object.
+
+Inputs may appear in any prose like:
+- "Summary: Test"
+- "Date: 2025-08-22"
+- "Start: 9 PM"
+- "End: 10 PM"
+- "Duration: 60" or "1h" or "9 PM to 10 PM"
+- "Timezone: Asia/Jerusalem"
+- "Location: ..."
+- "Description: ..."
+
+Rules
+- timezone default: "Asia/Jerusalem".
+- If user gives a time range in any field (e.g., "9 PM to 10 PM"), treat as start/end.
+- If only date + duration: pick start=09:00 local and compute end = start + duration.
+- If only date: create all-day event (start.date = YYYY-MM-DD, end.date = YYYY-MM-DD + 1).
+- If both start and end given: ensure end > start; if end ≤ start, add 1 day to end.
+- Use RFC3339 for dateTime (e.g., "2025-08-22T21:00:00+03:00" is OK), AND include timeZone on start/end objects.
+- Never ask questions. If something is missing, apply defaults.
+- Summary default: "Untitled Event".
+- Output ONLY compact JSON matching this exact shape (no extra keys, no commentary):
+{
+  "summary": "string",
+  "description": "string | omit if none",
+  "location": "string | omit if none",
+  "start": { "dateTime": "RFC3339" , "timeZone": "IANA" } | { "date": "YYYY-MM-DD" },
+  "end":   { "dateTime": "RFC3339" , "timeZone": "IANA" } | { "date": "YYYY-MM-DD" },
+  "attendees": [ { "email": "user@example.com" } ] | omit,
+  "recurrence": ["RRULE:..."] | omit,
+  "reminders": { "useDefault": true } | omit
+}
+
+Parsing guidance
+- Accept times like "21:00", "9 PM", "9pm".
+- Accept dates like "2025-08-22", "Aug 22, 2025", "today", "tomorrow".
+- Duration accepts "90", "90m", "1h30m", "1h".
+- If both start_text and duration are present but no end, compute end.
+
+Examples
+
+Input:
+Summary: Test
+Date: 2025-08-22
+Duration: 9 PM to 10 PM
+Timezone: Asia/Jerusalem
+
+Output:
+{"summary":"Test","start":{"dateTime":"2025-08-22T21:00:00+03:00","timeZone":"Asia/Jerusalem"},"end":{"dateTime":"2025-08-22T22:00:00+03:00","timeZone":"Asia/Jerusalem"}}
+
+Input:
+Date: 2025-08-22
+Duration: 60
+
+Output:
+{"summary":"Untitled Event","start":{"dateTime":"2025-08-22T09:00:00+03:00","timeZone":"Asia/Jerusalem"},"end":{"dateTime":"2025-08-22T10:00:00+03:00","timeZone":"Asia/Jerusalem"}}
+
+Input:
+Summary: Offsite
+Date: 2025-08-22
+
+Output:
+{"summary":"Offsite","start":{"date":"2025-08-22"},"end":{"date":"2025-08-23"}}
+`,
     tools: [AGENT_TOOLS.validate_event_fields],
   }),
   insertEvent: new Agent({
@@ -111,7 +162,7 @@ Output: return ONLY the final tool JSON.`,
   outputGuardrails: [
     {
       name: 'no_questions',
-      execute: ({ agentOutput }) => {
+      execute: async ({ agentOutput }) => {
         const NO_QUESTIONS_REGEX = /\bplease provide\b|\bconfirm\b|\bwould you like\b|\?$/i;
         const isBad = NO_QUESTIONS_REGEX.test(agentOutput.toString().trim());
 

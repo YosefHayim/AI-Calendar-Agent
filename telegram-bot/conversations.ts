@@ -29,14 +29,18 @@ export const scheduleEvent = async (conversation: Conversation<GlobalContext>, c
     }
     const duration = durationMsg.message.text.trim();
 
-    const { finalOutput } = await activateAgent(
-      calendarRouterAgent,
-      `Please insert the event details of the user ${session.email} into his calendar:
-    Event summary: ${summary}
-    Event date: ${date}
-    Event duration: ${duration}`
-    );
+    const payload = {
+      intent: 'insert',
+      email: session.email,
+      summary,
+      date_text: date, // free text is fine; the normalizer will parse
+      duration_text: duration, // e.g. "9 PM to 10 PM" or "60"
+      timezone: 'Asia/Jerusalem',
+    };
 
+    const { finalOutput, rawResponses } = await activateAgent(calendarRouterAgent, `STRUCTURED_INPUT:\n${JSON.stringify(payload)}\nROUTE:intent`);
+    console.log(finalOutput);
+    console.log(rawResponses);
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
   }
 };
