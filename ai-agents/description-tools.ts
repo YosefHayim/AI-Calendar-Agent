@@ -49,4 +49,5 @@ export const TOOLS_DESCRIPTION = {
       }
     }
   }`,
+  getCalendarTypes: 'Get array of all the calendars the user has on google calendar api.',
 } as const;

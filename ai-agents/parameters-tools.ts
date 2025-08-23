@@ -16,6 +16,14 @@ const fullEventParameters = z.object({
 });
 
 export const eventParameters = {
+  getCalendarTypes: z.object({
+    email: z
+      .string({ description: 'Unique identifier for the user. Email address is a must.' })
+      .refine((value) => validator.isEmail(value), {
+        message: 'Invalid email address.',
+      })
+      .describe('The email address of the user to validate.'),
+  }),
   getEventParameters: z
     .object({
       email: z

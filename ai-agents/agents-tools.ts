@@ -10,16 +10,16 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.validateUserDbParameter,
     execute: executionTools.validateUser,
     errorFunction: (_, error) => {
-      return `validate_user error: ${error}`;
+      return `validate_user: ${error}`;
     },
   }),
   validate_event_fields: tool({
     name: 'validate_event_fields',
-    description: 'Normalize free-text into a Google Calendar event object. Pass email through for token lookup.',
+    description: 'validates free-text into a Google Calendar event object. Pass email through for token lookup.',
     parameters: eventParameters.normalizedEventParams,
     execute: executionTools.validateEventFields,
     errorFunction: (_, error) => {
-      return `validate_event_fields error: ${error}`;
+      return `validate_event_fields: ${error}`;
     },
   }),
   insert_event: tool({
@@ -28,7 +28,7 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.insertEventParameters,
     execute: executionTools.insertEvent,
     errorFunction: (_, error) => {
-      return `insert_event error: ${error}`;
+      return `insert_event: ${error}`;
     },
   } as const),
   get_event: tool({
@@ -37,7 +37,7 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.getEventParameters,
     execute: executionTools.getEvent,
     errorFunction: (_, error) => {
-      return `get_event error: ${error}`;
+      return `get_event: ${error}`;
     },
   } as const),
   update_event: tool({
@@ -46,7 +46,7 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.updateEventParameters,
     execute: executionTools.updateEvent,
     errorFunction: (_, error) => {
-      return `update_event error: ${error}`;
+      return `update_event: ${error}`;
     },
   } as const),
   delete_event: tool({
@@ -55,25 +55,15 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.deleteEventParameter,
     execute: executionTools.deleteEvent,
     errorFunction: (_, error) => {
-      return `delete_event error: ${error}`;
+      return `delete_event: ${error}`;
     },
   } as const),
   calendar_type: tool({
     name: 'calendar_type',
-    description: TOOLS_DESCRIPTION.eventType,
-    parameters: eventParameters.getEventParameters,
+    description: TOOLS_DESCRIPTION.getCalendarTypes,
+    parameters: eventParameters.getCalendarTypes,
     errorFunction: (_, error) => {
-      return `calendar_type error: ${error}`;
-    },
-    execute: executionTools.getCalendarTypes,
-  } as const),
-
-  event_type: tool({
-    name: 'event_type',
-    description: TOOLS_DESCRIPTION.eventType,
-    parameters: eventParameters.getEventParameters,
-    errorFunction: (_, error) => {
-      return `event_type error: ${error}`;
+      return `calendar_type: ${error}`;
     },
     execute: executionTools.getCalendarTypes,
   } as const),

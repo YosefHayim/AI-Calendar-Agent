@@ -143,13 +143,13 @@ Output:
   }),
   analysesCalendarTypeByEventInformation: new Agent({
     instructions:
-      'agent analyzes event details and returns the calendar type that best fits the event. If the event is not suitable for any calendar type, it returns a default calendar type.',
+      'agent analyzes event details and choose the calendar type that best fits the event. If the event is not suitable for any calendar type, it returns a default calendar type which is "primary".',
     name: 'analyses_calendar_type_by_event_agent',
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that analysis the event details and return the calendar type that best fits the event.
     If the event is not suitable for any calendar type, return a default calendar type. default calendar is identified by the special keyword "primary"`,
-    tools: [AGENT_TOOLS.event_type],
+    tools: [AGENT_TOOLS.calendar_type],
   }),
   chatWithAgent: new Agent({
     instructions: 'agent chats with the user and acts as a personal calendar assistant.',
@@ -195,20 +195,23 @@ Output:
 export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
-  modelSettings: { parallelToolCalls: false },
+  modelSettings: { parallelToolCalls: true },
   instructions: `${RECOMMENDED_PROMPT_PREFIX}
-You orchestrate the full event workflow. Run these in order and stop with a final answer when done:
-1) call validate_user_db
-2) call analyses_calendar_type_by_event
-3) call the normalize_event_agent
-4) call validate_event_fields (use returned schema)
-5) call insert_event
-If any step fails, report the failing step and why; otherwise confirm success.`,
+You orchestrate event creation end-to-end. Plan and decide which tools to call and in what order.
+Rules:
+
+Call validate_user first; abort on failure.
+
+If inputs are sufficient, you may call calendar_type and normalize_event in parallel.
+
+Only call insert_event if validation passes.
+
+After each tool, read its output and adapt your plan. If anything fails, report the failing step and why. Otherwise, confirm success with the inserted record id.`,
   tools: [
     AGENTS.validateUserAuth.asTool({ toolName: 'validate_user' }),
     AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type' }),
     AGENTS.normalizeEventAgent.asTool({ toolName: 'normalize_event' }),
-    AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
+    // AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
     AGENTS.insertEvent.asTool({ toolName: 'insert_event' }),
   ],
 });
