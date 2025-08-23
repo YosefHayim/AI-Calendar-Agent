@@ -33,8 +33,8 @@ export const scheduleEvent = async (conversation: Conversation<GlobalContext>, c
       intent: 'insert',
       email: session.email,
       summary,
-      date_text: date, // free text is fine; the normalizer will parse
-      duration_text: duration, // e.g. "9 PM to 10 PM" or "60"
+      date_text: date,
+      duration_text: duration,
       timexzone: 'Asia/Jerusalem',
     };
 

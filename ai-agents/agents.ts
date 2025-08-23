@@ -1,4 +1,5 @@
 import { Agent, setDefaultOpenAIKey } from '@openai/agents';
+import { RECOMMENDED_PROMPT_PREFIX } from '@openai/agents-core/extensions';
 import { CONFIG } from '@/config/root-config';
 import { CURRENT_MODEL } from '@/types';
 import { AGENT_TOOLS } from './agents-tools';
@@ -9,13 +10,17 @@ export const AGENTS = {
   validateUserAuth: new Agent({
     name: 'validate_user_db_agent',
     model: CURRENT_MODEL,
-    instructions: 'An agent that sends a request to database and expects in return a response from database that is not error.',
+    toolUseBehavior: 'stop_on_first_tool',
+    modelSettings: { toolChoice: 'required' },
+    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that sends a request to database and expects in return a response from database that is not error.`,
     tools: [AGENT_TOOLS.validate_user_db],
   }),
   validateEventFields: new Agent({
     name: 'validate_event_fields_agent',
     model: CURRENT_MODEL,
-    instructions: `You convert free-text event details into a Google Calendar event object.
+    toolUseBehavior: 'stop_on_first_tool',
+    modelSettings: { toolChoice: 'required' },
+    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent convert free-text event details into a Google Calendar event object.
 
 Inputs may appear in any prose like:
 - "Summary: Test"
@@ -84,7 +89,9 @@ Output:
   insertEvent: new Agent({
     name: 'insert_event_agent',
     model: CURRENT_MODEL,
-    instructions: `Insert the event using provided normalized fields.
+    toolUseBehavior: 'stop_on_first_tool',
+    modelSettings: { toolChoice: 'required' },
+    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent Insert the event using provided normalized fields.
   If any required field is missing, compute it ONCE using defaults and proceed.
   Do not handoff back. Return ONLY the tool’s JSON result.`,
     tools: [AGENT_TOOLS.insert_event],
@@ -92,13 +99,17 @@ Output:
   getEventByIdOrName: new Agent({
     name: 'get_event_by_name_agent',
     model: CURRENT_MODEL,
-    instructions: `An agent that retrieve one or more events from the user's calendar by matching their title or keywords.`,
+    toolUseBehavior: 'stop_on_first_tool',
+    modelSettings: { toolChoice: 'required' },
+    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that retrieve one or more events from the user's calendar by matching their title or keywords.`,
     tools: [AGENT_TOOLS.get_event],
   }),
   updateEventByIdOrName: new Agent({
     name: 'update_event_by_id_agent',
     model: CURRENT_MODEL,
-    instructions: `An agent that update an existing calendar event.
+    toolUseBehavior: 'stop_on_first_tool',
+    modelSettings: { toolChoice: 'required' },
+    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that update an existing calendar event.
   
     Handle updates to:
     - Summary
@@ -112,36 +123,46 @@ Output:
   deleteEventByIdOrName: new Agent({
     name: 'delete_event_by_id_agent',
     model: CURRENT_MODEL,
-    instructions: 'An agent that delete a calendar event based on the title or other identifying detail.',
+    toolUseBehavior: 'stop_on_first_tool',
+    modelSettings: { toolChoice: 'required' },
+    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that delete a calendar event based on the title or other identifying detail.`,
     tools: [AGENT_TOOLS.delete_event],
   }),
   getCalendarList: new Agent({
     name: 'calendar_list_agent',
     model: CURRENT_MODEL,
-    instructions: `An agent that returns the list of calendars associated with the user's account via google api calendar.`,
+    toolUseBehavior: 'stop_on_first_tool',
+    modelSettings: { toolChoice: 'required' },
+    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that returns the list of calendars associated with the user's account via google api calendar.`,
     tools: [AGENT_TOOLS.calendar_type],
   }),
   analysesCalendarTypeByEventInformation: new Agent({
     name: 'analyse_calendar_type_by_event_agent',
     model: CURRENT_MODEL,
-    instructions: `An agent that analyse the event details and return the calendar type that best fits the event.
+    toolUseBehavior: 'stop_on_first_tool',
+    modelSettings: { toolChoice: 'required' },
+    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that analyse the event details and return the calendar type that best fits the event.
     If the event is not suitable for any calendar type, return a default calendar type.`,
     tools: [AGENT_TOOLS.event_type],
   }),
   chatWithAgent: new Agent({
     name: 'chat_with_agent',
     model: CURRENT_MODEL,
-    instructions: 'An agent that chat with the user and act as personal calendar assistant.',
+    toolUseBehavior: 'stop_on_first_tool',
+    modelSettings: { toolChoice: 'required' },
+    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that chat with the user and act as personal calendar assistant.`,
     tools: [AGENT_TOOLS.calendar_type],
   }),
 };
 
-const subAgents = Object.values(AGENTS) as Agent[];
+const subAgents = Object.values(AGENTS);
 
 export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
-  instructions: `Never address the user, return the answer only after recieving answer from each agent in the sequence
+  toolUseBehavior: 'stop_on_first_tool',
+  modelSettings: { toolChoice: 'required' },
+  instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent Never address the user, return the answer only after recieving answer from each agent in the sequence
 Sequence (always):
 1) validate_user_db_agent
 2) validate_event_fields_agent        // convert free text → RFC3339 start/end + minutes

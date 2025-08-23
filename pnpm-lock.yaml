@@ -23,6 +23,9 @@ importers:
       '@openai/agents':
         specifier: ^0.0.9
         version: 0.0.9(ws@8.18.3)(zod@3.25.76)
+      '@openai/agents-core':
+        specifier: ^0.0.17
+        version: 0.0.17(ws@8.18.3)(zod@3.25.76)
       '@supabase/supabase-js':
         specifier: ^2.53.0
         version: 2.53.0
@@ -38,6 +41,9 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.1.0
+      extensions:
+        specifier: link:openai/agents-core/extensions
+        version: link:openai/agents-core/extensions
       googleapis:
         specifier: ^105.0.0
         version: 105.0.0
@@ -441,6 +447,10 @@ packages:
     resolution: {integrity: sha512-CPle1OQehbWqd25La9Ack5B07StKIxh4+Bf19qnpZKJC1oI22Y0czZHbifjw1UoczIfKBwBDAp/dFxvHG13B5A==}
     engines: {node: '>=18'}
 
+  '@modelcontextprotocol/sdk@1.17.4':
+    resolution: {integrity: sha512-zq24hfuAmmlNZvik0FLI58uE5sriN0WWsQzIlYnzSuKDAHFqJtBFrl/LfB1NLgJT5Y7dEBzaX4yAKqOPrcetaw==}
+    engines: {node: '>=18'}
+
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -452,6 +462,14 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@openai/agents-core@0.0.17':
+    resolution: {integrity: sha512-+V8rtwq8OtvCvXIVN/8ZFJNfQXLeCpeaBuFwJY7QBa44lIdMSB3vULcUVm1L7bTGKeVKpdB8GDky64hOFG4w7Q==}
+    peerDependencies:
+      zod: ^3.25.40
+    peerDependenciesMeta:
+      zod:
+        optional: true
 
   '@openai/agents-core@0.0.9':
     resolution: {integrity: sha512-n7vftCMIBNNbhHSs6SAr0mU99YDD8CH2wRoGZ016nqgl1X9SZsfdQyZvpMMypWrGQ+bqke+jUtXCVnOhKXISFQ==}
@@ -2451,6 +2469,24 @@ snapshots:
       - supports-color
     optional: true
 
+  '@modelcontextprotocol/sdk@1.17.4':
+    dependencies:
+      ajv: 6.12.6
+      content-type: 1.0.5
+      cors: 2.8.5
+      cross-spawn: 7.0.6
+      eventsource: 3.0.7
+      eventsource-parser: 3.0.3
+      express: 5.1.0
+      express-rate-limit: 7.5.1(express@5.1.0)
+      pkce-challenge: 5.0.0
+      raw-body: 3.0.0
+      zod: 3.25.76
+      zod-to-json-schema: 3.24.6(zod@3.25.76)
+    transitivePeerDependencies:
+      - supports-color
+    optional: true
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -2462,6 +2498,17 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.19.1
+
+  '@openai/agents-core@0.0.17(ws@8.18.3)(zod@3.25.76)':
+    dependencies:
+      debug: 4.4.1(supports-color@5.5.0)
+      openai: 5.11.0(ws@8.18.3)(zod@3.25.76)
+    optionalDependencies:
+      '@modelcontextprotocol/sdk': 1.17.4
+      zod: 3.25.76
+    transitivePeerDependencies:
+      - supports-color
+      - ws
 
   '@openai/agents-core@0.0.9(ws@8.18.3)(zod@3.25.76)':
     dependencies:
