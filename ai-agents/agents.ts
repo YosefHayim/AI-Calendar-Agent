@@ -1,9 +1,7 @@
 import { Agent, setDefaultOpenAIKey, setTracingExportApiKey } from '@openai/agents';
 import { RECOMMENDED_PROMPT_PREFIX } from '@openai/agents-core/extensions';
 import { CONFIG } from '@/config/root-config';
-import { CURRENT_MODEL 
-  outputType:'text',
-} from '@/types';
+import { CURRENT_MODEL } from '@/types';
 import { AGENT_TOOLS } from './agents-tools';
 
 setDefaultOpenAIKey(CONFIG.open_ai_api_key || '');

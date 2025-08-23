@@ -49,7 +49,7 @@ export const eventParameters = {
       }),
     })
     .describe('Parameters for determining event type.'),
-  validateUserDbParamater: z
+  validateUserDbParameter: z
     .object({
       email: z
         .string({ description: 'Unique identifier for the user. Email address is a must.' })

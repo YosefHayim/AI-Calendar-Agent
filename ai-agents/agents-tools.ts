@@ -7,7 +7,7 @@ export const AGENT_TOOLS = {
   validate_user_db: tool({
     name: 'validate_user',
     description: TOOLS_DESCRIPTION.validateUser,
-    parameters: eventParameters.validateUserDbParamater,
+    parameters: eventParameters.validateUserDbParameter,
     execute: executionTools.validateUser,
     errorFunction: (_, error) => {
       return `validate_user error: ${error}`;
