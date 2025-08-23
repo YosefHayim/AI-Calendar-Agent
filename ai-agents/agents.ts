@@ -147,8 +147,8 @@ Output:
     name: 'analyses_calendar_type_by_event_agent',
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
-    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that analyse the event details and return the calendar type that best fits the event.
-    If the event is not suitable for any calendar type, return a default calendar type.`,
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that analysis the event details and return the calendar type that best fits the event.
+    If the event is not suitable for any calendar type, return a default calendar type. default calendar is identified by the special keyword "primary"`,
     tools: [AGENT_TOOLS.event_type],
   }),
   chatWithAgent: new Agent({
