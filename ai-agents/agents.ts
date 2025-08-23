@@ -9,18 +9,20 @@ setDefaultOpenAIKey(CONFIG.open_ai_api_key || '');
 export const AGENTS = {
   validateUserAuth: new Agent({
     name: 'validate_user_db_agent',
+    instructions:
+      'agent validates whether a user is registered in the system by querying the database. It requires a unique identifier, which is the email address. It returns a boolean and optional user metadata if found. It does not create, update, or delete any records.',
     model: CURRENT_MODEL,
-    toolUseBehavior: 'stop_on_first_tool',
     modelSettings: { toolChoice: 'required' },
-    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that sends a request to database and expects in return a response from database that is not error.`,
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that sends a request to database and expects in return a response from database that is not error.`,
     tools: [AGENT_TOOLS.validate_user_db],
   }),
   validateEventFields: new Agent({
     name: 'validate_event_fields_agent',
+    instructions:
+      'agent converts free-text event details into a Google Calendar event object. It handles various input formats for summary, date, time, duration, timezone, location, and description. It applies default values if information is missing and ensures the output is a compact JSON matching the specified Google Calendar event object shape. It never asks questions and always proceeds with defaults if parsing fails.',
     model: CURRENT_MODEL,
-    toolUseBehavior: 'stop_on_first_tool',
     modelSettings: { toolChoice: 'required' },
-    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent convert free-text event details into a Google Calendar event object.
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent convert free-text event details into a Google Calendar event object.
 
 Inputs may appear in any prose like:
 - "Summary: Test"
@@ -41,7 +43,7 @@ Rules
 - Use RFC3339 for dateTime (e.g., "2025-08-22T21:00:00+03:00" is OK), AND include timeZone on start/end objects.
 - Never ask questions. If something is missing, apply defaults.
 - Summary default: "Untitled Event".
-- Output ONLY compact JSON matching this exact shape (no extra keys, no commentary):
+- Output ONLY compact JSON matching exact shape (no extra keys, no commentary):
 {
   "summary": "string",
   "description": "string | omit if none",
@@ -87,29 +89,31 @@ Output:
     tools: [AGENT_TOOLS.validate_event_fields],
   }),
   insertEvent: new Agent({
+    instructions:
+      'agent inserts a new event into the calendar using provided normalized fields. If any required field is missing, it computes it once using defaults and proceeds. It does not handoff back and returns only the tool’s JSON result.',
     name: 'insert_event_agent',
     model: CURRENT_MODEL,
-    toolUseBehavior: 'stop_on_first_tool',
     modelSettings: { toolChoice: 'required' },
-    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent Insert the event using provided normalized fields.
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent Insert the event using provided normalized fields.
   If any required field is missing, compute it ONCE using defaults and proceed.
   Do not handoff back. Return ONLY the tool’s JSON result.`,
     tools: [AGENT_TOOLS.insert_event],
   }),
   getEventByIdOrName: new Agent({
+    instructions: "agent retrieves one or more events from the user's calendar by matching their title or keywords.",
     name: 'get_event_by_name_agent',
     model: CURRENT_MODEL,
-    toolUseBehavior: 'stop_on_first_tool',
     modelSettings: { toolChoice: 'required' },
-    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that retrieve one or more events from the user's calendar by matching their title or keywords.`,
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that retrieve one or more events from the user's calendar by matching their title or keywords.`,
     tools: [AGENT_TOOLS.get_event],
   }),
   updateEventByIdOrName: new Agent({
+    instructions:
+      'agent updates an existing calendar event. It handles updates to summary, date, location, and duration. If a field is not specified, it keeps the original value.',
     name: 'update_event_by_id_agent',
     model: CURRENT_MODEL,
-    toolUseBehavior: 'stop_on_first_tool',
     modelSettings: { toolChoice: 'required' },
-    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that update an existing calendar event.
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that update an existing calendar event.
   
     Handle updates to:
     - Summary
@@ -121,36 +125,37 @@ Output:
     tools: [AGENT_TOOLS.update_event],
   }),
   deleteEventByIdOrName: new Agent({
+    instructions: 'agent deletes a calendar event based on the title or other identifying detail.',
     name: 'delete_event_by_id_agent',
     model: CURRENT_MODEL,
-    toolUseBehavior: 'stop_on_first_tool',
     modelSettings: { toolChoice: 'required' },
-    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that delete a calendar event based on the title or other identifying detail.`,
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that delete a calendar event based on the title or other identifying detail.`,
     tools: [AGENT_TOOLS.delete_event],
   }),
   getCalendarList: new Agent({
+    instructions: "agent returns the list of calendars associated with the user's account via the Google Calendar API.",
     name: 'calendar_list_agent',
     model: CURRENT_MODEL,
-    toolUseBehavior: 'stop_on_first_tool',
     modelSettings: { toolChoice: 'required' },
-    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that returns the list of calendars associated with the user's account via google api calendar.`,
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that returns the list of calendars associated with the user's account via google api calendar.`,
     tools: [AGENT_TOOLS.calendar_type],
   }),
   analysesCalendarTypeByEventInformation: new Agent({
+    instructions:
+      'agent analyzes event details and returns the calendar type that best fits the event. If the event is not suitable for any calendar type, it returns a default calendar type.',
     name: 'analyse_calendar_type_by_event_agent',
     model: CURRENT_MODEL,
-    toolUseBehavior: 'stop_on_first_tool',
     modelSettings: { toolChoice: 'required' },
-    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that analyse the event details and return the calendar type that best fits the event.
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that analyse the event details and return the calendar type that best fits the event.
     If the event is not suitable for any calendar type, return a default calendar type.`,
     tools: [AGENT_TOOLS.event_type],
   }),
   chatWithAgent: new Agent({
+    instructions: 'agent chats with the user and acts as a personal calendar assistant.',
     name: 'chat_with_agent',
     model: CURRENT_MODEL,
-    toolUseBehavior: 'stop_on_first_tool',
     modelSettings: { toolChoice: 'required' },
-    instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent that chat with the user and act as personal calendar assistant.`,
+    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that chat with the user and act as personal calendar assistant.`,
     tools: [AGENT_TOOLS.calendar_type],
   }),
 };
@@ -160,7 +165,6 @@ const subAgents = Object.values(AGENTS);
 export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
-  toolUseBehavior: 'stop_on_first_tool',
   modelSettings: { toolChoice: 'required' },
   instructions: `${RECOMMENDED_PROMPT_PREFIX} An agent Never address the user, return the answer only after recieving answer from each agent in the sequence
 Sequence (always):
@@ -180,16 +184,5 @@ Output: return ONLY the final tool JSON.`,
 
   handoffs: subAgents,
   outputType: 'text',
-  outputGuardrails: [
-    {
-      name: 'no_questions',
-      execute: async ({ agentOutput }) => {
-        const NO_QUESTIONS_REGEX = /\bplease provide\b|\bconfirm\b|\bwould you like\b|\?$/i;
-        const isBad = NO_QUESTIONS_REGEX.test(agentOutput.toString().trim());
-
-        return { tripwireTriggered: isBad, outputInfo: { message: 'No user-facing questions allowed.' } };
-      },
-    },
-  ],
   handoffOutputTypeWarningEnabled: true,
 });
