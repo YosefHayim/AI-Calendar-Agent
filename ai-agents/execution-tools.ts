@@ -45,7 +45,7 @@ export const executionTools = {
 
   getCalendarTypes: asyncHandler(async (params: { email: string }) => {
     const tokenProps = await fetchCredentialsByEmail(params.email);
-    const CALENDAR = initCalendarWithUserTokens(tokenProps);
+    const CALENDAR = await initCalendarWithUserTokens(tokenProps);
     const r = await CALENDAR.calendarList.list();
     const allCalendars = r.data.items?.map((item) => item.summary);
     return allCalendars;

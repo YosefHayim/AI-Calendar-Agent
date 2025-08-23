@@ -17,7 +17,7 @@ export const eventsHandler = asyncHandler(
     }
 
     const credentials = await fetchCredentialsByEmail(email);
-    const calendar = initCalendarWithUserTokens(credentials);
+    const calendar = await initCalendarWithUserTokens(credentials);
     const calendarEvents = calendar.events;
 
     if ((action === ACTION.UPDATE || action === ACTION.DELETE) && !eventData?.id) {
@@ -36,20 +36,18 @@ export const eventsHandler = asyncHandler(
           ...listExtra,
         });
         const items = events.data.items ?? [];
-        const totalEventsFound = items
-          .map((event: calendar_v3.Schema$Event) => {
-            const startRaw = event.start?.date || event.start?.dateTime || null;
-            const endRaw = event.end?.date || event.end?.dateTime || null;
-            return {
-              eventId: event.id || 'No ID',
-              summary: event.summary || 'Untitled Event',
-              durationOfEvent: startRaw && endRaw ? getEventDurationString(startRaw as string, endRaw as string) : null,
-              description: event.description || null,
-              location: event.location || null,
-              start: startRaw as string | null,
-            };
-          })
-          .sort((a, b) => (a.start ? new Date(a.start).getTime() : 0) - (b.start ? new Date(b.start).getTime() : 0));
+        const totalEventsFound = items.map((event: calendar_v3.Schema$Event) => {
+          const startRaw = event.start?.date || event.start?.dateTime || null;
+          const endRaw = event.end?.date || event.end?.dateTime || null;
+          return {
+            eventId: event.id || 'No ID',
+            summary: event.summary || 'Untitled Event',
+            durationOfEvent: startRaw && endRaw ? getEventDurationString(startRaw as string, endRaw as string) : null,
+            description: event.description || null,
+            location: event.location || null,
+            start: startRaw as string | null,
+          };
+        });
 
         result = { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };
         break;
