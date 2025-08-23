@@ -13,7 +13,6 @@ export const AGENTS = {
     instructions:
       'agent validates whether a user is registered in the system by querying the database. It requires a unique identifier, which is the email address. It returns a boolean and optional user metadata if found. It does not create, update, or delete any records.',
     model: CURRENT_MODEL,
-    outputType: 'text',
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that sends a request to database and expects in return a response from database that is not error.`,
     tools: [AGENT_TOOLS.validate_user_db],
@@ -23,7 +22,6 @@ export const AGENTS = {
     instructions:
       'agent converts free-text event details into a Google Calendar event object. It handles various input formats for summary, date, time, duration, timezone, location, and description. It applies default values if information is missing and ensures the output is a compact JSON matching the specified Google Calendar event object shape. It never asks questions and always proceeds with defaults if parsing fails.',
     model: CURRENT_MODEL,
-    outputType: 'text',
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent convert free-text event details into a Google Calendar event object.
 
@@ -96,7 +94,6 @@ Output:
       'agent inserts a new event into the calendar using provided normalized fields. If any required field is missing, it computes it once using defaults and proceeds. It does not handoff back and returns only the tool’s JSON result.',
     name: 'insert_event_agent',
     model: CURRENT_MODEL,
-    outputType: 'text',
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent Insert the event using provided normalized fields.
   If any required field is missing, compute it ONCE using defaults and proceed.
@@ -107,7 +104,6 @@ Output:
     instructions: "agent retrieves one or more events from the user's calendar by matching their title or keywords.",
     name: 'get_event_by_name_agent',
     model: CURRENT_MODEL,
-    outputType: 'text',
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that retrieve one or more events from the user's calendar by matching their title or keywords.`,
     tools: [AGENT_TOOLS.get_event],
@@ -117,7 +113,6 @@ Output:
       'agent updates an existing calendar event. It handles updates to summary, date, location, and duration. If a field is not specified, it keeps the original value.',
     name: 'update_event_by_id_agent',
     model: CURRENT_MODEL,
-    outputType: 'text',
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that update an existing calendar event.
   
@@ -134,7 +129,6 @@ Output:
     instructions: 'agent deletes a calendar event based on the title or other identifying detail.',
     name: 'delete_event_by_id_agent',
     model: CURRENT_MODEL,
-    outputType: 'text',
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that delete a calendar event based on the title or other identifying detail.`,
     tools: [AGENT_TOOLS.delete_event],
@@ -143,8 +137,6 @@ Output:
     instructions: "agent returns the list of calendars associated with the user's account via the Google Calendar API.",
     name: 'calendar_list_agent',
     model: CURRENT_MODEL,
-    outputType: 'text',
-
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that returns the list of calendars associated with the user's account via google api calendar.`,
     tools: [AGENT_TOOLS.calendar_type],
@@ -154,7 +146,6 @@ Output:
       'agent analyzes event details and returns the calendar type that best fits the event. If the event is not suitable for any calendar type, it returns a default calendar type.',
     name: 'analyses_calendar_type_by_event_agent',
     model: CURRENT_MODEL,
-    outputType: 'text',
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that analyse the event details and return the calendar type that best fits the event.
     If the event is not suitable for any calendar type, return a default calendar type.`,
@@ -164,28 +155,59 @@ Output:
     instructions: 'agent chats with the user and acts as a personal calendar assistant.',
     name: 'chat_with_agent',
     model: CURRENT_MODEL,
-    outputType: 'text',
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that chat with the user and act as personal calendar assistant.`,
     tools: [AGENT_TOOLS.calendar_type],
+  }),
+  normalizeEventAgent: new Agent({
+    name: 'normalize_event_agent',
+    model: CURRENT_MODEL,
+    instructions: `
+You convert messy, free-text event details into a compact Google Calendar-style JSON object.
+
+Follow these rules:
+- Default timezone: "Asia/Jerusalem" unless a different IANA TZ is explicitly given.
+- If text contains a time range (e.g., "1am-3am", "1 am to 3 am"), use it as start/end.
+- If only one time is present, set duration to 60 minutes.
+- If only date + duration are present, set start=09:00 local and compute end=start+duration.
+- If only a date is present, create an all-day event (start.date=YYYY-MM-DD, end.date=YYYY-MM-DD+1).
+- If end ≤ start, add 1 day to end.
+- Summary default: "Untitled Event" or make sure you write in uppercase first letters.
+- Output ONLY valid JSON matching the schema; no extra keys, no commentary.
+
+Examples:
+
+Input:
+"ai project calendar; Aug 23, 2025; 1am-3am; tz Asia/Jerusalem"
+
+Output:
+{"summary":"ai project calendar","start":{"dateTime":"2025-08-23T01:00:00+03:00","timeZone":"Asia/Jerusalem"},"end":{"dateTime":"2025-08-23T03:00:00+03:00","timeZone":"Asia/Jerusalem"}}
+
+Input:
+"Offsite; 2025-08-22"
+
+Output:
+{"summary":"Offsite","start":{"date":"2025-08-22"},"end":{"date":"2025-08-23"}}
+`,
   }),
 };
 
 export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
-  outputType: 'text',
   modelSettings: { parallelToolCalls: false },
   instructions: `${RECOMMENDED_PROMPT_PREFIX}
 You orchestrate the full event workflow. Run these in order and stop with a final answer when done:
 1) call validate_user_db
 2) call analyses_calendar_type_by_event
-3) call validate_event_fields (use returned schema)
-4) call insert_event
+3) call the normalize_event_agent
+4) call validate_event_fields (use returned schema)
+5) call insert_event
 If any step fails, report the failing step and why; otherwise confirm success.`,
   tools: [
     AGENTS.validateUserAuth.asTool({ toolName: 'validate_user' }),
     AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type' }),
+    AGENTS.normalizeEventAgent.asTool({ toolName: 'normalize_event' }),
     AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
     AGENTS.insertEvent.asTool({ toolName: 'insert_event' }),
   ],

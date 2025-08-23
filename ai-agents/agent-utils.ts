@@ -22,8 +22,6 @@ export const formatEventData = (params: Partial<Event>): Event => {
   const startOut: Event['start'] = hasDateTime ? { dateTime: startParams.dateTime, timeZone } : { date: startParams.date };
   const endOut: Event['end'] = hasDateTime ? { dateTime: endParams.dateTime, timeZone } : { date: endParams.date };
 
-  // Validate required fields
-  // Build final event payload
   const event: Event = {
     id: params.id || crypto.randomUUID(), // required for update/delete
     summary: params.summary,
@@ -40,7 +38,6 @@ export const formatEventData = (params: Partial<Event>): Event => {
     end: endOut,
   };
 
-  // Remove undefined properties (clean payload)
   for (const key of Object.keys(event)) {
     if ((event as Record<string, string>)[key] === undefined) {
       delete (event as Record<string, string>)[key];

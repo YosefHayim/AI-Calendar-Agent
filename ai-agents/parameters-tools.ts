@@ -15,22 +15,6 @@ const fullEventParameters = z.object({
   end: eventTimeParameters.describe('The end time and date of the event.'),
 });
 
-const normalizedEventParams = z.object({
-  summary: z.string(),
-  description: z.string(),
-  location: z.string(),
-  start: z.object({
-    dateTime: z.string().datetime(),
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    timeZone: z.string(),
-  }),
-  end: z.object({
-    dateTime: z.string().datetime(),
-    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    timeZone: z.string(),
-  }),
-});
-
 export const eventParameters = {
   getEventParameters: z
     .object({
@@ -88,7 +72,7 @@ export const eventParameters = {
         .describe('The email address of the user to validate.'),
     })
     .describe('Parameters for updating an existing event.'),
-  normalizedEventParams: normalizedEventParams.extend({
+  normalizedEventParams: fullEventParameters.extend({
     email: z
       .string()
       .refine((value) => validator.isEmail(value), { message: 'Invalid email address.' })
