@@ -28,7 +28,7 @@ Inputs may appear in any prose like:
 - "Description: ..."
 
 Rules
-- timezone default: "Asia/Jerusalem".
+- timezone default: "Asia/Jerusalem" or other provided timezone.
 - If user gives a time range in any field (e.g., "9 PM to 10 PM"), treat as start/end.
 - If only date + duration: pick start=09:00 local and compute end = start + duration.
 - If only date: create all-day event (start.date = YYYY-MM-DD, end.date = YYYY-MM-DD + 1).

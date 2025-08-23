@@ -29,9 +29,6 @@ const normalizedEventParams = z.object({
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     timeZone: z.string(),
   }),
-  attendees: z.array(z.object({ email: z.string().email() })),
-  recurrence: z.array(z.string()),
-  reminders: z.any(),
 });
 
 export const eventParameters = {

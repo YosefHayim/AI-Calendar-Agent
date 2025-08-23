@@ -38,7 +38,7 @@ export const scheduleEvent = async (conversation: Conversation<GlobalContext>, c
       timezone: 'Asia/Jerusalem',
     };
 
-    const { finalOutput, rawResponses } = await activateAgent(calendarRouterAgent, `STRUCTURED_INPUT:\n${JSON.stringify(payload)}\nROUTE:intent`);
+    const { finalOutput, rawResponses } = await activateAgent('validateEventFields', `STRUCTURED_INPUT:\n${JSON.stringify(payload)}\nROUTE:intent`);
     console.log(finalOutput);
     console.log(rawResponses);
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
