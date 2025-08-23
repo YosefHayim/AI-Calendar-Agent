@@ -45,6 +45,7 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req: Request, res: Respo
         id_token,
         scope,
         email: user.email,
+        created_at: new Date().toISOString(),
       })
       .eq('email', user.email)
       .select();
@@ -53,7 +54,7 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req: Request, res: Respo
       return sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to store new tokens.', error);
     }
 
-    sendR(res, STATUS_RESPONSE.SUCCESS, 'Existing token is still valid.', {
+    sendR(res, STATUS_RESPONSE.SUCCESS, 'Tokens has been updated successfully.', {
       data,
     });
   } catch (error) {
