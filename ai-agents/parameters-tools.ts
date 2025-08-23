@@ -2,12 +2,12 @@ import validator from 'validator';
 import z from 'zod';
 
 const eventTimeParameters = z.object({
-  date: z.string().describe('The date of the event in YYYY-MM-DD format.'),
+  date: z.string().describe('The date of the event in YYYY-MM-DD format.').nullable(),
   dateTime: z.string().describe('The date and time of the event in RFC3339 format.'),
   timeZone: z.string().describe('The time zone of the event, e.g., "America/Los_Angeles".'),
 });
 
-const fullEventParameters = z.object({
+const eventParameters = z.object({
   summary: z.string().describe('The title of the event.'),
   description: z.string().describe('A detailed description of the event.'),
   location: z.string().describe('The physical location or a meeting link for the event.'),
@@ -15,7 +15,12 @@ const fullEventParameters = z.object({
   end: eventTimeParameters.describe('The end time and date of the event.'),
 });
 
-export const eventParameters = {
+const fullEventParameters = z.object({
+  calendarId: z.string().nullable().default('primary'),
+  eventParameters,
+});
+
+export const PARAMETERS_TOOLS = {
   getEventParameters: z
     .object({
       email: z
@@ -82,7 +87,7 @@ export const eventParameters = {
   }),
 };
 
-export const getCalendarTypes = z.object({}).extend({
+export const getCalendarTypes = z.object({
   email: z
     .string()
     .refine((value) => validator.isEmail(value), { message: 'Invalid email address.' })

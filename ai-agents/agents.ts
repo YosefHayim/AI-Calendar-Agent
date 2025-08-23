@@ -90,9 +90,9 @@ Output:
     tools: [AGENT_TOOLS.validate_event_fields],
   }),
   insertEvent: new Agent({
+    name: 'insert_event_agent',
     instructions:
       'agent inserts a new event into the calendar using provided normalized fields. If any required field is missing, it computes it once using defaults and proceeds. It does not handoff back and returns only the tool’s JSON result.',
-    name: 'insert_event_agent',
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent Insert the event using provided normalized fields.
@@ -133,18 +133,10 @@ Output:
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that delete a calendar event based on the title or other identifying detail.`,
     tools: [AGENT_TOOLS.delete_event],
   }),
-  getCalendarList: new Agent({
-    instructions: "agent returns the list of calendars associated with the user's account via the Google Calendar API.",
-    name: 'calendar_list_agent',
-    model: CURRENT_MODEL,
-    modelSettings: { toolChoice: 'required' },
-    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that returns the list of calendars associated with the user's account via google api calendar.`,
-    tools: [AGENT_TOOLS.calendar_type],
-  }),
   analysesCalendarTypeByEventInformation: new Agent({
-    instructions:
-      'agent analyzes event details and choose the calendar type that best fits the event. If the event is not suitable for any calendar type, it returns a default calendar type which is "primary".',
     name: 'analyses_calendar_type_by_event_agent',
+    instructions:
+      'agent analyzes event details and choose the calendar type that best fits the event from the calendars he retrieves. If the event is not suitable for any calendar type, it returns a default calendar type which is "primary".',
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that analysis the event details and return the calendar type that best fits the event.
@@ -152,8 +144,8 @@ Output:
     tools: [AGENT_TOOLS.calendar_type],
   }),
   chatWithAgent: new Agent({
-    instructions: 'agent chats with the user and acts as a personal calendar assistant.',
     name: 'chat_with_agent',
+    instructions: 'agent chats with the user and acts as a personal calendar assistant.',
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that chat with the user and act as personal calendar assistant.`,

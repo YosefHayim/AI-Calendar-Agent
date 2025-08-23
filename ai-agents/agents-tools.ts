@@ -1,13 +1,13 @@
 import { tool } from '@openai/agents';
 import { TOOLS_DESCRIPTION } from './description-tools';
 import { executionTools } from './execution-tools';
-import { eventParameters, getCalendarTypes } from './parameters-tools';
+import { getCalendarTypes, PARAMETERS_TOOLS } from './parameters-tools';
 
 export const AGENT_TOOLS = {
   validate_user_db: tool({
     name: 'validate_user',
     description: TOOLS_DESCRIPTION.validateUser,
-    parameters: eventParameters.validateUserDbParameter,
+    parameters: PARAMETERS_TOOLS.validateUserDbParameter,
     execute: executionTools.validateUser,
     errorFunction: (_, error) => {
       return `validate_user: ${error}`;
@@ -16,15 +16,16 @@ export const AGENT_TOOLS = {
   validate_event_fields: tool({
     name: 'validate_event_fields',
     description: 'validates free-text into a Google Calendar event object. Pass email through for token lookup.',
-    parameters: eventParameters.normalizedEventParams,
+    parameters: PARAMETERS_TOOLS.normalizedEventParams,
     execute: executionTools.validateEventFields,
     errorFunction: (_, error) => {
       return `validate_event_fields: ${error}`;
     },
   }),
   insert_event: tool({
+    name: 'insert_event',
     description: TOOLS_DESCRIPTION.insertEvent,
-    parameters: eventParameters.insertEventParameters,
+    parameters: PARAMETERS_TOOLS.insertEventParameters,
     execute: executionTools.insertEvent,
     errorFunction: (_, error) => {
       return `insert_event: ${error}`;
@@ -33,7 +34,7 @@ export const AGENT_TOOLS = {
   get_event: tool({
     name: 'get_event',
     description: TOOLS_DESCRIPTION.getEvent,
-    parameters: eventParameters.getEventParameters,
+    parameters: PARAMETERS_TOOLS.getEventParameters,
     execute: executionTools.getEvent,
     errorFunction: (_, error) => {
       return `get_event: ${error}`;
@@ -42,16 +43,16 @@ export const AGENT_TOOLS = {
   update_event: tool({
     name: 'update_event',
     description: TOOLS_DESCRIPTION.updateEvent,
-    parameters: eventParameters.updateEventParameters,
+    parameters: PARAMETERS_TOOLS.updateEventParameters,
     execute: executionTools.updateEvent,
     errorFunction: (_, error) => {
       return `update_event: ${error}`;
     },
   }),
   delete_event: tool({
-    description: TOOLS_DESCRIPTION.deleteEvent,
     name: 'delete_event',
-    parameters: eventParameters.deleteEventParameter,
+    description: TOOLS_DESCRIPTION.deleteEvent,
+    parameters: PARAMETERS_TOOLS.deleteEventParameter,
     execute: executionTools.deleteEvent,
     errorFunction: (_, error) => {
       return `delete_event: ${error}`;
