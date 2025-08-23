@@ -10,7 +10,7 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.validateUserDbParamater,
     execute: executionTools.validateUser,
     errorFunction: (_, error) => {
-      return `Failed to validate user from database query Error: ${error}`;
+      return `validate_user error: ${error}`;
     },
   }),
   validate_event_fields: tool({
@@ -19,7 +19,7 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.normalizedEventParams,
     execute: executionTools.validateEventFields,
     errorFunction: (_, error) => {
-      return `Failed to validate event fields. Error: ${error}`;
+      return `validate_event_fields error: ${error}`;
     },
   }),
   insert_event: tool({
@@ -28,7 +28,7 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.insertEventParameters,
     execute: executionTools.insertEvent,
     errorFunction: (_, error) => {
-      return `Failed to insert event. Please check event details or calendar API access. Error: ${error}`;
+      return `insert_event error: ${error}`;
     },
   } as const),
   get_event: tool({
@@ -37,7 +37,7 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.getEventParameters,
     execute: executionTools.getEvent,
     errorFunction: (_, error) => {
-      return `Failed to get event. Please check event details. Error: ${error}`;
+      return `get_event error: ${error}`;
     },
   } as const),
   update_event: tool({
@@ -46,7 +46,7 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.updateEventParameters,
     execute: executionTools.updateEvent,
     errorFunction: (_, error) => {
-      return `Failed to update event. Please check event details. Error: ${error}`;
+      return `update_event error: ${error}`;
     },
   } as const),
   delete_event: tool({
@@ -55,7 +55,7 @@ export const AGENT_TOOLS = {
     parameters: eventParameters.deleteEventParameter,
     execute: executionTools.deleteEvent,
     errorFunction: (_, error) => {
-      return `Failed to delete event. Please check event details or calendar API access. Error: ${error}`;
+      return `delete_event error: ${error}`;
     },
   } as const),
   calendar_type: tool({
@@ -63,7 +63,7 @@ export const AGENT_TOOLS = {
     description: TOOLS_DESCRIPTION.eventType,
     parameters: eventParameters.getEventParameters,
     errorFunction: (_, error) => {
-      return `Failed to determine calendar type. Please try again. Error: ${error}`;
+      return `calendar_type error: ${error}`;
     },
     execute: executionTools.getCalendarTypes,
   } as const),
@@ -73,7 +73,7 @@ export const AGENT_TOOLS = {
     description: TOOLS_DESCRIPTION.eventType,
     parameters: eventParameters.getEventParameters,
     errorFunction: (_, error) => {
-      return `Failed to determine event type. Please try again. Error: ${error}`;
+      return `event_type error: ${error}`;
     },
     execute: executionTools.getCalendarTypes,
   } as const),

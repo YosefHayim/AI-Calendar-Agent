@@ -1,5 +1,6 @@
 import type { Conversation } from '@grammyjs/conversations';
 import type { Context } from 'grammy';
+import { calendarRouterAgent } from '@/ai-agents/agents';
 import { activateAgent } from '@/utils/activate-agent';
 import type { GlobalContext } from './init-bot';
 
@@ -34,10 +35,10 @@ export const scheduleEvent = async (conversation: Conversation<GlobalContext>, c
       summary,
       date_text: date,
       duration_text: duration,
-      timexzone: 'Asia/Jerusalem',
+      timezone: 'Asia/Jerusalem',
     };
 
-    const { finalOutput, rawResponses } = await activateAgent('validateEventFields', `STRUCTURED_INPUT:\n${JSON.stringify(payload)}\nROUTE:intent`);
+    const { finalOutput, rawResponses } = await activateAgent(calendarRouterAgent, `STRUCTURED_INPUT:\n${JSON.stringify(payload)}\nROUTE:intent`);
     console.log(rawResponses);
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
   }
