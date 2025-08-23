@@ -9,7 +9,7 @@ import { initCalendarWithUserTokens } from '@/utils/init-calendar-with-user-toke
 import { TOKEN_FIELDS } from '@/utils/storage';
 import { formatEventData } from './agent-utils';
 
-export const executionTools = {
+export const EXECUTION_TOOLS = {
   validateUser: asyncHandler(async ({ email }: { email: string }) => {
     const { data, error } = await SUPABASE.from('calendars_of_users').select(TOKEN_FIELDS).eq('email', email.trim().toLowerCase());
     if (error) {
