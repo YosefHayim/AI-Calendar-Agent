@@ -181,8 +181,6 @@ Defaults: timezone=Asia/Jerusalem, summary="Untitled Event", start=now, duration
 If only date_text+duration_text → compute start/end.
 
 Output: return ONLY the final tool JSON.`,
-
   handoffs: subAgents,
-  outputType: 'text',
   handoffOutputTypeWarningEnabled: true,
 });
