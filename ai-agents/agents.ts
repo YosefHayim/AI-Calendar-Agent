@@ -171,14 +171,11 @@ Output:
   }),
 };
 
-// const subAgents = Object.values(AGENTS);
-
 export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
   outputType: 'text',
-  // let the model decide when to stop after tools are done
-  modelSettings: { /* toolChoice: 'auto', */ parallelToolCalls: false },
+  modelSettings: { parallelToolCalls: false },
   instructions: `${RECOMMENDED_PROMPT_PREFIX}
 You orchestrate the full event workflow. Run these in order and stop with a final answer when done:
 1) call validate_user_db
