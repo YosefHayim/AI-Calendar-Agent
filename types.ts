@@ -66,6 +66,7 @@ export type TokensProps = {
   id_token?: string | null;
   expiry_date?: number | null;
   refresh_token_expires_in?: number | null;
+  email?: string | null;
 };
 
 export enum ROUTES {
