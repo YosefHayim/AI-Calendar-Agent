@@ -171,36 +171,25 @@ Output:
   }),
 };
 
-const subAgents = Object.values(AGENTS);
+// const subAgents = Object.values(AGENTS);
 
 export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
   outputType: 'text',
-  modelSettings: { toolChoice: 'required' },
+  // let the model decide when to stop after tools are done
+  modelSettings: { /* toolChoice: 'auto', */ parallelToolCalls: false },
   instructions: `${RECOMMENDED_PROMPT_PREFIX}
-  You are an autonomous agent responsible for executing the full event-workflow with the user.  
-  Follow these steps in strict order, without skipping or merging steps:
-
-  1. Call "validate_user_db_agent" to confirm the user exists in our database.  
-     - If validation fails, stop and return an error response.  
-
-  2. Call "analyses_calendar_type_by_event_agent" to determine the correct calendar type from the event details.  
-
-  3. Call "validate_event_fields_agent" to check and correct the event JSON schema.  
-     - Always use the updated schema returned from this step.  
-
-  4. Call "insert_event_agent" to insert the validated event into the system.  
-
-  5. Respond back to the user:  
-     - If all steps succeed, confirm the workflow was completed successfully.  
-     - If any step fails, clearly state which step failed and why.  
-
-  Rules:  
-  - Never skip a step.  
-  - Do not ask the user to confirm assumptions mid-flow; deduce and proceed.  
-  - Be concise and professional in responses.  
-  - End only when the workflow is fully resolved or a clear error has been returned.`,
-  handoffs: subAgents,
-  handoffOutputTypeWarningEnabled: true,
+You orchestrate the full event workflow. Run these in order and stop with a final answer when done:
+1) call validate_user_db
+2) call analyses_calendar_type_by_event
+3) call validate_event_fields (use returned schema)
+4) call insert_event
+If any step fails, report the failing step and why; otherwise confirm success.`,
+  tools: [
+    AGENTS.validateUserAuth.asTool({ toolName: 'validate_user' }),
+    AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type' }),
+    AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
+    AGENTS.insertEvent.asTool({ toolName: 'insert_event' }),
+  ],
 });
