@@ -18,6 +18,9 @@ export const AGENT_TOOLS = {
     description: 'Normalize free-text into a Google Calendar event object. Pass email through for token lookup.',
     parameters: eventParameters.normalizedEventParams,
     execute: executionTools.validateEventFields,
+    errorFunction: (_, error) => {
+      return `Failed to validate event fields. Error: ${error}`;
+    },
   }),
   insert_event: tool({
     name: 'insert_event',
