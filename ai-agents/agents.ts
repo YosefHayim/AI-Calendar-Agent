@@ -196,17 +196,19 @@ export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
   modelSettings: { parallelToolCalls: true },
-  instructions: `${RECOMMENDED_PROMPT_PREFIX}
-You orchestrate event creation end-to-end. Plan and decide which tools to call and in what order.
-Rules:
+  instructions: `Plan before acting. Maintain a short scratchpad of facts you’ve confirmed.
+When inputs for two tools are independent, you may call them in parallel.
+After each tool returns, re-evaluate your plan and either:
+- call another tool with the exact fields required, or
+- request missing fields from the user, or
+- finalize the answer.
 
-Call validate_user first; abort on failure.
-
-If inputs are sufficient, you may call calendar_type and normalize_event in parallel.
-
-Only call insert_event if validation passes.
-
-After each tool, read its output and adapt your plan. If anything fails, report the failing step and why. Otherwise, confirm success with the inserted record id.`,
+Dependencies:
+- validate_user must succeed before any other tool.
+- calendar_type may inform normalize_event, but if inputs suffice, run both in parallel.
+- validate_event_fields must use {schema} from normalize_event.
+- insert_event only if {valid:true}. If invalid, summarize errors and stop.
+`,
   tools: [
     AGENTS.validateUserAuth.asTool({ toolName: 'validate_user' }),
     AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type' }),

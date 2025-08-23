@@ -1,7 +1,7 @@
 import { tool } from '@openai/agents';
 import { TOOLS_DESCRIPTION } from './description-tools';
 import { executionTools } from './execution-tools';
-import { eventParameters } from './parameters-tools';
+import { eventParameters, getCalendarTypes } from './parameters-tools';
 
 export const AGENT_TOOLS = {
   validate_user_db: tool({
@@ -23,14 +23,13 @@ export const AGENT_TOOLS = {
     },
   }),
   insert_event: tool({
-    name: 'insert_event',
     description: TOOLS_DESCRIPTION.insertEvent,
     parameters: eventParameters.insertEventParameters,
     execute: executionTools.insertEvent,
     errorFunction: (_, error) => {
       return `insert_event: ${error}`;
     },
-  } as const),
+  }),
   get_event: tool({
     name: 'get_event',
     description: TOOLS_DESCRIPTION.getEvent,
@@ -39,7 +38,7 @@ export const AGENT_TOOLS = {
     errorFunction: (_, error) => {
       return `get_event: ${error}`;
     },
-  } as const),
+  }),
   update_event: tool({
     name: 'update_event',
     description: TOOLS_DESCRIPTION.updateEvent,
@@ -48,23 +47,23 @@ export const AGENT_TOOLS = {
     errorFunction: (_, error) => {
       return `update_event: ${error}`;
     },
-  } as const),
+  }),
   delete_event: tool({
-    name: 'delete_event',
     description: TOOLS_DESCRIPTION.deleteEvent,
+    name: 'delete_event',
     parameters: eventParameters.deleteEventParameter,
     execute: executionTools.deleteEvent,
     errorFunction: (_, error) => {
       return `delete_event: ${error}`;
     },
-  } as const),
+  }),
   calendar_type: tool({
     name: 'calendar_type',
     description: TOOLS_DESCRIPTION.getCalendarTypes,
-    parameters: eventParameters.getCalendarTypes,
+    parameters: getCalendarTypes,
+    execute: executionTools.getCalendarTypes,
     errorFunction: (_, error) => {
       return `calendar_type: ${error}`;
     },
-    execute: executionTools.getCalendarTypes,
   } as const),
 };

@@ -16,14 +16,6 @@ const fullEventParameters = z.object({
 });
 
 export const eventParameters = {
-  getCalendarTypes: z.object({
-    email: z
-      .string({ description: 'Unique identifier for the user. Email address is a must.' })
-      .refine((value) => validator.isEmail(value), {
-        message: 'Invalid email address.',
-      })
-      .describe('The email address of the user to validate.'),
-  }),
   getEventParameters: z
     .object({
       email: z
@@ -54,6 +46,8 @@ export const eventParameters = {
   deleteEventParameter: z
     .object({
       eventId: z.string().describe('The unique ID of the event to be deleted.'),
+    })
+    .extend({
       email: z
         .string({ description: 'Unique identifier for the user. Email address is a must.' })
         .refine((value) => validator.isEmail(value), {
@@ -87,3 +81,10 @@ export const eventParameters = {
       .describe('The email address for the tokens to access user calendar tokens validate.'),
   }),
 };
+
+export const getCalendarTypes = z.object({}).extend({
+  email: z
+    .string()
+    .refine((value) => validator.isEmail(value), { message: 'Invalid email address.' })
+    .describe('The email address for the tokens to access user calendar tokens validate.'),
+});
