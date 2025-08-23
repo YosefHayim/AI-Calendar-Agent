@@ -141,7 +141,7 @@ const subAgents = Object.values(AGENTS) as Agent[];
 export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
-  instructions: `TOOLS-ONLY CONTROLLER. Never address the user.
+  instructions: `Never address the user, return the answer only after recieving answer from each agent in the sequence
 Sequence (always):
 1) validate_user_db_agent
 2) validate_event_fields_agent        // convert free text → RFC3339 start/end + minutes
