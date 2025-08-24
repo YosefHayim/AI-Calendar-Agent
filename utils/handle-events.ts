@@ -70,7 +70,9 @@ export const eventsHandler = asyncHandler(
       default:
         throw errorTemplate('Unsupported calendar action', STATUS_RESPONSE.BAD_REQUEST);
     }
-
+    console.log(result);
+    console.log(eventData);
+    console.log(action);
     return result;
   }
 );

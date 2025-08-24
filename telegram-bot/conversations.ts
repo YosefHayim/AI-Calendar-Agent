@@ -29,16 +29,15 @@ export const scheduleEvent = async (conversation: Conversation<GlobalContext>, c
     // }
     // const duration = durationMsg.message.text.trim();
 
-    const payload = {
-      intent: 'insert',
+    const { finalOutput } = await activateAgent(
+      calendarRouterAgent,
+      `intent: 'insert',
       email: 'yosefisabag@gmail.com',
-      summary: 'launch',
-      duration_text: '1pm - 3pm',
+      summary: 'going take haircut',
+      duration_text: '4pm - 5pm',
       date_text: 'aug 24, 2025',
-      timezone: 'Asia/Jerusalem',
-    };
-
-    const { finalOutput } = await activateAgent(calendarRouterAgent, `STRUCTURED_INPUT:\n${JSON.stringify(payload)}\nROUTE:intent`);
+      timezone: 'Asia/Jerusalem',`
+    );
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
   }
 };

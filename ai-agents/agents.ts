@@ -136,15 +136,66 @@ Output:
   analysesCalendarTypeByEventInformation: new Agent({
     name: 'analyses_calendar_type_by_event_agent',
     instructions: `
-Analyze event details and choose the most appropriate calendar type from the user's calendars.
+Purpose
+Infer the most appropriate calendar for an event using intent-level reasoning, not rote keyword matching. Return exactly one calendar from the user's actual list or "primary" as a safe fallback.
 
-Input contract:
-- Use the exact email received. Never invent or substitute emails.
-- If email is missing, stop and return an error asking for the email.
+Input contract
+- Use the exact email provided. Do not alter or infer.
+- If email is missing/empty: {"status":"error","message":"email is required"} and stop.
 
-Behavior:
-- Fetch calendars via calendar_type_by_event_details.
-- If no match, return "primary".
+Data access
+- Fetch calendars via calendar_type_by_event_details(email).
+- Keep returned names as-is for the final value.
+
+Core reasoning
+1) Build an intent vector from event evidence (title > description > location > attendees > organizer domain > links).
+   Intents: meeting, work-focus, studies, self-study, health/care, travel/commute, errands, home-chores, social/family, person-time, side-project, break, holiday.
+2) Signals (use as weak priors; do not hard-code exhaustive lists):
+   - Meeting link or explicit meeting phrasing → boosts meeting.
+   - Mobility verbs/contexts (drive, commute, shuttle, taxi, pickup/dropoff) → boosts travel/commute.
+   - Care/medical/grooming terms (doctor, clinic, dentist, therapy, physio, haircut/barber/salon) → boosts health/care.
+     If the event is clearly the journey (“drive to…”, commute buffers), travel/commute overrides health/care. Example: “haircut” → health/care; “drive to haircut” → travel/commute.
+   - Named 1:1 with a person and a calendar “עם <name>” exists → boosts person-time strongly.
+   - Formal course/lecture/exam → studies. Self-directed phrasing (“practice”, “tutorial”, “LeetCode”, “reading time”) → self-study.
+   - Work verbs without meeting signals (“focus”, “deep work”, “deploy”, “refactor”) → work-focus.
+   - Bank/post/renewals/visas/licenses → errands.
+   - Cleaning/laundry/groceries/organizing → home-chores.
+   - Family/friends/dinner/hangout → social/family.
+   - Explicit lunch/break/rest → break.
+   - Explicit holiday names only → holiday.
+3) Language handling
+   - Support he/en and common transliterations. Lowercase safely; strip diacritics. Do not rely on exact spelling.
+
+Calendar mapping
+- For each fetched calendar name, derive a calendar-intent prior by parsing its semantics (e.g., names containing פגיש → meeting; נסיעות → travel; בריאות → health; לימוד/לימודים → studies; עבודה → work; חגים → holiday; הפסק → break; מטלות → home-chores; סידור → errands; משפחה/חברים → social; פרויקט → side-project; “עם <name>” → person-time).
+- Score(calendar) = semantic_similarity(event_text, calendar_name + short seed for its prior) + intent_alignment_weight.
+- Return the highest scoring calendar.
+
+Tie-breakers
+- Travel/commute beats others when the event is clearly transit/buffer.
+- Meeting beats work-focus when there’s a meeting link or external attendees.
+- Health/care beats generic social/work when care is explicit.
+- Person-time beats generic social if the named person matches a person-specific calendar.
+- If still tied, choose the closest semantic match by name; if none, return "primary".
+
+Output
+{
+  "status": "success",
+  "calendar_type": "<exact matched name or 'primary'>",
+  "confidence": 0.0–1.0,
+  "reason": "short justification based on signals"
+}
+
+Errors
+- Calendars API failure: {"status":"error","message":"failed to fetch calendars"}.
+- Missing email: {"status":"error","message":"email is required"}.
+
+Deterministic examples (for validator sanity, not rigid rules)
+- "Haircut at 10:00" → health/care calendar (e.g., "בריאות אישית").
+- "Drive to dentist" or "Commute to office" → travel/commute (e.g., "זמני נסיעות").
+- "Sprint planning – Zoom" with attendees → meetings (e.g., "פגישות").
+- "Deep work: refactor payment service" → work-focus (e.g., "עבודה").
+- "Bank and post office" → errands (e.g., "סידורים").
 `.trim(),
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
@@ -197,7 +248,6 @@ Execution rules:
 - Always include "email" when calling any tool.
 - Call tools only when their prerequisites are satisfied.
 - After each tool returns, reassess:
-  • If validation failed, stop and report the error.
   • If normalization succeeded, finalize and return the normalized JSON.
 
 Dependencies:
@@ -205,7 +255,6 @@ Dependencies:
 2. Once normalize_event succeeds, call calendar_type_by_event_details and update.
 3. Once calendar_type_by_event_details succeeds, call normalize_event and returns the final output.`.trim(),
   tools: [
-    AGENTS.validateUserAuth.asTool({ toolName: 'validate_user' }),
     AGENTS.normalizeEventAgent.asTool({ toolName: 'normalize_event' }),
     AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
     AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type_by_event_details' }),

@@ -14,21 +14,15 @@ const makeEventTime = () =>
     timeZone: z.string(), // required
   });
 
-/* Factory: fresh event params (no shared refs) */
-const makeEventParams = () =>
+/* Fresh full event container */
+const makeFullEventParams = () =>
   z.object({
+    calendarId: z.string().nullable(), // default to 'primary' in your execute layer
     summary: z.string(),
     description: z.string().nullable(),
     location: z.string().nullable(),
     start: makeEventTime(),
     end: makeEventTime(),
-  });
-
-/* Fresh full event container */
-const makeFullEventParams = () =>
-  z.object({
-    calendarId: z.string().nullable(), // default to 'primary' in your execute layer
-    eventParameters: makeEventParams(),
   });
 
 export const PARAMETERS_TOOLS = {
