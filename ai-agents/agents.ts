@@ -207,32 +207,38 @@ Deterministic examples (for validator sanity, not rigid rules)
     name: 'normalize_event_agent',
     model: CURRENT_MODEL,
     instructions: `
-You convert messy, free-text event details into a compact Google Calendar-style JSON object.
-
-Follow these rules:
-- Default timezone: "Asia/Jerusalem" unless a different IANA TZ is explicitly given.
-- If text contains a time range (e.g., "1am-3am", "1 am to 3 am"), use it as start/end.
-- If only one time is present, set duration to 60 minutes.
-- If only date + duration are present, set start=09:00 local and compute end=start+duration.
-- If only a date is present, create an all-day event (start.date=YYYY-MM-DD, end.date=YYYY-MM-DD+1).
-- If end ≤ start, add 1 day to end.
-- Summary default: "Untitled Event" or make sure you write in uppercase first letters.
-- Output ONLY valid JSON matching the schema; no extra keys, no commentary.
-
-Examples:
-
-Input:
-"ai project calendar; Aug 23, 2025; 1am-3am; tz Asia/Jerusalem"
-
-Output:
-{"summary":"ai project calendar","start":{"dateTime":"2025-08-23T01:00:00+03:00","timeZone":"Asia/Jerusalem"},"end":{"dateTime":"2025-08-23T03:00:00+03:00","timeZone":"Asia/Jerusalem"}}
-
-Input:
-"Offsite; 2025-08-22"
-
-Output:
-{"summary":"Offsite","start":{"date":"2025-08-22"},"end":{"date":"2025-08-23"}}
-`.trim(),
+  You convert messy, free-text event details into a compact Google Calendar-style JSON object.
+  
+  Rules:
+  - Default timezone: "Asia/Jerusalem" unless a different IANA TZ is explicitly given.
+  - If text contains a time range (e.g., "1am-3am", "1 am to 3 am"), use it as start/end.
+  - If only one time is present, set duration=60 minutes.
+  - If only a date + duration are present, do NOT create all-day. Use start=09:00 local, end=start+duration, and output with dateTime (date must be null).
+  - If only a date is present (no duration, no time), create all-day: start.date=YYYY-MM-DD, end.date=YYYY-MM-DD+1.
+  - If end ≤ start, add 1 day to end.
+  - Summary default: "Untitled Event" (capitalize first letters).
+  - Output ONLY valid JSON matching Google Calendar schema; no extra keys, no commentary.
+  
+  Examples:
+  
+  Input:
+  "ai project calendar; Aug 23, 2025; 1am-3am; tz Asia/Jerusalem"
+  
+  Output:
+  {"summary":"ai project calendar","start":{"dateTime":"2025-08-23T01:00:00+03:00","timeZone":"Asia/Jerusalem"},"end":{"dateTime":"2025-08-23T03:00:00+03:00","timeZone":"Asia/Jerusalem"}}
+  
+  Input:
+  "Workshop; 2025-08-22; duration 2h"
+  
+  Output:
+  {"summary":"Workshop","start":{"dateTime":"2025-08-22T09:00:00+03:00","timeZone":"Asia/Jerusalem"},"end":{"dateTime":"2025-08-22T11:00:00+03:00","timeZone":"Asia/Jerusalem"}}
+  
+  Input:
+  "Offsite; 2025-08-22"
+  
+  Output:
+  {"summary":"Offsite","start":{"date":"2025-08-22"},"end":{"date":"2025-08-23"}}
+  `.trim(),
   }),
 };
 
