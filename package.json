@@ -18,6 +18,7 @@
   "scripts": {
     "dev": "nodemon",
     "download-env": "doppler secrets download --no-file --format env > .env ",
+    "get-updated-db-types": "npx supabase gen types typescript --project-id vdwjfekcsnurtjsieojv --schema public > database.types.ts",
     "format": "npx ultracite format --unsafe",
     "lint": "npx ultracite lint",
     "prepare": "husky install",
