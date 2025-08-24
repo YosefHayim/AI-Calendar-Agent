@@ -1,8 +1,7 @@
 import { Agent, setDefaultOpenAIKey, setTracingExportApiKey } from '@openai/agents';
-import { RECOMMENDED_PROMPT_PREFIX } from '@openai/agents-core/extensions';
 import { CONFIG } from '@/config/root-config';
 import { CURRENT_MODEL } from '@/types';
-import { AGENT_HANDOFFS } from './agents-handsoff-description';
+import { AGENT_HANDOFFS } from './agents-hands-off-description';
 import { AGENT_INSTRUCTIONS } from './agents-instructions';
 import { AGENT_TOOLS } from './agents-tools';
 
