@@ -43,7 +43,7 @@ export const EXECUTION_TOOLS = {
     return eventsHandler(null, ACTION.GET, {}, { email: params.email });
   }),
 
-  getCalendarTypesByEventDetails: asyncHandler(async (params: calendar_v3.Schema$Event & { email: string }) => {
+  getCalendarTypesByEventDetails: asyncHandler(async (params: { email: string }) => {
     const tokenProps = await fetchCredentialsByEmail(params.email);
     const CALENDAR = await initCalendarWithUserTokens(tokenProps);
     const r = await CALENDAR.calendarList.list();

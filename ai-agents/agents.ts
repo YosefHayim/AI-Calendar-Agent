@@ -135,8 +135,17 @@ Output:
   }),
   analysesCalendarTypeByEventInformation: new Agent({
     name: 'analyses_calendar_type_by_event_agent',
-    instructions:
-      `agent analyzes event details and choose the calendar type that best fits the event from the calendars he retrieves. If the event is not suitable for any calendar type, it returns a default calendar type which is "primary".`.trim(),
+    instructions: `
+Analyze event details and choose the most appropriate calendar type from the user's calendars.
+
+Input contract:
+- Use the exact email received. Never invent or substitute emails.
+- If email is missing, stop and return an error asking for the email.
+
+Behavior:
+- Fetch calendars via calendar_type_by_event_details.
+- If no match, return "primary".
+`.trim(),
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that analysis the event details and return the calendar type that best fits the event.
@@ -180,7 +189,8 @@ export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
   modelSettings: { parallelToolCalls: true },
-  instructions: `Plan before acting. Keep a concise scratchpad of confirmed facts (e.g., validated email, calendar types, normalized schema).
+  instructions:
+    `${RECOMMENDED_PROMPT_PREFIX} Plan before acting. Keep a concise scratchpad of confirmed facts (e.g., validated email, calendar types, normalized schema).
 
 Execution rules:
 - Always include "email" when calling any tool.

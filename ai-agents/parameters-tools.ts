@@ -21,9 +21,17 @@ const fullEventParameters = z.object({
 });
 
 export const PARAMETERS_TOOLS = {
-  getCalendarTypesByEventParameters: eventParameters.extend({
-    email: z.string(),
-  }),
+  getCalendarTypesByEventParameters: z
+    .object({
+      eventParameters,
+      email: z
+        .string({ description: 'Unique identifier for the user. Email address is a must.' })
+        .refine((value) => validator.isEmail(value), {
+          message: 'Invalid email address.',
+        })
+        .describe('The email address of the user to validate.'),
+    })
+    .describe('Parameter for requesting user calendar types from google api.'),
   getEventParameters: z
     .object({
       email: z
