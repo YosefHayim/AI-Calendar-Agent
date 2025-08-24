@@ -14,15 +14,17 @@
   "license": "ISC",
   "author": "",
   "type": "commonjs",
-  "main": "app.ts",
+  "main": "app.js",
   "scripts": {
+    "build": "tsc",
     "dev": "nodemon",
     "download-env": "doppler secrets download --no-file --format env > .env ",
-    "get-updated-db-types": "npx supabase gen types typescript --project-id vdwjfekcsnurtjsieojv --schema public > database.types.ts",
     "format": "npx ultracite format --unsafe",
+    "get-updated-db-types": "npx supabase gen types typescript --project-id vdwjfekcsnurtjsieojv --schema public > database.types.ts",
     "lint": "npx ultracite lint",
     "prepare": "husky install",
-    "sort": "npx sort-package-json"
+    "sort": "npx sort-package-json",
+    "start": "node dist/app.js"
   },
   "dependencies": {
     "@grammyjs/commands": "^1.1.0",
