@@ -5,7 +5,8 @@ export const TOOLS_DESCRIPTION = {
       "email": "user@example.com"
     }`,
 
-  insertEvent: `Creates a new event in the user’s calendar. Requires "email" (execution context parameter) and a JSON payload with event summary, description, start/end time in RFC3339 format, time zone, and optional location. Returns the created event object.
+  insertEvent:
+    `Creates a new event in the user’s calendar. Requires "email" (execution context parameter) and a JSON payload with event summary, description, start/end time in RFC3339 format, time zone, and optional location. Returns the created event object.
   Example JSON payload:
   {
     "summary": "Quick Standup Meeting",
@@ -19,9 +20,10 @@ export const TOOLS_DESCRIPTION = {
       "dateTime": "2025-06-29T15:30:00+03:00",
       "timeZone": "Asia/Jerusalem"
     }
-  }`,
+  }`.trim(),
 
-  updateEvent: `Updates an existing calendar event for a given user. Requires "email" (execution context parameter), "eventId", and an "updates" object containing the fields to modify. Supports changes to summary, description, start/end time, and location. Returns the updated event object.
+  updateEvent:
+    `Updates an existing calendar event for a given user. Requires "email" (execution context parameter), "eventId", and an "updates" object containing the fields to modify. Supports changes to summary, description, start/end time, and location. Returns the updated event object.
   Example JSON payload:
   {
     "eventId": "abc123def456",
@@ -37,7 +39,7 @@ export const TOOLS_DESCRIPTION = {
         "timeZone": "Asia/Jerusalem"
       }
     }
-  }`,
+  }`.trim(),
 
   deleteEvent: `Deletes a calendar event permanently for a given user. Requires "email" (execution context parameter) and "eventId". Once deleted, the event cannot be recovered.
   Example JSON payload:
@@ -45,13 +47,15 @@ export const TOOLS_DESCRIPTION = {
     "eventId": "abc123def456"
   }`,
 
-  getEvent: `Fetches all calendar events associated with the provided user. Requires "email" (execution context parameter). Returns an array of events from the user’s calendar.
+  getEvent:
+    `Fetches all calendar events associated with the provided user. Requires "email" (execution context parameter). Returns an array of events from the user’s calendar.
   Example input:
   {
     // no additional JSON fields required
-  }`,
+  }`.trim(),
 
-  getCalendarTypesByEventParameters: `Retrieves all calendars linked to the provided user via the Google Calendar API. Requires "email" (execution context parameter). Returns an array of calendar names.
+  getCalendarTypesByEventParameters:
+    `Retrieves all calendars linked to the provided user via the Google Calendar API. Requires "email" (execution context parameter). Returns an array of calendar names.
   Example response:
-  ["Family and Friends", "Studies", "Meetings"]`,
+  ["Family and Friends", "Studies", "Meetings"]`.trim(),
 } as const;

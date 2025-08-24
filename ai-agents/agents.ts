@@ -11,7 +11,7 @@ export const AGENTS = {
   validateUserAuth: new Agent({
     name: 'validate_user_db_agent',
     instructions:
-      'agent validates whether a user is registered in the system by querying the database. It requires a unique identifier, which is the email address. It returns a boolean and optional user metadata if found. It does not create, update, or delete any records.',
+      'agent validates whether a user is registered in the system by querying the database. It requires a unique identifier, which is the email address. It returns a boolean and optional user metadata if found. It does not create, update, or delete any records.'.trim(),
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that sends a request to database and expects in return a response from database that is not error.`,
@@ -20,7 +20,7 @@ export const AGENTS = {
   validateEventFields: new Agent({
     name: 'validate_event_fields_agent',
     instructions:
-      'agent converts free-text event details into a Google Calendar event object. It handles various input formats for summary, date, time, duration, timezone, location, and description. It applies default values if information is missing and ensures the output is a compact JSON matching the specified Google Calendar event object shape. It never asks questions and always proceeds with defaults if parsing fails.',
+      'agent converts free-text event details into a Google Calendar event object. It handles various input formats for summary, date, time, duration, timezone, location, and description. It applies default values if information is missing and ensures the output is a compact JSON matching the specified Google Calendar event object shape. It never asks questions and always proceeds with defaults if parsing fails.'.trim(),
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent convert free-text event details into a Google Calendar event object.
@@ -92,7 +92,7 @@ Output:
   insertEvent: new Agent({
     name: 'insert_event_agent',
     instructions:
-      'agent inserts a new event into the calendar using provided normalized fields. If any required field is missing, it computes it once using defaults and proceeds. It does not handoff back and returns only the tool’s JSON result.',
+      'agent inserts a new event into the calendar using provided normalized fields. If any required field is missing, it computes it once using defaults and proceeds. It does not handoff back and returns only the tool’s JSON result.'.trim(),
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent Insert the event using provided normalized fields.
@@ -101,7 +101,7 @@ Output:
     tools: [AGENT_TOOLS.insert_event],
   }),
   getEventByIdOrName: new Agent({
-    instructions: "agent retrieves one or more events from the user's calendar by matching their title or keywords.",
+    instructions: `agent retrieves one or more events from the user's calendar by matching their title or keywords.`.trim(),
     name: 'get_event_by_name_agent',
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
@@ -110,23 +110,23 @@ Output:
   }),
   updateEventByIdOrName: new Agent({
     instructions:
-      'agent updates an existing calendar event. It handles updates to summary, date, location, and duration. If a field is not specified, it keeps the original value.',
+      'agent updates an existing calendar event. It handles updates to summary, date, location, and duration. If a field is not specified, it keeps the original value.'.trim(),
     name: 'update_event_by_id_agent',
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that update an existing calendar event.
-  
+
     Handle updates to:
     - Summary
     - Date
     - Location
-    - Duration 
-  
+    - Duration
+
   If a field is not specified, keep the original value.`,
     tools: [AGENT_TOOLS.update_event],
   }),
   deleteEventByIdOrName: new Agent({
-    instructions: 'agent deletes a calendar event based on the title or other identifying detail.',
+    instructions: 'agent deletes a calendar event based on the title or other identifying detail.'.trim(),
     name: 'delete_event_by_id_agent',
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
@@ -136,11 +136,11 @@ Output:
   analysesCalendarTypeByEventInformation: new Agent({
     name: 'analyses_calendar_type_by_event_agent',
     instructions:
-      'agent analyzes event details and choose the calendar type that best fits the event from the calendars he retrieves. If the event is not suitable for any calendar type, it returns a default calendar type which is "primary".',
+      `agent analyzes event details and choose the calendar type that best fits the event from the calendars he retrieves. If the event is not suitable for any calendar type, it returns a default calendar type which is "primary".`.trim(),
     model: CURRENT_MODEL,
     modelSettings: { toolChoice: 'required' },
     handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that analysis the event details and return the calendar type that best fits the event.
-    If the event is not suitable for any calendar type, return a default calendar type. default calendar is identified by the special keyword "primary"`,
+    If the event is not suitable for any calendar type, return a default calendar type. default calendar is identified by the special keyword "primary"`.trim(),
     tools: [AGENT_TOOLS.calendar_type],
   }),
   normalizeEventAgent: new Agent({
@@ -172,7 +172,7 @@ Input:
 
 Output:
 {"summary":"Offsite","start":{"date":"2025-08-22"},"end":{"date":"2025-08-23"}}
-`,
+`.trim(),
   }),
 };
 
@@ -180,19 +180,22 @@ export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
   modelSettings: { parallelToolCalls: true },
-  instructions: `Plan before acting. Maintain a short scratchpad of facts you’ve confirmed.
-When inputs for two tools are independent, you may call them in parallel.
-After each tool returns, re-evaluate your plan and either:
-- call another tool with the exact fields required, or
-- request missing fields from the user, or
-- finalize the answer.
+  instructions: `Plan before acting. Keep a concise scratchpad of confirmed facts (e.g., validated email, calendar types, normalized schema).
+
+Execution rules:
+- Always include "email" when calling any tool.
+- If multiple tools can run independently, call them in parallel.
+- After each tool returns, reassess the plan:
+  • If sufficient data is available, proceed to the next dependent tool.
+  • If required fields are missing, request them from the user.
+  • If all goals are met, finalize the answer.
 
 Dependencies:
-- validate_user must succeed before any other tool.
-- calendar_type may inform normalize_event, but if inputs suffice, run both in parallel.
-- validate_event_fields must use {schema} from normalize_event.
-- insert_event only if {valid:true}. If invalid, summarize errors and stop.
-`,
+1. validate_user must succeed before any other tool.
+2. calendar_type may provide input for validate_event_fields, but if user input already suffices, run both in parallel.
+3. validate_event_fields must use the {schema} output from normalize_event.
+4. insert_event should be called only if validate_event_fields returns { valid: true }. If invalid, summarize errors and stop.
+`.trim(),
   tools: [
     AGENTS.validateUserAuth.asTool({ toolName: 'validate_user' }),
     AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type_by_event_details' }),
