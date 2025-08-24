@@ -70,6 +70,12 @@ export const AGENTS = {
     model: CURRENT_MODEL,
     instructions: AGENT_INSTRUCTIONS.normalizeEventAgent,
   }),
+  getUserDefaultTimeZone: new Agent({
+    name: 'get_user_default_timezone_agent',
+    model: CURRENT_MODEL,
+    instructions: AGENT_INSTRUCTIONS.getUserDefaultTimeZone,
+    tools: [AGENT_TOOLS.get_user_default_timezone],
+  }),
 };
 
 export const calendarRouterAgent = new Agent({

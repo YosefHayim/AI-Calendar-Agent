@@ -22,26 +22,21 @@ const makeFullEventParams = () =>
 
 export const PARAMETERS_TOOLS = {
   validateUserDbParameter: z.object({ email: emailSchema }).describe('Validate user by email.'),
-
+  getUserDefaultTimeZone: z.object({ email: emailSchema }).describe('Fetch user default timezone.'),
   getEventParameters: z.object({ email: emailSchema }).describe('Fetch events for the user email.'),
-
   getCalendarTypesByEventParameters: z.object({ email: emailSchema }).describe('Fetch all calendars for the user.'),
-
   insertEventParameters: makeFullEventParams().extend({ email: emailSchema }).describe('Insert a new event into the user calendar.'),
-
   updateEventParameters: makeFullEventParams()
     .extend({
       eventId: z.string(),
       email: emailSchema,
     })
     .describe('Update an existing event by ID.'),
-
   deleteEventParameter: z
     .object({
       eventId: z.string(),
       email: emailSchema,
     })
     .describe('Delete an event by ID.'),
-
   normalizedEventParams: makeFullEventParams().extend({ email: emailSchema }).describe('Normalize an event payload for insertion/update.'),
 };

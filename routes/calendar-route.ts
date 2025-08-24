@@ -13,7 +13,7 @@ router.get('/', calendarController.getAllCalendars);
 router.get('/colors', calendarController.getCalendarColors);
 
 // get calendar timezone
-router.get('/timezone', calendarController.getCalendarTimezones);
+router.get('/timezone', calendarController.getCalendarTimezone);
 
 // get all the events of the user
 router.get('/events', calendarController.getAllEvents);

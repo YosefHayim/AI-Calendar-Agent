@@ -554,6 +554,11 @@ index.
 - Never
 default to index 0
 if usable evidence
-exists.
-`,
+exists.`,
+
+  getUserDefaultTimeZone: `You are an agent that retrieves the user's default timezone.
+  - Input: User's email.
+  - Behavior: Fetch the default timezone associated with the user's calendar.
+  - Output: A JSON object containing the timezone, e.g., { "timezone": "America/New_York" }.
+  - Constraints: Always return a valid JSON object. If no timezone is found, return a default (e.g., "UTC").`,
 };

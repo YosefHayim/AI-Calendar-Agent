@@ -80,4 +80,5 @@ Example:
   getCalendarTypesByEventParameters: `Lists all calendars linked to the user via Google Calendar API. Requires "email" (execution context parameter). Returns an array of calendar names.
 Example:
 ["Family and Friends", "Studies", "Meetings"]`,
+  getUserDefaultTimeZone: `Retrieves the user's default timezone. Requires "email" (execution context parameter).`,
 } as const;

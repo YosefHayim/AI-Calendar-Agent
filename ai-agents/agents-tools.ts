@@ -66,5 +66,14 @@ export const AGENT_TOOLS = {
     errorFunction: (_, error) => {
       return `calendar_type: ${error}`;
     },
-  } as const),
+  }),
+  get_user_default_timezone: tool({
+    name: 'get_user_default_timezone',
+    description: TOOLS_DESCRIPTION.getUserDefaultTimeZone,
+    parameters: PARAMETERS_TOOLS.getUserDefaultTimeZone,
+    execute: EXECUTION_TOOLS.getUserDefaultTimeZone,
+    errorFunction: (_, error) => {
+      return `get_user_default_timezone: ${error}`;
+    },
+  }),
 };

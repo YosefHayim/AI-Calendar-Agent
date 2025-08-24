@@ -121,4 +121,14 @@ export const EXECUTION_TOOLS = {
     }
     return eventsHandler(null, ACTION.DELETE, { id: eventId }, { email });
   }),
+  getUserDefaultTimeZone: asyncHandler(async (params: { email: string }) => {
+    const { email } = coerceArgs(params);
+    if (!(email && isEmail(email))) {
+      throw new Error('Invalid email address.');
+    }
+    const tokenProps = await fetchCredentialsByEmail(email);
+    const CALENDAR = await initCalendarWithUserTokensAndUpdateTokens(tokenProps);
+    const r = await CALENDAR.settings.get({ setting: 'timezone' });
+    return r;
+  }),
 };
