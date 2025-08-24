@@ -1,7 +1,9 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
   "extends": ["ultracite"],
-  "formatter": { "lineWidth": 160 },
+  "formatter": {
+    "lineWidth": 160
+  },
   "linter": {
     "rules": {
       "style": {
@@ -19,5 +21,28 @@
         }
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "include": [
+        "**/*.test.js",
+        "**/*.spec.js",
+        "**/*.test.ts",
+        "**/*.spec.ts"
+      ],
+      "linter": {
+        "globals": {
+          "describe": true,
+          "it": true,
+          "test": true,
+          "expect": true,
+          "beforeAll": true,
+          "afterAll": true,
+          "beforeEach": true,
+          "afterEach": true,
+          "jest": true
+        }
+      }
+    }
+  ]
 }
