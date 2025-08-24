@@ -30,6 +30,14 @@ const getCalendarColors = reqResAsyncHandler(async (req, res) => {
   sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully received calendar colors', r.data);
 });
 
+const getCalendarTimezones = reqResAsyncHandler(async (req, res) => {
+  const user = (req as Request & { user: User }).user;
+  const tokenData = await fetchCredentialsByEmail(user.email || '');
+  const calendar = await initCalendarWithUserTokensAndUpdateTokens(tokenData as TokensProps);
+  const r = await calendar.settings.get();
+  sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully received calendar timezone', r.data);
+});
+
 const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
   const tokenData = await fetchCredentialsByEmail(user.email || '');
@@ -95,4 +103,5 @@ export default {
   getSpecificEvent,
   getAllFilteredEvents,
   getCalendarColors,
+  getCalendarTimezones,
 };
