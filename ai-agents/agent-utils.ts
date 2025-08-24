@@ -6,11 +6,57 @@ type EDT = calendar_v3.Schema$EventDateTime;
 
 const ALLOWED_TZ = new Set<string>(Object.values(TIMEZONE) as string[]);
 
-export const formatEventData = (params: Partial<Event>): Event => {
-  const start: Partial<EDT> = params.start ?? {};
-  const end: Partial<EDT> = params.end ?? {};
+function deepClean<T extends Record<string, any>>(obj: T): T {
+  if (!obj || typeof obj !== 'object') {
+    return obj;
+  }
+  const out: any = Array.isArray(obj) ? [] : {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v === '' || v === undefined || v === null) {
+      continue;
+    }
+    if (typeof v === 'object') {
+      const cleaned = deepClean(v as any);
+      if (Array.isArray(cleaned) ? cleaned.length : Object.keys(cleaned).length) {
+        out[k] = cleaned;
+      }
+    } else {
+      out[k] = v;
+    }
+  }
+  return out;
+}
 
-  if (!params.summary) {
+function normalizeEDT(input: Partial<EDT>): EDT {
+  const e: Partial<EDT> = { ...input };
+
+  // Remove empty fields early
+  for (const k of Object.keys(e) as (keyof EDT)[]) {
+    if (e[k] === '' || e[k] === undefined || e[k] === null) {
+      delete e[k];
+    }
+  }
+
+  // Enforce mutual exclusivity
+  if (e.dateTime) {
+    e.date = undefined;
+  } else if (e.date) {
+    // All-day: no dateTime, and Google recommends omitting timeZone
+    e.dateTime = undefined;
+    e.timeZone = undefined;
+  }
+
+  return e as EDT;
+}
+
+export const formatEventData = (params: Partial<Event>): Event => {
+  // Clean early so required-field checks see real values
+  const cleaned = deepClean(params || {});
+
+  const start = normalizeEDT((cleaned.start ?? {}) as Partial<EDT>);
+  const end = normalizeEDT((cleaned.end ?? {}) as Partial<EDT>);
+
+  if (!cleaned.summary) {
     throw new Error('Event summary is required.');
   }
   if (!(start.dateTime || start.date)) {
@@ -20,12 +66,14 @@ export const formatEventData = (params: Partial<Event>): Event => {
     throw new Error('Event end is required.');
   }
 
-  const tzStart = start.timeZone;
-  const tzEnd = end.timeZone ?? tzStart; // default end tz to start tz if missing
+  // Time zone rules: only for timed events
+  const tzStart = start.dateTime ? start.timeZone : undefined;
+  const tzEnd = end.dateTime ? (end.timeZone ?? tzStart) : undefined;
 
-  if (!(tzStart || tzEnd)) {
-    throw new Error('Event timeZone is required.');
+  if ((start.dateTime || end.dateTime) && !(tzStart || tzEnd)) {
+    throw new Error('Event timeZone is required for timed events.');
   }
+
   if (tzStart && !ALLOWED_TZ.has(tzStart)) {
     throw new Error(`Invalid timeZone: ${tzStart}. Allowed: ${Array.from(ALLOWED_TZ).join(', ')}`);
   }
@@ -36,27 +84,27 @@ export const formatEventData = (params: Partial<Event>): Event => {
     throw new Error('Start and end time zones must match.');
   }
 
+  if (start.dateTime) {
+    start.timeZone = tzStart ?? tzEnd;
+  }
+  if (end.dateTime) {
+    end.timeZone = tzStart ?? tzEnd;
+  }
+
   const event: Event = {
-    summary: params.summary,
-    description: params.description,
-    location: params.location,
-    attendees: params.attendees,
-    reminders: params.reminders,
-    recurrence: params.recurrence,
-    colorId: params.colorId,
-    conferenceData: params.conferenceData,
-    transparency: params.transparency,
-    visibility: params.visibility,
-    start: { ...start, timeZone: tzStart ?? tzEnd },
-    end: { ...end, timeZone: tzEnd ?? tzStart },
+    summary: cleaned.summary,
+    description: cleaned.description,
+    location: cleaned.location,
+    attendees: cleaned.attendees,
+    reminders: cleaned.reminders,
+    recurrence: cleaned.recurrence,
+    colorId: cleaned.colorId,
+    conferenceData: cleaned.conferenceData,
+    transparency: cleaned.transparency,
+    visibility: cleaned.visibility,
+    start,
+    end,
   };
 
-  // prune undefined/empty strings
-  for (const k of Object.keys(event) as (keyof Event)[]) {
-    const v = event[k] as unknown;
-    if (v === undefined || v === null || v === '') {
-      delete event[k];
-    }
-  }
-  return event;
+  return deepClean(event);
 };

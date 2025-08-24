@@ -4,7 +4,7 @@ import { calendarRouterAgent } from '@/ai-agents/agents';
 import { activateAgent } from '@/utils/activate-agent';
 import type { GlobalContext } from './init-bot';
 
-export const scheduleEvent = async (conversation: Conversation<GlobalContext>, ctx: Context) => {
+export const scheduleEvent = async (_conversation: Conversation<GlobalContext>, ctx: Context) => {
   {
     // const session = await conversation.external((externalCtx) => externalCtx.session);
 
