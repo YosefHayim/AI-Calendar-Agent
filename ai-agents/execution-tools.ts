@@ -5,7 +5,7 @@ import { ACTION } from '@/types';
 import { asyncHandler } from '@/utils/async-handlers';
 import { fetchCredentialsByEmail } from '@/utils/get-user-calendar-tokens';
 import { eventsHandler } from '@/utils/handle-events';
-import { initCalendarWithUserTokens } from '@/utils/init-calendar-with-user-tokens';
+import { initCalendarWithUserTokensAndUpdateTokens } from '@/utils/init-calendar-with-user-tokens-and-update-tokens';
 import { TOKEN_FIELDS } from '@/utils/storage';
 import { formatEventData } from './agent-utils';
 
@@ -106,7 +106,7 @@ export const EXECUTION_TOOLS = {
       throw new Error('Invalid email address.');
     }
     const tokenProps = await fetchCredentialsByEmail(email);
-    const CALENDAR = await initCalendarWithUserTokens(tokenProps);
+    const CALENDAR = await initCalendarWithUserTokensAndUpdateTokens(tokenProps);
     const r = await CALENDAR.calendarList.list();
     return r.data.items?.map((item) => item.summary);
   }),

@@ -6,9 +6,8 @@ import { asyncHandler } from './async-handlers';
 import errorTemplate from './error-template';
 import { getEventDurationString } from './get-event-duration-string';
 import { fetchCredentialsByEmail } from './get-user-calendar-tokens';
-import { initCalendarWithUserTokens } from './init-calendar-with-user-tokens';
+import { initCalendarWithUserTokensAndUpdateTokens } from './init-calendar-with-user-tokens-and-update-tokens';
 
-// eventsandler
 export const eventsHandler = asyncHandler(
   async (req?: Request | null, action?: ACTION, eventData?: SCHEMA_EVENT_PROPS | Record<string, string>, extra?: Record<string, string>) => {
     const email = (req as AuthedRequest | undefined)?.user?.email ?? (typeof extra?.email === 'string' ? (extra.email as string) : undefined);
@@ -17,7 +16,7 @@ export const eventsHandler = asyncHandler(
     }
 
     const credentials = await fetchCredentialsByEmail(email);
-    const calendar = await initCalendarWithUserTokens(credentials);
+    const calendar = await initCalendarWithUserTokensAndUpdateTokens(credentials);
     const calendarEvents = calendar.events;
 
     if ((action === ACTION.UPDATE || action === ACTION.DELETE) && !eventData?.id) {

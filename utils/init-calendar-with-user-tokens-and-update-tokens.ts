@@ -4,7 +4,7 @@ import type { TokensProps } from '@/types';
 import { asyncHandler } from './async-handlers';
 import { updateTokensOfUser } from './update-tokens-of-user';
 
-export const initCalendarWithUserTokens = asyncHandler(async (tokens: TokensProps) => {
+export const initCalendarWithUserTokensAndUpdateTokens = asyncHandler(async (tokens: TokensProps) => {
   OAUTH2CLIENT.setCredentials(tokens);
 
   const newTokens = await OAUTH2CLIENT.getAccessToken().catch((e) => {

@@ -6,7 +6,7 @@ import { ACTION, STATUS_RESPONSE, type TokensProps } from '@/types';
 import { reqResAsyncHandler } from '@/utils/async-handlers';
 import { fetchCredentialsByEmail } from '@/utils/get-user-calendar-tokens';
 import { eventsHandler } from '@/utils/handle-events';
-import { initCalendarWithUserTokens } from '@/utils/init-calendar-with-user-tokens';
+import { initCalendarWithUserTokensAndUpdateTokens } from '@/utils/init-calendar-with-user-tokens-and-update-tokens';
 import sendR from '@/utils/send-response';
 
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
@@ -15,11 +15,19 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   if (!tokenData) {
     return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User credentials not found in order to retrieve all calendars.');
   }
-  const calendar = await initCalendarWithUserTokens(tokenData as TokensProps);
+  const calendar = await initCalendarWithUserTokensAndUpdateTokens(tokenData as TokensProps);
   const r = await calendar.calendarList.list();
   const allCalendars = r.data.items?.map((item: calendar_v3.Schema$CalendarListEntry) => item.summary);
 
   sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully received your current calendars', allCalendars);
+});
+
+const getCalendarColors = reqResAsyncHandler(async (req, res) => {
+  const user = (req as Request & { user: User }).user;
+  const tokenData = await fetchCredentialsByEmail(user.email || '');
+  const calendar = await initCalendarWithUserTokensAndUpdateTokens(tokenData as TokensProps);
+  const r = await calendar.colors.get();
+  sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully received calendar colors', r.data);
 });
 
 const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
@@ -33,7 +41,7 @@ const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
     return sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Event ID is required in order to get specific event.');
   }
 
-  const calendar = await initCalendarWithUserTokens(tokenData as TokensProps);
+  const calendar = await initCalendarWithUserTokensAndUpdateTokens(tokenData as TokensProps);
   const r = await calendar.events.get({
     ...requestConfigBase,
     eventId: req.params.eventId,
@@ -86,4 +94,5 @@ export default {
   deleteEvent,
   getSpecificEvent,
   getAllFilteredEvents,
+  getCalendarColors,
 };
