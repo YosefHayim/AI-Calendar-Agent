@@ -24,8 +24,7 @@
     "lint": "npx ultracite lint",
     "prepare": "husky install",
     "sort": "npx sort-package-json",
-    "start": "node dist/app.js",
-    "compress-to-zip":"git archive --format=zip HEAD -o app.zip"
+    "start": "node dist/app.js"
   },
   "dependencies": {
     "@grammyjs/commands": "^1.1.0",
