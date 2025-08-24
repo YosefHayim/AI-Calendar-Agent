@@ -72,14 +72,15 @@ export const PARAMETERS_TOOLS = {
         .describe('The email address of the user to validate.'),
     })
     .describe('Parameter for deleting an event.'),
-  insertEventParameters: fullEventParameters
-    .extend({
+  insertEventParameters: z
+    .object({
+      fullEventParameters,
       email: z
         .string({ description: 'Unique identifier for the user. Email address is a must.' })
         .refine((value) => validator.isEmail(value), {
           message: 'Invalid email address.',
         })
-        .describe('The email address of the user to validate.'),
+        .describe('The email address of the user to insert into user specific calendar.'),
     })
     .describe('Parameters for inserting a new event.'),
   updateEventParameters: fullEventParameters

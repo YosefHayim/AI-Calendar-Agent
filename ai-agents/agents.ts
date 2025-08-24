@@ -189,28 +189,26 @@ export const calendarRouterAgent = new Agent({
   name: 'calendar_router_agent',
   model: CURRENT_MODEL,
   modelSettings: { parallelToolCalls: true },
-  instructions:
-    `${RECOMMENDED_PROMPT_PREFIX} Plan before acting. Keep a concise scratchpad of confirmed facts (e.g., validated email, calendar types, normalized schema).
+  instructions: `${RECOMMENDED_PROMPT_PREFIX}
+
+Plan before acting. Keep a concise scratchpad of confirmed facts (validated email, normalized event schema).  
 
 Execution rules:
 - Always include "email" when calling any tool.
-- If multiple tools can run independently, call them in parallel.
-- After each tool returns, reassess the plan:
-  • If sufficient data is available, proceed to the next dependent tool.
-  • If required fields are missing, request them from the user.
-  • If all goals are met, finalize the answer.
+- Call tools only when their prerequisites are satisfied.
+- After each tool returns, reassess:
+  • If validation failed, stop and report the error.
+  • If normalization succeeded, finalize and return the normalized JSON.
 
 Dependencies:
 1. validate_user must succeed before any other tool.
-2. calendar_type may provide input for validate_event_fields, but if user input already suffices, run both in parallel.
-3. validate_event_fields must use the {schema} output from normalize_event.
-4. insert_event should be called only if validate_event_fields returns { valid: true }. If invalid, summarize errors and stop.
-`.trim(),
+2. Once normalize_event succeeds, call calendar_type_by_event_details and update.
+3. Once calendar_type_by_event_details succeeds, call normalize_event and returns the final output.`.trim(),
   tools: [
     AGENTS.validateUserAuth.asTool({ toolName: 'validate_user' }),
-    AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type_by_event_details' }),
     AGENTS.normalizeEventAgent.asTool({ toolName: 'normalize_event' }),
-    // AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
+    AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
+    AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type_by_event_details' }),
     AGENTS.insertEvent.asTool({ toolName: 'insert_event' }),
   ],
 });

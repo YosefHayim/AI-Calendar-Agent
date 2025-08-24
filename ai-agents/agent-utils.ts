@@ -4,26 +4,25 @@ import { TIMEZONE } from '@/types';
 type Event = calendar_v3.Schema$Event;
 
 export const formatEventData = (params: Partial<Event>): Event => {
-  const startParams = params.start || {};
-  const endParams = params.end || {};
-
-  const hasDateTime = Boolean(startParams.dateTime || endParams.dateTime);
-  const hasDate = Boolean(startParams.date || endParams.date);
-
-  validateEventDateType(hasDateTime, hasDate);
-
-  let timeZone: string | undefined;
-  if (hasDateTime) {
-    timeZone = validateAndTimezone(startParams, endParams);
+  if (!params.summary) {
+    throw new Error('Event summary is required.');
+  }
+  if (!(params.start?.dateTime || params.start?.date)) {
+    throw new Error('Event start is required.');
+  }
+  if (!(params.end?.dateTime || params.end?.date)) {
+    throw new Error('Event end is required.');
   }
 
-  validateEventOrdering(hasDateTime, startParams, endParams, hasDate);
-
-  const startOut: Event['start'] = hasDateTime ? { dateTime: startParams.dateTime, timeZone } : { date: startParams.date };
-  const endOut: Event['end'] = hasDateTime ? { dateTime: endParams.dateTime, timeZone } : { date: endParams.date };
+  if (
+    !(params.start?.timeZone && params.start.timeZone in TIMEZONE) ||
+    (params.end?.timeZone && params.end.timeZone in TIMEZONE && params.start.timeZone !== params.end.timeZone)
+  ) {
+    throw new Error(`Must be from one of the timezone list and to be the same timezone: ${TIMEZONE}`);
+  }
 
   const event: Event = {
-    id: params.id || crypto.randomUUID(), // required for update/delete
+    id: crypto.randomUUID(),
     summary: params.summary,
     description: params.description,
     location: params.location,
@@ -34,49 +33,9 @@ export const formatEventData = (params: Partial<Event>): Event => {
     conferenceData: params.conferenceData,
     transparency: params.transparency,
     visibility: params.visibility,
-    start: startOut,
-    end: endOut,
+    start: params.start,
+    end: params.end,
   };
 
-  for (const key of Object.keys(event)) {
-    if ((event as Record<string, string>)[key] === undefined) {
-      delete (event as Record<string, string>)[key];
-    }
-  }
-
   return event;
-};
-
-const validateEventDateType = (hasDateTime: boolean, hasDate: boolean) => {
-  if (!(hasDateTime || hasDate)) {
-    throw new Error('Missing start and end dates!');
-  }
-  if (hasDateTime && hasDate) {
-    throw new Error('Use either dateTime or date (all-day), not both.');
-  }
-};
-
-const validateAndTimezone = (startParams: Partial<calendar_v3.Schema$EventDateTime>, endParams: Partial<calendar_v3.Schema$EventDateTime>) => {
-  const startTZ = startParams.timeZone;
-  const endTZ = endParams.timeZone;
-
-  if (startTZ && endTZ && startTZ !== endTZ) {
-    throw new Error('Start and end time zones must match.');
-  }
-  return startTZ || endTZ || TIMEZONE.DEFAULT;
-};
-
-const validateEventOrdering = (
-  hasDateTime: boolean,
-  startParams: Partial<calendar_v3.Schema$EventDateTime>,
-  endParams: Partial<calendar_v3.Schema$EventDateTime>,
-  hasDate: boolean
-) => {
-  if (hasDateTime && startParams.dateTime && endParams.dateTime) {
-    if (new Date(endParams.dateTime) <= new Date(startParams.dateTime)) {
-      throw new Error('End time must be after start time.');
-    }
-  } else if (hasDate && startParams.date && endParams.date && new Date(endParams.date) <= new Date(startParams.date)) {
-    throw new Error('End date must be after start date.');
-  }
 };
