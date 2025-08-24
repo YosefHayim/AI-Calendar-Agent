@@ -51,7 +51,7 @@ export const TOOLS_DESCRIPTION = {
     // no additional JSON fields required
   }`,
 
-  getCalendarTypes: `Retrieves all calendars linked to the provided user via the Google Calendar API. Requires "email" (execution context parameter). Returns an array of calendar names.
+  getCalendarTypesByEventParameters: `Retrieves all calendars linked to the provided user via the Google Calendar API. Requires "email" (execution context parameter). Returns an array of calendar names.
   Example response:
   ["Family and Friends", "Studies", "Meetings"]`,
 } as const;

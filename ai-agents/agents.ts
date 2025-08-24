@@ -143,14 +143,6 @@ Output:
     If the event is not suitable for any calendar type, return a default calendar type. default calendar is identified by the special keyword "primary"`,
     tools: [AGENT_TOOLS.calendar_type],
   }),
-  chatWithAgent: new Agent({
-    name: 'chat_with_agent',
-    instructions: 'agent chats with the user and acts as a personal calendar assistant.',
-    model: CURRENT_MODEL,
-    modelSettings: { toolChoice: 'required' },
-    handoffDescription: `${RECOMMENDED_PROMPT_PREFIX} An agent that chat with the user and act as personal calendar assistant.`,
-    tools: [AGENT_TOOLS.calendar_type],
-  }),
   normalizeEventAgent: new Agent({
     name: 'normalize_event_agent',
     model: CURRENT_MODEL,
@@ -203,7 +195,7 @@ Dependencies:
 `,
   tools: [
     AGENTS.validateUserAuth.asTool({ toolName: 'validate_user' }),
-    AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type' }),
+    AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type_by_event_details' }),
     AGENTS.normalizeEventAgent.asTool({ toolName: 'normalize_event' }),
     // AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
     AGENTS.insertEvent.asTool({ toolName: 'insert_event' }),

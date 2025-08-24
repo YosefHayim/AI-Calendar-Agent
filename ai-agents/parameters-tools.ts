@@ -21,6 +21,9 @@ const fullEventParameters = z.object({
 });
 
 export const PARAMETERS_TOOLS = {
+  getCalendarTypesByEventParameters: eventParameters.extend({
+    email: z.string(),
+  }),
   getEventParameters: z
     .object({
       email: z
@@ -86,10 +89,3 @@ export const PARAMETERS_TOOLS = {
       .describe('The email address for the tokens to access user calendar tokens validate.'),
   }),
 };
-
-export const getCalendarTypes = z.object({
-  email: z
-    .string()
-    .refine((value) => validator.isEmail(value), { message: 'Invalid email address.' })
-    .describe('The email address for the tokens to access user calendar tokens validate.'),
-});

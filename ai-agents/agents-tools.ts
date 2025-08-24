@@ -1,7 +1,7 @@
 import { tool } from '@openai/agents';
 import { TOOLS_DESCRIPTION } from './description-tools';
 import { EXECUTION_TOOLS } from './execution-tools';
-import { getCalendarTypes, PARAMETERS_TOOLS } from './parameters-tools';
+import { PARAMETERS_TOOLS } from './parameters-tools';
 
 export const AGENT_TOOLS = {
   validate_user_db: tool({
@@ -59,10 +59,10 @@ export const AGENT_TOOLS = {
     },
   }),
   calendar_type: tool({
-    name: 'calendar_type',
-    description: TOOLS_DESCRIPTION.getCalendarTypes,
-    parameters: getCalendarTypes,
-    execute: EXECUTION_TOOLS.getCalendarTypes,
+    name: 'calendar_type_by_event_details',
+    description: TOOLS_DESCRIPTION.getCalendarTypesByEventParameters,
+    parameters: PARAMETERS_TOOLS.getCalendarTypesByEventParameters,
+    execute: EXECUTION_TOOLS.getCalendarTypesByEventDetails,
     errorFunction: (_, error) => {
       return `calendar_type: ${error}`;
     },
