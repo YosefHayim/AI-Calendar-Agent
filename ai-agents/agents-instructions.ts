@@ -271,7 +271,7 @@ if care explicit.
 if person match.
 • If still tied, pick the closest semantic name match.
    • If no calendars were fetched, or no match is strong,
-return index `0` (primary).
+return index "0" (primary).
 
 Output
 Contract;
