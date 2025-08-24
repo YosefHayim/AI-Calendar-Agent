@@ -7,10 +7,10 @@ import { CONFIG } from '@/config/root-config';
 import errorHandler from '@/middlewares/error-handler';
 import calendarRoute from '@/routes/calendar-route';
 import usersRouter from '@/routes/users';
-import { startTelegramBot } from '@/telegram-bot/init-bot';
 import { ROUTES, STATUS_RESPONSE } from './types';
+import { startTelegramBot } from './telegram-bot/init-bot';
 
-const app = express();
+export const app = express();
 const PORT = CONFIG.port;
 
 app.use(cors());
