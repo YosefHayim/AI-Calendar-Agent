@@ -23,15 +23,10 @@ const fullEventParameters = z.object({
 export const PARAMETERS_TOOLS = {
   getCalendarTypesByEventParameters: z
     .object({
-      eventParameters,
-      email: z
-        .string({ description: 'Unique identifier for the user. Email address is a must.' })
-        .refine((value) => validator.isEmail(value), {
-          message: 'Invalid email address.',
-        })
-        .describe('The email address of the user to validate.'),
+      email: z.string({ description: 'Unique identifier for the user. Email address is a must.' }),
     })
-    .describe('Parameter for requesting user calendar types from google api.'),
+    .extend({ eventParameters }),
+
   getEventParameters: z
     .object({
       email: z
@@ -72,17 +67,14 @@ export const PARAMETERS_TOOLS = {
         .describe('The email address of the user to validate.'),
     })
     .describe('Parameter for deleting an event.'),
-  insertEventParameters: z
-    .object({
-      fullEventParameters,
+  insertEventParameters: fullEventParameters
+    .extend({
       email: z
-        .string({ description: 'Unique identifier for the user. Email address is a must.' })
-        .refine((value) => validator.isEmail(value), {
-          message: 'Invalid email address.',
-        })
-        .describe('The email address of the user to insert into user specific calendar.'),
+        .string()
+        .refine((value) => validator.isEmail(value), { message: 'Invalid email address.' })
+        .describe('The email address of the user to use for insertion of the event into the user calendar.'),
     })
-    .describe('Parameters for inserting a new event.'),
+    .describe('Parameters for inserting new event into user calendar.'),
   updateEventParameters: fullEventParameters
     .extend({
       email: z
