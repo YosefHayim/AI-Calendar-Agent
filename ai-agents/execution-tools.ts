@@ -9,6 +9,49 @@ import { initCalendarWithUserTokens } from '@/utils/init-calendar-with-user-toke
 import { TOKEN_FIELDS } from '@/utils/storage';
 import { formatEventData } from './agent-utils';
 
+type Event = calendar_v3.Schema$Event;
+
+function coerceArgs(raw: unknown) {
+  // 1) accept stringified input
+  const base = typeof (raw as { input?: string })?.input === 'string' ? safeParse((raw as { input: string }).input) : raw;
+
+  // 2) unwrap common nestings
+  const outer = base?.fullEventParameters ?? base;
+  const inner = outer?.eventParameters ?? base?.eventParameters ?? base;
+
+  // 3) collect fields
+  const email = base?.email ?? outer?.email ?? inner?.email;
+  const calendarId = outer?.calendarId ?? base?.calendarId;
+  const eventId = base?.eventId ?? outer?.eventId;
+
+  // 4) extract event fields (summary/start/end/…)
+  const eventLike: Partial<Event> = {
+    id: inner?.id,
+    summary: inner?.summary,
+    description: inner?.description,
+    location: inner?.location,
+    attendees: inner?.attendees,
+    reminders: inner?.reminders,
+    recurrence: inner?.recurrence,
+    colorId: inner?.colorId,
+    conferenceData: inner?.conferenceData,
+    transparency: inner?.transparency,
+    visibility: inner?.visibility,
+    start: inner?.start,
+    end: inner?.end,
+  };
+
+  return { email, calendarId, eventId, eventLike };
+}
+
+function safeParse(s: string) {
+  try {
+    return JSON.parse(s);
+  } catch {
+    return {};
+  }
+}
+
 export const EXECUTION_TOOLS = {
   validateUser: asyncHandler(async ({ email }: { email: string }) => {
     const { data, error } = await SUPABASE.from('calendars_of_users').select(TOKEN_FIELDS).eq('email', email.trim().toLowerCase());
@@ -19,43 +62,63 @@ export const EXECUTION_TOOLS = {
   }),
 
   validateEventFields: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
-    if (!isEmail(params.email)) {
+    const { email, eventLike } = coerceArgs(params);
+    if (!(email && isEmail(email))) {
       throw new Error('Invalid email address.');
     }
-
-    return {
-      ...formatEventData(params),
-      email: params.email,
-    };
-  }),
-
-  updateEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
-    const eventData: calendar_v3.Schema$Event = formatEventData(params);
-    return eventsHandler(null, ACTION.UPDATE, eventData, { email: params.email });
+    const formatted = formatEventData(eventLike as Event);
+    return { ...formatted, email };
   }),
 
   insertEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
-    const eventData: calendar_v3.Schema$Event = formatEventData(params);
-    return eventsHandler(null, ACTION.INSERT, eventData, { email: params.email });
+    const { email, calendarId, eventLike } = coerceArgs(params);
+    if (!(email && isEmail(email))) {
+      throw new Error('Invalid email address.');
+    }
+    const eventData: Event = formatEventData(eventLike as Event);
+    return eventsHandler(null, ACTION.INSERT, eventData, { email, calendarId: calendarId ?? 'primary' });
   }),
 
-  getEvent: asyncHandler((params: { email: string }) => {
-    return eventsHandler(null, ACTION.GET, {}, { email: params.email });
+  updateEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
+    const { email, calendarId, eventId, eventLike } = coerceArgs(params);
+    if (!(email && isEmail(email))) {
+      throw new Error('Invalid email address.');
+    }
+    if (!eventId) {
+      throw new Error('eventId is required for update.');
+    }
+    const eventData: Event = { ...formatEventData(eventLike as Event), id: eventId };
+    return eventsHandler(null, ACTION.UPDATE, eventData, { email, calendarId: calendarId ?? 'primary' });
   }),
 
-  getCalendarTypesByEventDetails: asyncHandler(async (params: { email: string }) => {
-    const tokenProps = await fetchCredentialsByEmail(params.email);
+  getEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
+    const { email, calendarId } = coerceArgs(params);
+    if (!(email && isEmail(email))) {
+      throw new Error('Invalid email address.');
+    }
+    // list extra is passed via extra; eventsHandler uses it for list()
+    return eventsHandler(null, ACTION.GET, {}, { email, calendarId: calendarId ?? 'primary' });
+  }),
+
+  getCalendarTypesByEventDetails: asyncHandler(async (params: calendar_v3.Schema$Event & { email: string }) => {
+    const { email } = coerceArgs(params);
+    if (!(email && isEmail(email))) {
+      throw new Error('Invalid email address.');
+    }
+    const tokenProps = await fetchCredentialsByEmail(email);
     const CALENDAR = await initCalendarWithUserTokens(tokenProps);
     const r = await CALENDAR.calendarList.list();
-    const allCalendars = r.data.items?.map((item) => item.summary);
-    return allCalendars;
+    return r.data.items?.map((item) => item.summary);
   }),
 
-  deleteEvent: asyncHandler((params: Record<string, string> & { email: string }) => {
-    if (!params.eventId) {
-      throw new Error('Event ID or name is missing to delete event.');
+  deleteEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
+    const { email, eventId } = coerceArgs(params);
+    if (!(email && isEmail(email))) {
+      throw new Error('Invalid email address.');
     }
-    const eventData = { id: params.eventId };
-    return eventsHandler(null, ACTION.DELETE, eventData, { email: params.email });
+    if (!eventId) {
+      throw new Error('Event ID is required to delete event.');
+    }
+    return eventsHandler(null, ACTION.DELETE, { id: eventId }, { email });
   }),
 };

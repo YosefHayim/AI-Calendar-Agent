@@ -1,92 +1,65 @@
 import validator from 'validator';
-import z from 'zod';
+import { z } from 'zod';
 
-const eventTimeParameters = z.object({
-  date: z.string().describe('The date of the event in YYYY-MM-DD format.').nullable(),
-  dateTime: z.string().describe('The date and time of the event in RFC3339 format.'),
-  timeZone: z.string().describe('The time zone of the event, e.g., "America/Los_Angeles".'),
-});
+/* ---- Helpers (primitive only; no transforms to keep JSON Schema simple) ---- */
+const emailSchema = z.string().refine((v) => validator.isEmail(v), { message: 'Invalid email address.' });
 
-const eventParameters = z.object({
-  summary: z.string().describe('The title of the event.'),
-  description: z.string().describe('A detailed description of the event.'),
-  location: z.string().describe('The physical location or a meeting link for the event.'),
-  start: eventTimeParameters.describe('The start time and date of the event.'),
-  end: eventTimeParameters.describe('The end time and date of the event.'),
-});
+/* Factory: create a fresh time object per use to avoid $ref reuse */
+const makeEventTime = () =>
+  z.object({
+    // Provide either date OR dateTime. Keep both nullable at the schema level;
+    // enforce mutual exclusivity in code if you want.
+    date: z.string().nullable(),
+    dateTime: z.string().nullable(),
+    timeZone: z.string(), // required
+  });
 
-const fullEventParameters = z.object({
-  calendarId: z.string().nullable().default('primary'),
-  eventParameters,
-});
+/* Factory: fresh event params (no shared refs) */
+const makeEventParams = () =>
+  z.object({
+    summary: z.string(),
+    description: z.string().nullable(),
+    location: z.string().nullable(),
+    start: makeEventTime(),
+    end: makeEventTime(),
+  });
+
+/* Fresh full event container */
+const makeFullEventParams = () =>
+  z.object({
+    calendarId: z.string().nullable(), // default to 'primary' in your execute layer
+    eventParameters: makeEventParams(),
+  });
 
 export const PARAMETERS_TOOLS = {
-  getCalendarTypesByEventParameters: z
-    .object({
-      email: z.string({ description: 'Unique identifier for the user. Email address is a must.' }),
-    })
-    .extend({ eventParameters }),
+  /* validate user in DB */
+  validateUserDbParameter: z.object({ email: emailSchema }).describe('Validate user by email.'),
 
-  getEventParameters: z
-    .object({
-      email: z
-        .string({ description: 'Unique identifier for the user. Email address is a must.' })
-        .refine((value) => validator.isEmail(value), {
-          message: 'Invalid email address.',
-        })
-        .describe('The email address of the user to validate.'),
+  /* list events for user (your GET returns a list) */
+  getEventParameters: z.object({ email: emailSchema }).describe('Fetch events for the user email.'),
+
+  /* list calendar types for user */
+  getCalendarTypesByEventParameters: z.object({ email: emailSchema }).describe('Fetch all calendars for the user.'),
+
+  /* insert event: nested full payload + email */
+  insertEventParameters: makeFullEventParams().extend({ email: emailSchema }).describe('Insert a new event into the user calendar.'),
+
+  /* update event: require eventId + nested payload + email */
+  updateEventParameters: makeFullEventParams()
+    .extend({
+      eventId: z.string(),
+      email: emailSchema,
     })
-    .describe('Parameters for retrieving an event.'),
-  eventTypeToolParameters: z
-    .object({
-      email: z.string({ description: 'Unique identifier for the user. Email address is a must.' }).refine((value) => validator.isEmail(value), {
-        message: 'Invalid email address.',
-      }),
-    })
-    .describe('Parameters for determining event type.'),
-  validateUserDbParameter: z
-    .object({
-      email: z
-        .string({ description: 'Unique identifier for the user. Email address is a must.' })
-        .refine((value) => validator.isEmail(value), {
-          message: 'Invalid email address.',
-        })
-        .describe('The email address of the user to validate.'),
-    })
-    .describe('Parameter for validating a user in the database.'),
+    .describe('Update an existing event by ID.'),
+
+  /* delete event: eventId + email */
   deleteEventParameter: z
     .object({
-      eventId: z.string().describe('The unique ID of the event to be deleted.'),
+      eventId: z.string(),
+      email: emailSchema,
     })
-    .extend({
-      email: z
-        .string({ description: 'Unique identifier for the user. Email address is a must.' })
-        .refine((value) => validator.isEmail(value), {
-          message: 'Invalid email address.',
-        })
-        .describe('The email address of the user to validate.'),
-    })
-    .describe('Parameter for deleting an event.'),
-  insertEventParameters: fullEventParameters
-    .extend({
-      email: z
-        .string()
-        .refine((value) => validator.isEmail(value), { message: 'Invalid email address.' })
-        .describe('The email address of the user to use for insertion of the event into the user calendar.'),
-    })
-    .describe('Parameters for inserting new event into user calendar.'),
-  updateEventParameters: fullEventParameters
-    .extend({
-      email: z
-        .string()
-        .refine((value) => validator.isEmail(value), { message: 'Invalid email address.' })
-        .describe('The email address of the user to validate.'),
-    })
-    .describe('Parameters for updating an existing event.'),
-  normalizedEventParams: fullEventParameters.extend({
-    email: z
-      .string()
-      .refine((value) => validator.isEmail(value), { message: 'Invalid email address.' })
-      .describe('The email address for the tokens to access user calendar tokens validate.'),
-  }),
+    .describe('Delete an event by ID.'),
+
+  /* normalize event payload (if you keep this tool) */
+  normalizedEventParams: makeFullEventParams().extend({ email: emailSchema }).describe('Normalize an event payload for insertion/update.'),
 };
