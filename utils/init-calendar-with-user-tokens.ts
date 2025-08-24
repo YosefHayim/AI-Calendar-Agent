@@ -1,7 +1,8 @@
 import { google } from 'googleapis';
-import { OAUTH2CLIENT, SUPABASE } from '@/config/root-config';
+import { OAUTH2CLIENT } from '@/config/root-config';
 import type { TokensProps } from '@/types';
 import { asyncHandler } from './async-handlers';
+import { updateTokensOfUser } from './update-tokens-of-user';
 
 export const initCalendarWithUserTokens = asyncHandler(async (tokens: TokensProps) => {
   OAUTH2CLIENT.setCredentials(tokens);
@@ -19,20 +20,7 @@ export const initCalendarWithUserTokens = asyncHandler(async (tokens: TokensProp
   });
 
   if (newTokens?.token) {
-    const updatedTokens = {
-      ...tokens,
-      access_token: newTokens.token,
-      expiry_date: OAUTH2CLIENT.credentials.expiry_date,
-      updated_at: new Date().toISOString(),
-    };
-
-    const { error } = await SUPABASE.from('calendars_of_users')
-      .update(updatedTokens)
-      .eq('email', tokens.email || '');
-
-    if (error) {
-      console.error('Failed to update Supabase tokens', error);
-    }
+    await updateTokensOfUser(tokens, newTokens);
   }
 
   return google.calendar({ version: 'v3', auth: OAUTH2CLIENT });
