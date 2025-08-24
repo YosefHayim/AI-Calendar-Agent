@@ -15,7 +15,7 @@ export const AGENT_TOOLS = {
   }),
   validate_event_fields: tool({
     name: 'validate_event_fields',
-    description: 'validates free-text into a Google Calendar event object. Pass email through for token lookup.',
+    description: TOOLS_DESCRIPTION.validateEventFields,
     parameters: PARAMETERS_TOOLS.normalizedEventParams,
     execute: EXECUTION_TOOLS.validateEventFields,
     errorFunction: (_, error) => {

@@ -1,61 +1,83 @@
 export const TOOLS_DESCRIPTION = {
-  validateUser: `Validates whether a user is registered in the system by querying the database. Requires "email" (execution context parameter). Returns an array of matching user records or an empty array if not found.
-    Example input:
-    {
-      "email": "user@example.com"
-    }`,
+  validateUser: `Checks if a user is registered in the system. Requires "email" (execution context parameter). Returns an array of matching user records, or an empty array if none are found.
+Example:
+{
+  "email": "user@example.com"
+}`,
+  validateEventFields: `Converts free-text into a minimal Google Calendar event object. Requires "email" (execution context parameter) for token lookup. Always returns ONLY:
+- "summary" (string)
+- "start"  ({ date, dateTime, timeZone })
+- "end"    ({ date, dateTime, timeZone })
+- "calendarId" (string of digits, e.g., "1", "2"; must match ^\\d+$)
 
-  insertEvent:
-    `Creates a new event in the user’s calendar. Requires "email" (execution context parameter) and a JSON payload with event summary, description, start/end time in RFC3339 format, time zone, and optional location. Returns the created event object.
-  Example JSON payload:
-  {
-    "summary": "Quick Standup Meeting",
-    "location": "Online - Google Meet",
-    "description": "Daily standup to sync team updates.",
+Example input:
+{
+  "email": "user@example.com",
+  "text": "Lunch with Sarah tomorrow at 1pm in Tel Aviv"
+}
+
+Example output:
+{
+  "summary": "Lunch with Sarah",
+  "start": {
+    "date": "2025-06-30",
+    "dateTime": "2025-06-30T13:00:00+03:00",
+    "timeZone": "Asia/Jerusalem"
+  },
+  "end": {
+    "date": "2025-06-30",
+    "dateTime": "2025-06-30T14:00:00+03:00",
+    "timeZone": "Asia/Jerusalem"
+  },
+  "calendarId": "1"
+}`,
+  insertEvent: `Creates a new calendar event for the specified user. Requires "email" (execution context parameter) and event details (summary, description, start/end time in RFC3339, time zone, and optional location). Returns the created event object.
+Example:
+{
+  "summary": "Quick Standup Meeting",
+  "location": "Online - Google Meet",
+  "description": "Daily standup to sync team updates.",
+  "start": {
+    "dateTime": "2025-06-29T15:00:00+03:00",
+    "timeZone": "Asia/Jerusalem"
+  },
+  "end": {
+    "dateTime": "2025-06-29T15:30:00+03:00",
+    "timeZone": "Asia/Jerusalem"
+  }
+}`,
+
+  updateEvent: `Modifies an existing calendar event. Requires "email" (execution context parameter), "eventId", and an "updates" object specifying fields to change (summary, description, start/end time, location). Returns the updated event object.
+Example:
+{
+  "eventId": "abc123def456",
+  "updates": {
+    "summary": "Updated Meeting Title",
+    "description": "Updated meeting agenda.",
     "start": {
-      "dateTime": "2025-06-29T15:00:00+03:00",
+      "dateTime": "2025-06-29T16:00:00+03:00",
       "timeZone": "Asia/Jerusalem"
     },
     "end": {
-      "dateTime": "2025-06-29T15:30:00+03:00",
+      "dateTime": "2025-06-29T16:30:00+03:00",
       "timeZone": "Asia/Jerusalem"
     }
-  }`.trim(),
+  }
+}`,
 
-  updateEvent:
-    `Updates an existing calendar event for a given user. Requires "email" (execution context parameter), "eventId", and an "updates" object containing the fields to modify. Supports changes to summary, description, start/end time, and location. Returns the updated event object.
-  Example JSON payload:
-  {
-    "eventId": "abc123def456",
-    "updates": {
-      "summary": "Updated Meeting Title",
-      "description": "Updated meeting agenda.",
-      "start": {
-        "dateTime": "2025-06-29T16:00:00+03:00",
-        "timeZone": "Asia/Jerusalem"
-      },
-      "end": {
-        "dateTime": "2025-06-29T16:30:00+03:00",
-        "timeZone": "Asia/Jerusalem"
-      }
-    }
-  }`.trim(),
+  deleteEvent: `Deletes a calendar event permanently. Requires "email" (execution context parameter) and "eventId". Deleted events cannot be recovered. Returns confirmation of deletion.
+Example:
+{
+  "eventId": "abc123def456"
+}`,
 
-  deleteEvent: `Deletes a calendar event permanently for a given user. Requires "email" (execution context parameter) and "eventId". Once deleted, the event cannot be recovered.
-  Example JSON payload:
-  {
-    "eventId": "abc123def456"
-  }`,
+  getEvent: `Retrieves all events from the user’s calendar. Requires "email" (execution context parameter). Returns an array of event objects.
+Example:
+{
+  // no additional fields required
+}`,
 
-  getEvent:
-    `Fetches all calendar events associated with the provided user. Requires "email" (execution context parameter). Returns an array of events from the user’s calendar.
-  Example input:
-  {
-    // no additional JSON fields required
-  }`.trim(),
-
-  getCalendarTypesByEventParameters:
-    `Retrieves all calendars linked to the provided user via the Google Calendar API. Requires "email" (execution context parameter). Returns an array of calendar names.
-  Example response:
-  ["Family and Friends", "Studies", "Meetings"]`.trim(),
+  getCalendarTypesByEventParameters: `Lists all calendars linked to the user via Google Calendar API. Requires "email" (execution context parameter). Returns an array of calendar names.
+Example:
+["Family and Friends", "Studies", "Meetings"]`,
 } as const;
