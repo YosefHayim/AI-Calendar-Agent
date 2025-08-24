@@ -52,9 +52,15 @@ export const eventsHandler = asyncHandler(
         result = { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };
         break;
       }
-      case ACTION.INSERT:
-        result = await calendarEvents.insert({ ...requestConfigBase, requestBody: eventData });
+      case ACTION.INSERT: {
+        const calendarId = (extra?.calendarId as string) || 'primary';
+        result = await calendarEvents.insert({
+          ...requestConfigBase,
+          calendarId,
+          requestBody: eventData,
+        });
         break;
+      }
       case ACTION.UPDATE:
         result = await calendarEvents.update({ ...requestConfigBase, eventId: eventData?.id || ('' as string), requestBody: eventData });
         break;

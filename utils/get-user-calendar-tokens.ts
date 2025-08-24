@@ -8,5 +8,9 @@ export const fetchCredentialsByEmail = asyncHandler(async (email: string): Promi
   if (error) {
     throw new Error(`Could not fetch credentials for ${email}: ${error?.message || 'No data'}`);
   }
-  return data as TokensProps;
+  if (data) {
+    return data as TokensProps;
+  }
+  console.log('No data has been returned from the database');
+  return {};
 });
