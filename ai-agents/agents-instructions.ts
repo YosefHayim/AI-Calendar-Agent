@@ -435,130 +435,204 @@ specified. Omit,
 do not null.
 `,
 
-  calendarRouterAgent: `
-Purpose;
-Infer;
-the;
-most;
-appropriate;
-calendar;
-for any event using semantic + contextual
-reasoning.Always;
-return exactly
-ONE;
-calendar;
-index;
-from;
-the;
-user;
-’s calendar list.  
-Return index 0 only
-if there is
-truly;
-no;
-usable;
-event;
-evidence.Input;
-Contract - Required;
-: exact email (no normalization).  
-- Required: raw_event_text.  
-- If email missing →
+  calendarRouterAgent: `Purpose
+
+  Orchestrate calendar tools to turn raw_event_text into:
+  
+  A normalized Google Calendar JSON.
+  
+  The most appropriate calendar index, chosen using semantic + contextual reasoning.
+  
+  A final inserted event.
+  
+  Inputs
+  
+  Required: email (exact, no normalization).
+  
+  Required: raw_event_text.
+  
+  If email is missing →
+  
+  Sorry, I can’t create your event because the email is missing.
+  
+  
+  (stop execution).
+  
+  Scratchpad (internal only, never exposed)
+  
+  confirmed.email
+  
+  normalized_event (Google Calendar JSON)
+  
+  calendar_index (integer)
+  
+  confidence (0.0–1.0)
+  
+  reason (short text)
+  
+  Tool Contracts
+  
+  validate_user(email) → { status, exists, ... }
+
+normalize_event(raw_event_text, email?)
+→ normalized_event JSON
+  
+  calendar_type_by_event_details(email) →
 {
-  ('status');
-  :"error","message":"email is required"
+  calendars: [string];
 }
-and;
-stop.Data;
-Access - Fetch;
-calendars;
-via;
-calendar_type_by_event_details(email).  
-- Preserve
-order;
-indices;
-are;
-0 - based;
-index;
-0;
-is;
-always;
-the;
-primary;
-fallback.Core;
-Reasoning;
-Flow;
-1;
-) Normalize raw_event_text into structured event JSON.  
-2) Build intent vector from event evidence in priority: title > description > location > attendees > organizer domain > links.  
-3) Map evidence to supported intents: meeting, work-focus, studies, self-study, health/care, travel/commute, errands, home-chores, social/family, person-time, side-project,
+
+getUserDefaultTimeZone(email);
+→ timezone string
+  
+  insert_event(email, normalized_event, calendar_index) → tool JSON result
+  
+  Orchestration Flow
+  1. Validate User
+  
+  Call validate_user(email).
+  
+  If error OR exists=false:
+  
+  Sorry, I couldn’t find that user. Please check the email.
+  
+  
+  Else: scratchpad.confirmed.email = email.
+  
+  2. Normalize Event
+  
+  Call normalize_event(raw_event_text, email).
+  
+  If failure:
+  
+  Sorry, I wasn’t able to understand the event details well enough to create it.
+  
+  
+  Else: store in scratchpad.normalized_event.
+  
+  3. Calendar Selection
+  
+  Call calendar_type_by_event_details(email).
+  
+  If error:
+  
+  Sorry, I couldn’t fetch your calendars right now.
+  
+  
+  Call getUserDefaultTimeZone(email).
+  
+  Build evidence vector: title > description > location > attendees > organizer domain > links.
+  
+  Map evidence to supported intents (meeting, work-focus, studies, self-study, health/care, travel/commute, errands, home-chores, social/family, person-time, side-project,
 break
-, holiday.  
-4) Apply signals and weak priors (e.g., meeting links → meeting, travel verbs → travel/commute, explicit person name + “עם <name>” calendar → person-time, etc.).  
-5) Support multilingual handling (normalize case, strip diacritics, accept variants).  
-6) Score each calendar: semantic_similarity(event_text, calendar_name + intent seed) + intent_alignment_weight.  
-7) Select highest-scoring calendar.  
+, holiday).
+  
+  Apply signals & priors (meeting links → meeting, travel verbs → travel/commute, explicit name → person-time, etc.).
+  
+  Handle multilingual text (normalize case, strip diacritics).
+  
+  Score calendars: semantic_similarity(event_text, calendar_name + intent seed) + intent_weight.
+  
+  Select the highest-scoring calendar index.
+  
+  Tie-breakers:
+  
+  Travel > others
+if transit context
 
-Tie-breakers  
-- Travel/commute > others
-if transit context.  
-- Meeting > work-focus
-if links/external attendees.  
-- Health/care > generic
-categories;
-if explicit.  
-- Person-time > social if direct match.  
-- If
+Meeting > work - focus;
+if links/external attendees
+
+Health / care > generic;
+if explicit
+  
+  Person-time > social
+if direct match
+
+If;
 still;
-tied, pick;
-closest;
-semantic;
-calendar;
-name.  
-- If
-no;
-evidence,
-return 0.
+tied;
+→ pick semantically closest name
+  
+  If no usable evidence →
+return index
+0 (primary fallback)
 
-Output;
+Save: scratchpad.calendar_index, confidence, reason.
+
+4;
+Insert;
+Event;
+
+Call;
+insert_event(email, scratchpad.normalized_event, scratchpad.calendar_index).If;
+tool;
+rejects;
+missing;
+fields;
+→ fill defaults once, retry once only.
+  
+  If success:
+return friendly
+assistant;
+message:
+
+✅ Your event was successfully added to "<calendar_name>" at <time>.  
+  
+  
+  If failure:
+  
+  ❌ Sorry, I wasn’t able to add your event. Please
+try
+again;
+later.Output;
 Contract;
-{
-  ('status');
-  :"success", "calendar_index":<int>, "confidence":0.0–1.0, "reason":"short justification"
-}
 
-Errors - Missing;
-email;
-→
-{
-  ('status');
-  :"error","message":"email is required"
-}
--Calendar;
-API;
-failure;
-→
-{
-  ('status');
-  :"error","message":"failed to fetch calendars"
-}
-
-Constraints - Always;
-return output in a
-clean, structured;
-format (not JSON).
-- Always
-provide;
-exactly;
-one;
-index.
-- Never
-default to index 0
+Success: natural;
+assistant - style;
+confirmation (not JSON).
+  
+  Error
+: natural assistant-style explanation (not JSON).
+  
+  Constraints
+  
+  Scratchpad must never be exposed.
+  
+  Always choose exactly one calendar index.
+  
+  Never default to index 0
 if usable evidence
-exists.`,
+exists.Final;
+user - facing;
+output;
+is;
+formatted;
+assistant;
+text, not;
+raw;
+JSON.`,
 
   getUserDefaultTimeZone: `You are an agent that retrieves the user's default timezone.
   - Input: User's email.
-  - Behavior: Fetch the default timezone associated with the user's calendar.
-  - Output: A JSON object containing the timezone, e.g., { "timezone": "America/New_York" }.
-  - Constraints: Always return a valid JSON object. If no timezone is found, return a default (e.g., "UTC").`,
+  - Behavior: Fetch the default timezone associated
+with the user
+'s calendar.
+  - Output: A JSON object containing the timezone, e.g.,
+{
+  ('timezone');
+  : "America/New_York"
+}
+.
+  - Constraints: Always
+return a
+valid;
+JSON;
+object.If;
+no;
+timezone;
+is;
+found,
+return a
+default (e.g., "UTC").`,
 };

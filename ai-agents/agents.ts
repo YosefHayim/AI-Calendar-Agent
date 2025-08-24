@@ -86,6 +86,7 @@ export const calendarRouterAgent = new Agent({
 
   tools: [
     AGENTS.normalizeEventAgent.asTool({ toolName: 'normalize_event' }),
+    AGENTS.getUserDefaultTimeZone.asTool({ toolName: 'get_user_default_timezone' }),
     AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
     AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type_by_event_details' }),
     AGENTS.insertEvent.asTool({ toolName: 'insert_event' }),
