@@ -4,3 +4,4 @@ credentials.JSON
 .venv
 supabase.exe
 app.zip
+*.js

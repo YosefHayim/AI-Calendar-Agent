@@ -24,7 +24,8 @@
     "lint": "npx ultracite lint",
     "prepare": "husky install",
     "sort": "npx sort-package-json",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "compress-to-zip":"git archive --format=zip HEAD -o app.zip"
   },
   "dependencies": {
     "@grammyjs/commands": "^1.1.0",
@@ -38,7 +39,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "extensions": "link:openai/agents-core/extensions",
     "googleapis": "^105.0.0",
     "grammy": "^1.37.0",
     "jsonwebtoken": "^9.0.2",
