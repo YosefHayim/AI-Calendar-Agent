@@ -1,8 +1,26 @@
-import { expect, jest, test } from '@jest/globals';
+import { expect, jest, test, describe, beforeEach } from '@jest/globals';
 import type { Request, Response } from 'express';
-import { STATUS_RESPONSE } from '@/types';
+import { PROVIDERS, STATUS_RESPONSE } from '@/types';
 
-const signInWithOAuth = jest.fn();
+interface SignInArgs {
+  provider: PROVIDERS; 
+  options: {
+    redirectTo: string;
+    scopes: string;
+    queryParams: {
+      access_type: string;
+      prompt: string;
+    };
+  };
+}
+interface SignInResult {
+  data: { url: string | null };
+  error: Error | null;
+}
+type SignInWithOAuthFn = (args: SignInArgs) => Promise<SignInResult>;
+
+// Shared mocks
+const signInWithOAuth: jest.MockedFunction<SignInWithOAuthFn> = jest.fn();
 const CONFIG = {
   node_env: 'development',
   redirect_url_prod: 'https://prod.example.com/callback',
@@ -14,29 +32,33 @@ jest.mock('@/config/root-config', () => ({
   SCOPES_STRING: 'openid email profile',
   SUPABASE: {
     auth: {
-      signInWithOAuth: (...args: any[]) => signInWithOAuth(...args),
+      signInWithOAuth: (...args: Parameters<SignInWithOAuthFn>) =>
+        signInWithOAuth(...args),
     },
   },
 }));
 
-const sendR = jest.fn();
+const sendR: jest.MockedFunction<
+  (res: Response, status: number, msg: string, err?: unknown) => void
+> = jest.fn();
+
 jest.mock('@/utils/send-response', () => ({
   __esModule: true,
-  default: (...args: any[]) => (sendR as any)(...args),
+  default: (...args: Parameters<typeof sendR>) => sendR(...args),
 }));
 
 import { CONFIG as LIVE_CONFIG } from '@/config/root-config';
 import { thirdPartySignInOrSignUp } from '@/utils/third-party-signup-signin-supabase';
 
 describe('thirdPartySignInOrSignUp', () => {
-  const provider = 'google' as any;
+  const provider = PROVIDERS.GOOGLE;
 
   const makeRes = (): Response =>
     ({
       redirect: jest.fn(),
     }) as unknown as Response;
 
-  const makeReq = (): Request => ({}) as unknown as Request;
+  const makeReq = (): Request => ({} as Request);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -45,7 +67,7 @@ describe('thirdPartySignInOrSignUp', () => {
 
   test('redirects when Supabase returns a URL', async () => {
     const res = makeRes();
-    (signInWithOAuth as jest.Mock).mockResolvedValue({
+    signInWithOAuth.mockResolvedValue({
       data: { url: 'https://supabase.example/redirect' },
       error: null,
     });
@@ -55,12 +77,9 @@ describe('thirdPartySignInOrSignUp', () => {
     expect(signInWithOAuth).toHaveBeenCalledWith({
       provider,
       options: {
-        redirectTo: LIVE_CONFIG.redirect_url_dev,
+        redirectTo: LIVE_CONFIG.redirect_url_dev!, 
         scopes: 'openid email profile',
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
+        queryParams: { access_type: 'offline', prompt: 'consent' },
       },
     });
 
@@ -70,23 +89,23 @@ describe('thirdPartySignInOrSignUp', () => {
 
   test('uses production redirect URL when node_env is production', async () => {
     (LIVE_CONFIG as any).node_env = 'production';
-
     const res = makeRes();
-    (signInWithOAuth as jest.Mock).mockResolvedValue({
+
+    signInWithOAuth.mockResolvedValue({
       data: { url: 'https://supabase.example/redirect' },
       error: null,
     });
 
     await thirdPartySignInOrSignUp(makeReq(), res, provider);
 
-    const args = (signInWithOAuth as jest.Mock).mock.calls[0][0];
+    const args = signInWithOAuth.mock.calls[0][0];
     expect(args.options.redirectTo).toBe(LIVE_CONFIG.redirect_url_prod);
   });
 
   test('calls sendR with 500 when Supabase returns an error', async () => {
     const res = makeRes();
     const error = new Error('auth failed');
-    (signInWithOAuth as jest.Mock).mockResolvedValue({
+    signInWithOAuth.mockResolvedValue({
       data: { url: null },
       error,
     });
@@ -94,12 +113,17 @@ describe('thirdPartySignInOrSignUp', () => {
     await thirdPartySignInOrSignUp(makeReq(), res, provider);
 
     expect(res.redirect).not.toHaveBeenCalled();
-    expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to sign up user.', error);
+    expect(sendR).toHaveBeenCalledWith(
+      res,
+      STATUS_RESPONSE.INTERNAL_SERVER_ERROR,
+      'Failed to sign up user.',
+      error
+    );
   });
 
   test('no-op when neither url nor error returned', async () => {
     const res = makeRes();
-    (signInWithOAuth as jest.Mock).mockResolvedValue({
+    signInWithOAuth.mockResolvedValue({
       data: { url: null },
       error: null,
     });

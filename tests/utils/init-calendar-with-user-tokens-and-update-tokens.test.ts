@@ -1,8 +1,13 @@
-import { expect, jest, test } from '@jest/globals';
+import { expect, jest, test, describe, beforeEach, afterEach } from '@jest/globals';
 import type { TokensProps } from '@/types';
 
-const setCredentials = jest.fn();
-const getAccessToken = jest.fn();
+type AccessToken = { token: string };
+type CalendarInit = { version: 'v3'; auth: unknown };
+type CalendarClient = { events: { list?: jest.Mock } };
+
+const setCredentials: jest.MockedFunction<(t: TokensProps) => void> = jest.fn();
+const getAccessToken: jest.MockedFunction<() => Promise<AccessToken | undefined>> = jest.fn();
+
 jest.mock('@/config/root-config', () => ({
   OAUTH2CLIENT: {
     setCredentials,
@@ -11,15 +16,21 @@ jest.mock('@/config/root-config', () => ({
   },
 }));
 
-const updateTokensOfUser = jest.fn();
+const updateTokensOfUser: jest.MockedFunction<
+  (prev: TokensProps, next: AccessToken) => Promise<void> | void
+> = jest.fn();
+
 jest.mock('@/utils/update-tokens-of-user', () => ({
-  updateTokensOfUser: (...args: unknown[]) => updateTokensOfUser(...args),
+  updateTokensOfUser: (...args: Parameters<typeof updateTokensOfUser>) =>
+    updateTokensOfUser(...args),
 }));
 
-const googleCalendarMock = jest.fn();
+const googleCalendarMock: jest.MockedFunction<(args: CalendarInit) => CalendarClient> = jest.fn();
+
 jest.mock('googleapis', () => ({
   google: {
-    calendar: (...args: unknown[]) => googleCalendarMock(...args),
+    calendar: (...args: Parameters<typeof googleCalendarMock>) =>
+      googleCalendarMock(...args),
   },
 }));
 
@@ -35,7 +46,7 @@ describe('initCalendarWithUserTokensAndUpdateTokens', () => {
     expiry_date: Date.now() + 3_600_000,
   };
 
-  let consoleErrorSpy: jest.SpyInstance;
+  let consoleErrorSpy: jest.SpiedFunction<typeof console.error>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -48,7 +59,7 @@ describe('initCalendarWithUserTokensAndUpdateTokens', () => {
 
   test('sets credentials, refreshes access token, updates stored tokens, returns calendar client', async () => {
     getAccessToken.mockResolvedValue({ token: 'new-access-token' });
-    const calendarInstance = { events: { list: jest.fn() } };
+    const calendarInstance: CalendarClient = { events: { list: jest.fn() } };
     googleCalendarMock.mockReturnValue(calendarInstance);
 
     const res = await initCalendarWithUserTokensAndUpdateTokens(baseTokens);
@@ -63,7 +74,7 @@ describe('initCalendarWithUserTokensAndUpdateTokens', () => {
 
   test('does not call updateTokensOfUser when no new token is returned', async () => {
     getAccessToken.mockResolvedValue(undefined);
-    const calendarInstance = { events: {} };
+    const calendarInstance: CalendarClient = { events: {} };
     googleCalendarMock.mockReturnValue(calendarInstance);
 
     const res = await initCalendarWithUserTokensAndUpdateTokens(baseTokens);

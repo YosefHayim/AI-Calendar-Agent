@@ -24,7 +24,6 @@ describe('errorTemplate', () => {
 
     expect(() => errorTemplate(message, httpStatus, res)).toThrow(message);
 
-    // Boundary effects
     expect(res.status).toHaveBeenCalledTimes(1);
     expect(res.status).toHaveBeenCalledWith(httpStatus);
     expect(res.json).toHaveBeenCalledTimes(1);
@@ -34,7 +33,6 @@ describe('errorTemplate', () => {
       message,
     });
 
-    // Cause-specific assertion (requires catch to inspect object)
     try {
       errorTemplate(message, httpStatus, res);
     } catch (e) {
