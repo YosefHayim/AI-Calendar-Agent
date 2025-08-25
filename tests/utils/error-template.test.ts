@@ -22,8 +22,7 @@ describe('errorTemplate', () => {
     const message = 'Bad thing';
     const httpStatus = 400;
 
-    // Assert throw without manual try/catch for message/type
-    expect(() => errorTemplate(message, httpStatus, res)).toThrowError(message);
+    expect(() => errorTemplate(message, httpStatus, res)).toThrow(message);
 
     // Boundary effects
     expect(res.status).toHaveBeenCalledTimes(1);
@@ -47,7 +46,7 @@ describe('errorTemplate', () => {
     const message = 'No response';
     const httpStatus = 500;
 
-    expect(() => errorTemplate(message, httpStatus)).toThrowError(message);
+    expect(() => errorTemplate(message, httpStatus)).toThrow(message);
 
     try {
       errorTemplate(message, httpStatus);
@@ -58,6 +57,6 @@ describe('errorTemplate', () => {
 
   it('propagates exact message text', () => {
     const customMsg = 'precise-message';
-    expect(() => errorTemplate(customMsg, 418)).toThrowError(customMsg);
+    expect(() => errorTemplate(customMsg, 418)).toThrow(customMsg);
   });
 });

@@ -1,36 +1,35 @@
-const SECOND = 1000;
-const SIXTY_SECONDS = 60;
+const MS_IN_SEC = 1000;
+const SECS_IN_MIN = 60;
 
-export function getEventDurationString(startISO: string, endISO: string) {
+export function getEventDurationString(startISO?: string | null, endISO?: string | null): string | null {
   if (!(startISO && endISO)) {
     return null;
   }
 
   const start = new Date(startISO);
   const end = new Date(endISO);
-
   if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime()) || end <= start) {
     return null;
   }
 
   const diffMs = end.getTime() - start.getTime();
 
-  const totalSeconds = Math.round(diffMs / SECOND);
-  if (totalSeconds < SIXTY_SECONDS) {
+  // Round to nearest second
+  const totalSeconds = Math.round(diffMs / MS_IN_SEC);
+
+  // Sub-minute durations (<60s) → show seconds
+  if (totalSeconds < SECS_IN_MIN) {
     return `${totalSeconds}s`;
   }
 
-  const totalSIXTY_SECONDSs = Math.floor(totalSeconds / SIXTY_SECONDS);
-  if (totalSIXTY_SECONDSs < SIXTY_SECONDS) {
-    return `${totalSIXTY_SECONDSs}m`;
+  // Round to nearest minute
+  const totalMinutes = Math.round(totalSeconds / SECS_IN_MIN);
+
+  if (totalMinutes < SECS_IN_MIN) {
+    return `${totalMinutes}m`;
   }
+  const hours = Math.floor(totalMinutes / SECS_IN_MIN);
+  const minutes = totalMinutes % SECS_IN_MIN;
 
-  const hours = Math.floor(totalSIXTY_SECONDSs / SIXTY_SECONDS);
-  const SIXTY_SECONDSs = totalSIXTY_SECONDSs % SIXTY_SECONDS;
-
-  if (SIXTY_SECONDSs === 0) {
-    return `${hours}h`;
-  }
-
-  return `${hours}h ${SIXTY_SECONDSs}m`;
+  return minutes === 0 ? `${hours}h` : `${hours}h ${minutes}m`;
 }

@@ -2,8 +2,9 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import type { Agent } from '@openai/agents';
 
 const run = jest.fn();
+
 jest.mock('@openai/agents', () => ({
-  run: (...args: any[]) => (run as any)(...args),
+  run,
 }));
 
 const AGENTS_REGISTRY: Record<string, Agent> = {
@@ -13,13 +14,13 @@ jest.mock('@/ai-agents/agents', () => ({
   AGENTS: AGENTS_REGISTRY,
 }));
 
-jest.mock('./async-handlers', () => ({
+jest.mock('@/utils/async-handlers', () => ({
   asyncHandler: (fn: any) => fn,
 }));
 
 import { run as openAiRun } from '@openai/agents';
 import { AGENTS } from '@/ai-agents/agents';
-import { activateAgent } from '@/utils/activate-agent'; 
+import { activateAgent } from '@/utils/activate-agent';
 
 describe('activateAgent', () => {
   beforeEach(() => {
@@ -64,6 +65,6 @@ describe('activateAgent', () => {
   it('throws when prompt is falsy even with direct Agent object', async () => {
     const a = { name: 'Direct' } as Agent;
     await expect(activateAgent(a, '')).rejects.toThrow('Please provide the prompt for the agent: Direct');
-    expect(openAiRun).not.toHaveBeenCalled();
+    expect(openAiRun).not.toHaveBeenCalled(); // now valid: openAiRun is a jest.fn()
   });
 });

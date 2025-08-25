@@ -9,11 +9,17 @@ const config: Config = {
   extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
   modulePaths: [compilerOptions.baseUrl || '<rootDir>'],
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths || {}, { prefix: '<rootDir>/' }),
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
+    ...pathsToModuleNameMapper(compilerOptions.paths || {}, { prefix: '<rootDir>/' }),
+  },
   transform: {
-    '^.+\\.[tj]sx?$': ['ts-jest', { useESM: true }],
+    '^.+\\.[tj]sx?$': ['ts-jest', { useESM: true, tsconfig: 'tsconfig.json' }],
   },
   transformIgnorePatterns: ['/node_modules/(?!(@openai/agents|@openai/agents-core)/)'],
+  resetMocks: true,
+  restoreMocks: true,
+  clearMocks: true,
 };
 
 export default config;

@@ -51,8 +51,9 @@ describe('getEventDurationString', () => {
 
   test('exact hours return "Xh"', () => {
     expect(getEventDurationString('2024-01-01T00:00:00Z', '2024-01-01T02:00:00Z')).toBe('2h');
-    expect(getEventDurationString('2024-01-01T05:00:00Z', '2024-01-01T05:00:59Z')).toBe('1m'); // rounds to 1m, not an hour
+    expect(getEventDurationString('2024-01-01T05:00:00Z', '2024-01-01T05:00:59Z')).toBe('59s'); 
   });
+  
 
   test('hours and minutes: "Xh Ym"', () => {
     expect(getEventDurationString('2024-01-01T00:00:00Z', '2024-01-01T01:30:00Z')).toBe('1h 30m');
