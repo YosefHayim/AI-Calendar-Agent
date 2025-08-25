@@ -24,7 +24,7 @@
   },
   "overrides": [
     {
-      "include": [
+      "includes": [
         "**/*.test.js",
         "**/*.spec.js",
         "**/*.test.ts",
