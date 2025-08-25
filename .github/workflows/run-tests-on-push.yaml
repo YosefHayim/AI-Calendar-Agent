@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -12,28 +16,36 @@ jobs:
       CI: true
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (latest) with pnpm cache
+      - name: Setup Node.js (LTS) with pnpm cache
         uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version: 'lts/*'
           cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Enable Corepack (pnpm)
-        run: corepack enable
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
 
-      - name: Install dependencies (pnpm)
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Unique, file-driven cache key: update .cache-keys/jest.key to force a new cache
       - name: Cache Jest cache
         uses: actions/cache@v4
         with:
           path: .jest-cache
-          key: ${{ runner.os }}-jest-${{ github.sha }}
+          key: ${{ runner.os }}-jest-${{ hashFiles('pnpm-lock.yaml', 'jest.config.*', 'tsconfig.json', '.cache-keys/jest.key') }}
           restore-keys: |
             ${{ runner.os }}-jest-
+
+      - name: Ensure Jest cache dir
+        run: mkdir -p .jest-cache
 
       - name: Run tests with coverage (fail if <95%)
         run: |
@@ -46,7 +58,7 @@ jobs:
             --coverageDirectory=coverage \
             --coverageThreshold='{"global":{"branches":95,"functions":95,"lines":95,"statements":95}}'
 
-      - name: Upload coverage artifact
+      - name: Upload coverage + cache
         if: always()
         uses: actions/upload-artifact@v4
         with:
