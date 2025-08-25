@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "isolatedModules":true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "isolatedModules": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -14,5 +14,6 @@
     "paths": {
       "@/*": ["*"]
     }
-  }
+  },
+  "include": ["tests", "jest.config.ts"]
 }

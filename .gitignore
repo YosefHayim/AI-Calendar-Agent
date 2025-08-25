@@ -1,7 +1,26 @@
-node_modules
-.env
-credentials.JSON
-.venv
-supabase.exe
-app.zip
+# Ignore all JS files
 *.js
+
+# Keep config variants explicitly ignored too (redundant but explicit)
+*.config.js
+*.config.cjs
+*.config.mjs
+
+# Environment & credentials
+.env
+credentials.json
+
+# Virtual environments & binaries
+.venv/
+supabase.exe
+
+# Archives
+app.zip
+
+# Dependencies
+node_modules/
+
+# Build / logs / system files
+dist/
+build/
+*.log
