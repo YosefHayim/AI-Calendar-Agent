@@ -1,3 +1,4 @@
+// tests/controllers/users-route.test.ts
 import type { NextFunction, Request, Response } from 'express';
 import { STATUS_RESPONSE, PROVIDERS } from '@/types';
 
@@ -20,12 +21,12 @@ jest.mock('@/config/root-config', () => ({
   },
 }));
 
-// execute inner async handler immediately
+// execute inner async handler immediately, passing next through unchanged
 jest.mock('@/utils/async-handlers', () => ({
   reqResAsyncHandler:
     (fn: any) =>
-    (req: Request, res: Response, next?: any) =>
-      Promise.resolve(fn(req, res,mockNext, next)).catch(next),
+    (req: Request, res: Response, next?: NextFunction) =>
+      Promise.resolve(fn(req, res, next)).catch(next),
 }));
 
 jest.mock('@/utils/send-response', () => jest.fn());
@@ -53,7 +54,7 @@ const mockReq = (overrides: Partial<Request> = {}): Request =>
     ...overrides,
   } as unknown as Request);
 
-  const mockNext = () => jest.fn() as unknown as NextFunction;
+const mockNext = jest.fn() as unknown as NextFunction;
 
 // ---- Supabase builder helpers ----
 
@@ -107,7 +108,7 @@ describe('generateAuthGoogleUrl', () => {
     const req = mockReq({ headers: { 'user-agent': 'PostmanRuntime/7.32.2' } });
     const res = mockRes();
 
-    await userController.generateAuthGoogleUrl(req, res,mockNext);
+    await userController.generateAuthGoogleUrl(req, res, mockNext);
 
     expect(OAUTH2CLIENT.generateAuthUrl).toHaveBeenCalledWith({
       access_type: 'offline',
@@ -126,7 +127,7 @@ describe('generateAuthGoogleUrl', () => {
     const req = mockReq({ headers: { 'user-agent': 'Mozilla/5.0' } });
     const res = mockRes();
 
-    await userController.generateAuthGoogleUrl(req, res,mockNext);
+    await userController.generateAuthGoogleUrl(req, res, mockNext);
 
     expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('https://accounts.google.com'));
     expect(sendR).not.toHaveBeenCalled();
@@ -151,7 +152,7 @@ describe('generateAuthGoogleUrl', () => {
 
     mockUpdateEqSelect('calendars_of_users', { data: [{ id: 1 }], error: null });
 
-    await userController.generateAuthGoogleUrl(req, res,mockNext);
+    await userController.generateAuthGoogleUrl(req, res, mockNext);
 
     expect(sendR).toHaveBeenCalledWith(
       res,
@@ -170,7 +171,7 @@ describe('generateAuthGoogleUrl', () => {
 
     mockUpdateEqSelect('calendars_of_users', { data: null, error: new Error('db error') });
 
-    await userController.generateAuthGoogleUrl(req, res,mockNext);
+    await userController.generateAuthGoogleUrl(req, res, mockNext);
 
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to store new tokens.', expect.any(Error));
   });
@@ -181,7 +182,7 @@ describe('generateAuthGoogleUrl', () => {
 
     (OAUTH2CLIENT.getToken as jest.Mock).mockRejectedValueOnce(new Error('oauth down'));
 
-    await userController.generateAuthGoogleUrl(req, res,mockNext);
+    await userController.generateAuthGoogleUrl(req, res, mockNext);
 
     expect(sendR).toHaveBeenCalledWith(
       res,
@@ -194,13 +195,12 @@ describe('generateAuthGoogleUrl', () => {
 
 describe('signUpUserReg', () => {
   it('validates required body (controller does not return early)', async () => {
-    // controller does not `return` after BAD_REQUEST, so make signUp resolve safely
     (SUPABASE.auth.signUp as jest.Mock).mockResolvedValueOnce({ data: null, error: null });
 
     const req = mockReq({ body: {} });
     const res = mockRes();
 
-    await userController.signUpUserReg(req, res,mockNext);
+    await userController.signUpUserReg(req, res, mockNext);
 
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.BAD_REQUEST, 'Email and password are required.');
   });
@@ -211,7 +211,7 @@ describe('signUpUserReg', () => {
 
     (SUPABASE.auth.signUp as jest.Mock).mockResolvedValueOnce({ data: null, error: new Error('signup failed') });
 
-    await userController.signUpUserReg(req, res,mockNext);
+    await userController.signUpUserReg(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to sign up user.', expect.any(Error));
   });
 
@@ -221,7 +221,7 @@ describe('signUpUserReg', () => {
 
     (SUPABASE.auth.signUp as jest.Mock).mockResolvedValueOnce({ data: { user: { id: '1' } }, error: null });
 
-    await userController.signUpUserReg(req, res,mockNext);
+    await userController.signUpUserReg(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.SUCCESS, 'User signed up successfully.', { user: { id: '1' } });
   });
 });
@@ -231,16 +231,16 @@ describe('OAuth provider helpers', () => {
     const req = mockReq();
     const res = mockRes();
 
-    await userController.signUpOrSignInWithGoogle(req, res,mockNext);
-    expect(thirdPartySignInOrSignUp).toHaveBeenCalledWith(req, res,mockNext, PROVIDERS.GOOGLE);
+    await userController.signUpOrSignInWithGoogle(req, res, mockNext);
+    expect(thirdPartySignInOrSignUp).toHaveBeenCalledWith(req, res, PROVIDERS.GOOGLE);
   });
 
   it('GitHub delegates to thirdPartySignInOrSignUp', async () => {
     const req = mockReq();
     const res = mockRes();
 
-    await userController.signUpUserViaGitHub(req, res,mockNext);
-    expect(thirdPartySignInOrSignUp).toHaveBeenCalledWith(req, res,mockNext, PROVIDERS.GITHUB);
+    await userController.signUpUserViaGitHub(req, res, mockNext);
+    expect(thirdPartySignInOrSignUp).toHaveBeenCalledWith(req, res, PROVIDERS.GITHUB);
   });
 });
 
@@ -270,7 +270,7 @@ describe('deActivateUser', () => {
 
     mockSelectEq('calendars_of_users', { data: null, error: new Error('select failed') });
 
-    await userController.deActivateUser(req, res,mockNext);
+    await userController.deActivateUser(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to find user.', expect.any(Error));
   });
 
@@ -281,9 +281,7 @@ describe('deActivateUser', () => {
     mockSelectEq('calendars_of_users', { data: [{ email: 'e@test.com' }], error: null });
     mockUpdateEq('calendars_of_users', { error: null });
 
-    await userController.deActivateUser(req, res,mockNext);
-
-    // second from() call’s builder was used; assert final response
+    await userController.deActivateUser(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.SUCCESS, 'User deactivated successfully.');
   });
 
@@ -294,7 +292,7 @@ describe('deActivateUser', () => {
     mockSelectEq('calendars_of_users', { data: [{ email: 'e@test.com' }], error: null });
     mockUpdateEq('calendars_of_users', { error: new Error('update failed') });
 
-    await userController.deActivateUser(req, res,mockNext);
+    await userController.deActivateUser(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to deactivate user.', expect.any(Error));
   });
 
@@ -304,7 +302,7 @@ describe('deActivateUser', () => {
 
     mockSelectEq('calendars_of_users', { data: [], error: null });
 
-    await userController.deActivateUser(req, res,mockNext);
+    await userController.deActivateUser(req, res, mockNext);
     expect(sendR).not.toHaveBeenCalled();
   });
 });
@@ -316,7 +314,7 @@ describe('signInUserReg', () => {
     const req = mockReq({ body: {} });
     const res = mockRes();
 
-    await userController.signInUserReg(req, res,mockNext);
+    await userController.signInUserReg(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.BAD_REQUEST, 'Email and password are required ');
   });
 
@@ -326,7 +324,7 @@ describe('signInUserReg', () => {
 
     (SUPABASE.auth.signInWithPassword as jest.Mock).mockResolvedValueOnce({ data: null, error: new Error('bad creds') });
 
-    await userController.signInUserReg(req, res,mockNext);
+    await userController.signInUserReg(req, res, mockNext);
 
     expect((sendR as jest.Mock).mock.calls[0][1]).toBe(STATUS_RESPONSE.INTERNAL_SERVER_ERROR);
     expect((sendR as jest.Mock).mock.calls[1][1]).toBe(STATUS_RESPONSE.SUCCESS);
@@ -338,7 +336,7 @@ describe('signInUserReg', () => {
 
     (SUPABASE.auth.signInWithPassword as jest.Mock).mockResolvedValueOnce({ data: { session: { access_token: 't' } }, error: null });
 
-    await userController.signInUserReg(req, res,mockNext);
+    await userController.signInUserReg(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.SUCCESS, 'User signin successfully.', { session: { access_token: 't' } });
   });
 });
@@ -350,7 +348,7 @@ describe('verifyEmailByOpt', () => {
     const req = mockReq({ body: {} });
     const res = mockRes();
 
-    await userController.verifyEmailByOpt(req, res,mockNext);
+    await userController.verifyEmailByOpt(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.BAD_REQUEST, 'Email and token are required.');
   });
 
@@ -360,7 +358,7 @@ describe('verifyEmailByOpt', () => {
 
     (SUPABASE.auth.verifyOtp as jest.Mock).mockResolvedValueOnce({ data: null, error: new Error('invalid token') });
 
-    await userController.verifyEmailByOpt(req, res,mockNext);
+    await userController.verifyEmailByOpt(req, res, mockNext);
 
     expect((sendR as jest.Mock).mock.calls[0][1]).toBe(STATUS_RESPONSE.INTERNAL_SERVER_ERROR);
     expect((sendR as jest.Mock).mock.calls[1][1]).toBe(STATUS_RESPONSE.SUCCESS);
@@ -372,7 +370,7 @@ describe('verifyEmailByOpt', () => {
 
     (SUPABASE.auth.verifyOtp as jest.Mock).mockResolvedValueOnce({ data: { user: { id: '1' } }, error: null });
 
-    await userController.verifyEmailByOpt(req, res,mockNext);
+    await userController.verifyEmailByOpt(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.SUCCESS, 'Email verified successfully.', { user: { id: '1' } });
   });
 });
