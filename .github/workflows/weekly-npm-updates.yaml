@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Hard-stop if the repo is configured for Yarn. We only support pnpm here.
+      # Enforce pnpm; block Yarn to avoid PM drift
       - name: Verify no Yarn config present
         shell: bash
         run: |
@@ -30,7 +30,7 @@ jobs:
             exit 1
           fi
           if jq -e '.packageManager | startswith("yarn@")' package.json >/dev/null 2>&1; then
-            echo "packageManager is set to Yarn. Set to pnpm (e.g., \"pnpm@10.x\") or remove to proceed."
+            echo 'packageManager is set to Yarn. Set it to pnpm (e.g., "pnpm@10.x") or remove to proceed.'
             exit 1
           fi
           if grep -R --exclude-dir=node_modules -nE '\byarn( |$)' package.json packages/*/package.json 2>/dev/null | head -n1; then
@@ -38,6 +38,14 @@ jobs:
             exit 1
           fi
 
+      # Install pnpm FIRST so it's in PATH for subsequent steps
+      - name: Setup pnpm (latest)
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      # Node + pnpm cache for speed
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -45,27 +53,17 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      # Always use latest pnpm (action v4 handles install + cache integration)
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-          run_install: false
-
       - name: Print tool versions
         run: |
           node -v
           pnpm -v
-          corepack -v || true
 
-      # Update deps: only minor/patch; explicitly block zod major (keep ^3 while peers require it)
+      # Update deps: only minor/patch; block zod major
       - name: Update dependencies (minor/patch only; block zod major)
         shell: bash
         run: |
           set -euo pipefail
           pnpm dlx npm-check-updates@latest -u --target minor --reject 'zod'
-          # Install after bump to refresh lockfile
-          # Use workspace root (-w) and recurse (-r) when applicable; safe even for single-package repos.
           pnpm -w -r install --no-frozen-lockfile
 
       - name: Lint and test (if present)

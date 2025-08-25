@@ -29,10 +29,18 @@ jobs:
             exit 1
           fi
           if jq -e '.packageManager | startswith("yarn@")' package.json >/dev/null 2>&1; then
-            echo 'packageManager is set to Yarn. Use pnpm instead.'
+            echo ' packageManager is set to Yarn. Use pnpm instead.'
             exit 1
           fi
 
+      # Install pnpm FIRST so it's available in PATH
+      - name: Setup pnpm (latest)
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      # Then install Node.js and enable pnpm cache
       - name: Setup Node.js (LTS) with pnpm cache
         uses: actions/setup-node@v4
         with:
@@ -40,11 +48,10 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - name: Setup pnpm (latest)
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-          run_install: false
+      - name: Print tool versions
+        run: |
+          node -v
+          pnpm -v
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
