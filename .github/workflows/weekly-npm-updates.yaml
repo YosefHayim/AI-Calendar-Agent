@@ -16,9 +16,13 @@ concurrency:
 jobs:
   update-deps:
     runs-on: ubuntu-latest
+    env:
+      HUSKY: "0" # hard-disable git hooks in CI
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false # ensure we only use the PAT below
 
       - name: Verify no Yarn config present
         shell: bash
@@ -42,7 +46,7 @@ jobs:
       - name: Setup Node.js with pnpm cache
         uses: actions/setup-node@v4
         with:
-          node-version: "latest"
+          node-version: "lts/*"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -60,13 +64,15 @@ jobs:
 
       - name: Create PR with changes
         uses: peter-evans/create-pull-request@v6
+        env:
+          HUSKY: "0" # also disable inside the action's commit
         with:
+          token: ${{ secrets.REPO_SCOPED_PAT }} # required if GITHUB_TOKEN is blocked
           branch: chore/weekly-pnpm-updates
           title: "chore: weekly dependency updates (pnpm, minor/patch)"
           commit-message: "chore: weekly dependency updates (pnpm, minor/patch)"
           body: |
             Automated weekly dependency refresh via pnpm.
-
             - Enforced pnpm@latest with caching.
             - Ran npm-check-updates with --target minor and --reject zod to avoid zod@4 while peers require zod^3.
             - Updated lockfile with pnpm install.

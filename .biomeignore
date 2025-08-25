@@ -1,0 +1,5 @@
+coverage/
+coverage/lcov-report/
+dist/
+build/
+node_modules/
