@@ -1,4 +1,4 @@
-name: Run Unit Tests (pnpm)
+name: Run unit tests (pnpm)
 
 on:
   push:
@@ -19,27 +19,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Ensure pnpm only (no Yarn)
+      # Guard against Yarn
+      - name: Ensure pnpm is the only package manager
         shell: bash
         run: |
           set -euo pipefail
           if [ -f yarn.lock ]; then
-            echo "yarn.lock found. Remove it and migrate to pnpm."
+            echo " yarn.lock found. Remove it and migrate to pnpm."
             exit 1
           fi
           if jq -e '.packageManager | startswith("yarn@")' package.json >/dev/null 2>&1; then
-            echo 'packageManager is set to Yarn. Set it to pnpm.'
+            echo ' packageManager is set to Yarn. Use pnpm instead.'
             exit 1
           fi
 
-      # Install pnpm FIRST so it's on PATH
+      # Install pnpm FIRST so it's available in PATH
       - name: Setup pnpm (latest)
         uses: pnpm/action-setup@v4
         with:
           version: latest
           run_install: false
 
-      # Node + pnpm cache for speed
+      # Then install Node.js and enable pnpm cache
       - name: Setup Node.js (LTS) with pnpm cache
         uses: actions/setup-node@v4
         with:
@@ -55,9 +56,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # IMPORTANT: no extra "--" before flags; use pnpm exec to avoid arg mangling
       - name: Run tests with coverage
-        run: pnpm run test
+        run: |
+          pnpm test -- \
+            --coverage \
+            --coverageReporters=json-summary \
+            --coverageReporters=text-summary \
+            --coverageReporters=lcov \
+            --coverageDirectory=coverage
 
       - name: Upload coverage artifact
         if: always()
