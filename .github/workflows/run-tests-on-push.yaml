@@ -57,14 +57,7 @@ jobs:
 
       # IMPORTANT: no extra "--" before flags; use pnpm exec to avoid arg mangling
       - name: Run tests with coverage
-        run: |
-          pnpm exec jest \
-            --ci \
-            --coverage \
-            --coverageReporters=json-summary \
-            --coverageReporters=text-summary \
-            --coverageReporters=lcov \
-            --coverageDirectory=coverage
+        run: pnpm run test
 
       - name: Upload coverage artifact
         if: always()
