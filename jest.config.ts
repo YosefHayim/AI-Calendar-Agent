@@ -13,7 +13,7 @@ const config: Config = {
   // bail: 0,
 
   // The directory where Jest should store its cached dependency information
-  // cacheDirectory: "/private/var/folders/5h/0hqwxjgd19vgxw21r_x2g6_w0000gn/T/jest_dx",
+  cacheDirectory: "/private/var/folders/5h/0hqwxjgd19vgxw21r_x2g6_w0000gn/T/jest_dx",
 
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
@@ -92,8 +92,9 @@ const config: Config = {
   // ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
-
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1'
+  }
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
 
