@@ -15,9 +15,7 @@
       "suspicious": {
         "noConsole": {
           "level": "error",
-          "options": {
-            "allow": ["error", "log"]
-          }
+          "options": { "allow": ["error", "log"] }
         }
       }
     }
@@ -31,18 +29,10 @@
         "**/*.spec.ts"
       ],
       "linter": {
-        "globals": {
-          "describe": true,
-          "it": true,
-          "test": true,
-          "expect": true,
-          "beforeAll": true,
-          "afterAll": true,
-          "beforeEach": true,
-          "afterEach": true,
-          "jest": true
-        }
+        "domains": { "test": "recommended" }
       }
+      // If you need extra globals beyond Jest/Vitest/Mocha, uncomment:
+      // ,"javascript": { "globals": ["__DEV__"] }
     }
   ]
 }

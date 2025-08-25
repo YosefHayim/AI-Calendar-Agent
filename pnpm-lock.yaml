@@ -20,6 +20,9 @@ importers:
       '@grammyjs/runner':
         specifier: ^2.0.3
         version: 2.0.3(grammy@1.38.1)
+      '@jest/globals':
+        specifier: ^30.0.5
+        version: 30.0.5
       '@openai/agents':
         specifier: ^0.0.9
         version: 0.0.9(ws@8.18.3)(zod@3.25.76)
