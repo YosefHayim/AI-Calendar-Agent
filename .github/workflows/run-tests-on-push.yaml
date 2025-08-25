@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  Running-Tests:
     runs-on: ubuntu-latest
     env:
       CI: true
