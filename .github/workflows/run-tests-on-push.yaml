@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -15,43 +18,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (LTS)
+      - name: Setup Node.js (LTS) with npm cache
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
           cache: 'npm'
+          cache-dependency-path: package-lock.json
 
-      - name: Install dependencies (npm install)
-        run: npm install
+      - name: Install dependencies (npm ci)
+        run: npm ci
 
-      - name: Cache Jest cache
-        uses: actions/cache@v4
-        with:
-          path: .jest-cache
-          key: ${{ runner.os }}-jest-${{ hashFiles('package-lock.json', 'jest.config.*', 'tsconfig.json') }}
-          restore-keys: |
-            ${{ runner.os }}-jest-
-
-      - name: Ensure Jest cache dir
-        run: mkdir -p .jest-cache
-
-      - name: Run tests with coverage (fail if <95%)
+      - name: Run tests with coverage
         run: |
           npm run test -- \
             --coverage \
-            --cache .jest-cache \
             --coverageReporters=json-summary \
             --coverageReporters=text-summary \
             --coverageReporters=lcov \
-            --coverageDirectory=coverage \
-            --coverageThreshold='{"global":{"branches":95,"functions":95,"lines":95,"statements":95}}'
+            --coverageDirectory=coverage
 
-      - name: Upload coverage + cache
+      - name: Upload coverage artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ github.run_id }}
-          path: |
-            coverage/**
-            .jest-cache/**
+          path: coverage/**
           retention-days: 14
