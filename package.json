@@ -80,7 +80,9 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "supabase"
+      "esbuild",
+      "supabase",
+      "unrs-resolver"
     ]
   }
 }

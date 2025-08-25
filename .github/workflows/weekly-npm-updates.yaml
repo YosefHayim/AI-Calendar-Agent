@@ -1,4 +1,4 @@
-name: Weekly NPM Updates
+name: Weekly PNPM Updates
 
 on:
   schedule:
@@ -16,106 +16,79 @@ concurrency:
 jobs:
   update-deps:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Detect package manager (respect packageManager field)
-        id: pm
+      # Hard-stop if the repo is configured for Yarn. We only support pnpm here.
+      - name: Verify no Yarn config present
         shell: bash
         run: |
           set -euo pipefail
-          PM_FIELD="$(jq -r '.packageManager // ""' package.json || true)"
-          if [ -n "$PM_FIELD" ] && [[ "$PM_FIELD" == *@* ]]; then
-            PM_NAME="${PM_FIELD%@*}"
-            PM_VER="${PM_FIELD#*@}"
-          else
-            if [ -f pnpm-lock.yaml ]; then PM_NAME="pnpm"; PM_VER="latest";
-            elif [ -f yarn.lock ]; then PM_NAME="yarn"; PM_VER="stable";
-            else PM_NAME="npm"; PM_VER=""; fi
+          if [ -f yarn.lock ]; then
+            echo "yarn.lock found. This workflow enforces pnpm. Remove yarn.lock and migrate."
+            exit 1
           fi
-
-          if [ "$PM_NAME" = "pnpm" ]; then
-            LOCKFILE="pnpm-lock.yaml"
-          elif [ "$PM_NAME" = "yarn" ]; then
-            LOCKFILE="yarn.lock"
-          else
-            LOCKFILE="package-lock.json"
+          if jq -e '.packageManager | startswith("yarn@")' package.json >/dev/null 2>&1; then
+            echo "packageManager is set to Yarn. Set to pnpm (e.g., \"pnpm@10.x\") or remove to proceed."
+            exit 1
           fi
-
-          if [ "$PM_NAME" = "pnpm" ] || [ "$PM_NAME" = "yarn" ]; then
-            corepack enable
-            corepack prepare "${PM_NAME}@${PM_VER:-latest}" --activate
+          if grep -R --exclude-dir=node_modules -nE '\byarn( |$)' package.json packages/*/package.json 2>/dev/null | head -n1; then
+            echo "Yarn command references found in package scripts. Replace with pnpm."
+            exit 1
           fi
-
-          if [ "$PM_NAME" = "pnpm" ]; then
-            DLX="pnpm dlx"
-          elif [ "$PM_NAME" = "yarn" ]; then
-            DLX="yarn dlx"
-          else
-            DLX="npx"
-          fi
-
-          {
-            echo "pm=$PM_NAME"
-            echo "pm_version=$PM_VER"
-            echo "lockfile=$LOCKFILE"
-            echo "dlx=$DLX"
-          } >> "$GITHUB_OUTPUT"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: ${{ steps.pm.outputs.pm }}
-          cache-dependency-path: ${{ steps.pm.outputs.lockfile }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
+      # Always use latest pnpm (action v4 handles install + cache integration)
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: Print tool versions
+        run: |
+          node -v
+          pnpm -v
+          corepack -v || true
+
+      # Update deps: only minor/patch; explicitly block zod major (keep ^3 while peers require it)
       - name: Update dependencies (minor/patch only; block zod major)
         shell: bash
         run: |
           set -euo pipefail
-          # Single ncu run to avoid unintended majors
-          ${{
-            steps.pm.outputs.dlx
-          }} npm-check-updates@latest \
-             -u --target minor \
-             --reject 'zod'
+          pnpm dlx npm-check-updates@latest -u --target minor --reject 'zod'
+          # Install after bump to refresh lockfile
+          # Use workspace root (-w) and recurse (-r) when applicable; safe even for single-package repos.
+          pnpm -w -r install --no-frozen-lockfile
 
-          PM="${{ steps.pm.outputs.pm }}"
-          if [ "$PM" = "pnpm" ]; then
-            pnpm install --frozen-lockfile=false
-          elif [ "$PM" = "yarn" ]; then
-            yarn install
-          else
-            npm install
-          fi
-
-      - name: Run lint/tests if present
+      - name: Lint and test (if present)
         shell: bash
         run: |
-          PM="${{ steps.pm.outputs.pm }}"
-          if [ "$PM" = "pnpm" ]; then
-            pnpm -w -r run lint --if-present || true
-            pnpm -w -r run test --if-present -- --ci || true
-          elif [ "$PM" = "yarn" ]; then
-            yarn run lint --if-present || true
-            yarn run test --if-present --ci || true
-          else
-            npm run lint --if-present || true
-            npm test --if-present -- --ci || true
+          set -euo pipefail
+          pnpm -w -r run lint --if-present
+          pnpm -w -r run test --if-present -- --ci
 
       - name: Create PR with changes
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: chore/weekly-npm-updates
-          title: "chore: weekly dependency updates (minor/patch)"
-          commit-message: "chore: weekly dependency updates (minor/patch)"
+          branch: chore/weekly-pnpm-updates
+          title: "chore: weekly dependency updates (pnpm, minor/patch)"
+          commit-message: "chore: weekly dependency updates (pnpm, minor/patch)"
           body: |
-            Automated weekly dependency refresh.
+            Automated weekly dependency refresh via pnpm.
 
-            - Used npm-check-updates with --target minor and --reject zod to avoid zod@4 while @openai/agents peers zod^3.
-            - Respected the repo's packageManager via Corepack to prevent PM conflicts.
-            - Installed with the detected package manager and updated the lockfile.
-            - Lint/tests executed if available.
+            - Enforced pnpm@latest with caching.
+            - Ran npm-check-updates with --target minor and --reject zod to avoid zod@4 while peers require zod^3.
+            - Updated lockfile with pnpm -w -r install.
+            - Lint/tests executed when available.
+            - Guardrails fail the run if Yarn config/usage is detected (yarn.lock, packageManager=yarn, or yarn scripts).
           labels: dependencies
           signoff: false
           delete-branch: true
