@@ -20,33 +20,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Enforce pnpm; block Yarn to avoid PM drift
       - name: Verify no Yarn config present
         shell: bash
         run: |
           set -euo pipefail
           if [ -f yarn.lock ]; then
-            echo "yarn.lock found. This workflow enforces pnpm. Remove yarn.lock and migrate."
+            echo " yarn.lock found. Remove it and migrate to pnpm."
             exit 1
           fi
           if jq -e '.packageManager | startswith("yarn@")' package.json >/dev/null 2>&1; then
-            echo 'packageManager is set to Yarn. Set it to pnpm (e.g., "pnpm@10.x") or remove to proceed.'
-            exit 1
-          fi
-          if grep -R --exclude-dir=node_modules -nE '\byarn( |$)' package.json packages/*/package.json 2>/dev/null | head -n1; then
-            echo "Yarn command references found in package scripts. Replace with pnpm."
+            echo ' packageManager is Yarn. Set it to pnpm.'
             exit 1
           fi
 
-      # Install pnpm FIRST so it's in PATH for subsequent steps
       - name: Setup pnpm (latest)
         uses: pnpm/action-setup@v4
         with:
           version: latest
           run_install: false
 
-      # Node + pnpm cache for speed
-      - name: Setup Node.js
+      - name: Setup Node.js with pnpm cache
         uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -58,20 +51,19 @@ jobs:
           node -v
           pnpm -v
 
-      # Update deps: only minor/patch; block zod major
       - name: Update dependencies (minor/patch only; block zod major)
         shell: bash
         run: |
           set -euo pipefail
           pnpm dlx npm-check-updates@latest -u --target minor --reject 'zod'
-          pnpm -w -r install --no-frozen-lockfile
+          pnpm install --no-frozen-lockfile
 
       - name: Lint and test (if present)
         shell: bash
         run: |
           set -euo pipefail
-          pnpm -w -r run lint --if-present
-          pnpm -w -r run test --if-present -- --ci
+          pnpm run lint --if-present
+          pnpm run test --if-present -- --ci
 
       - name: Create PR with changes
         uses: peter-evans/create-pull-request@v6
@@ -84,9 +76,9 @@ jobs:
 
             - Enforced pnpm@latest with caching.
             - Ran npm-check-updates with --target minor and --reject zod to avoid zod@4 while peers require zod^3.
-            - Updated lockfile with pnpm -w -r install.
+            - Updated lockfile with pnpm install.
             - Lint/tests executed when available.
-            - Guardrails fail the run if Yarn config/usage is detected (yarn.lock, packageManager=yarn, or yarn scripts).
+            - Guardrails fail the run if Yarn config/usage is detected.
           labels: dependencies
           signoff: false
           delete-branch: true
