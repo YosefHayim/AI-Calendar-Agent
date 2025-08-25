@@ -10,7 +10,7 @@ import usersRouter from '@/routes/users';
 import { startTelegramBot } from './telegram-bot/init-bot';
 import { ROUTES, STATUS_RESPONSE } from './types';
 
-export const app = express();
+const app = express();
 const PORT = CONFIG.port;
 
 app.use(cors());

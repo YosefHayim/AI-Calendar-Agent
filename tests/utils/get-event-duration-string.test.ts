@@ -1,21 +1,24 @@
 import { getEventDurationString } from '@/utils/get-event-duration-string';
 
 describe('getEventDurationString', () => {
-  test('returns null for missing inputs', () => {
-    expect(getEventDurationString('', '2024-01-01T00:00:05Z')).toBeNull();
-    expect(getEventDurationString('2024-01-01T00:00:00Z', '')).toBeNull();
-    expect(getEventDurationString('', '')).toBeNull();
-    expect(getEventDurationString(null as unknown as string, '2024-01-01T00:00:05Z')).toBeNull();
-    expect(getEventDurationString('2024-01-01T00:00:00Z', undefined as unknown as string)).toBeNull();
+  it.each([
+    ['', '2024-01-01T00:00:05Z'],
+    ['2024-01-01T00:00:00Z', ''],
+    ['', ''],
+    [null, '2024-01-01T00:00:05Z'],
+    ['2024-01-01T00:00:00Z', undefined],
+  ])('returns null for missing inputs %p / %p', (start, end) => {
+    expect(getEventDurationString(start as any, end as any)).toBeNull();
   });
 
-  test('returns null for invalid dates or end <= start', () => {
-    expect(getEventDurationString('invalid', '2024-01-01T00:00:05Z')).toBeNull();
-    expect(getEventDurationString('2024-01-01T00:00:00Z', 'invalid')).toBeNull();
-    expect(getEventDurationString('2024-01-01T00:00:00Z', '2024-01-01T00:00:00Z')).toBeNull();
-    expect(getEventDurationString('2024-01-01T00:00:05Z', '2024-01-01T00:00:04Z')).toBeNull();
+  it.each([
+    ['invalid', '2024-01-01T00:00:05Z'],
+    ['2024-01-01T00:00:00Z', 'invalid'],
+    ['2024-01-01T00:00:00Z', '2024-01-01T00:00:00Z'],
+    ['2024-01-01T00:00:05Z', '2024-01-01T00:00:04Z'],
+  ])('returns null for invalid or end <= start %p / %p', (start, end) => {
+    expect(getEventDurationString(start, end)).toBeNull();
   });
-
   test('seconds: < 60s returns "Xs"', () => {
     expect(getEventDurationString('2024-01-01T00:00:00Z', '2024-01-01T00:00:01Z')).toBe('1s');
     expect(getEventDurationString('2024-01-01T00:00:00Z', '2024-01-01T00:00:59Z')).toBe('59s');

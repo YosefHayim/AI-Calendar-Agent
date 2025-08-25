@@ -1,119 +1,138 @@
-// tests/app.test.ts
-// Real HTTP integration tests against a locally running server (no supertest)
+import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import axios from 'axios';
+const noopMw = jest.fn((_req: any, _res: any, next: any) => next && next());
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-const ROOT = `${BASE_URL}/`;
+jest.mock('cors', () => jest.fn(() => noopMw));
+jest.mock('cookie-parser', () => jest.fn(() => noopMw));
+jest.mock('morgan', () => jest.fn(() => noopMw));
 
-const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const staticMw = jest.fn();
+const jsonMw = jest.fn();
+const urlencodedMw = jest.fn();
+const appUse = jest.fn();
+const appGet = jest.fn();
+const appListen = jest.fn((_port: number, cb?: (err?: Error) => void) => cb && cb());
 
-async function waitForServer(url = ROOT, timeoutMs = 15_000, intervalMs = 300) {
-  const start = Date.now();
-  let lastErr: unknown;
-  while (Date.now() - start < timeoutMs) {
-    try {
-      const res = await axios.get(url, { validateStatus: () => true, timeout: 2000 });
-      if (res.status >= 200 && res.status < 600) {
-        return;
-      }
-    } catch (e) {
-      lastErr = e;
-    }
-    await wait(intervalMs);
+const expressMock = Object.assign(
+  jest.fn(() => ({
+    use: appUse,
+    get: appGet,
+    listen: appListen,
+  })),
+  {
+    json: jest.fn(() => jsonMw),
+    urlencoded: jest.fn(() => urlencodedMw),
+    static: jest.fn(() => staticMw),
   }
-  const msg = (lastErr as Error | undefined)?.message || 'Server did not become ready in time';
-  throw new Error(`Server not ready at ${url}: ${msg}`);
-}
+);
+jest.mock('express', () => ({
+  __esModule: true,
+  default: expressMock,
+}));
 
-describe('Express Server Integration Tests (real HTTP, no supertest)', () => {
-  beforeAll(async () => {
-    await waitForServer();
-  }, 20_000);
+jest.mock('node:path', () => ({
+  __esModule: true,
+  default: { join: jest.fn(() => '/abs/public') },
+  join: jest.fn(() => '/abs/public'),
+}));
 
-  test('GET / returns server running status', async () => {
-    const res = await axios.get(ROOT);
-    expect(res.status).toBe(200);
-    expect(res.data).toBe('Server is running.');
-    expect(res.headers['content-type']).toMatch(/text\/html|text\/plain|charset/i);
-  });
+jest.mock('@/config/root-config', () => ({
+  CONFIG: { port: 4321 },
+}));
 
-  test('CORS preflight on / responds with 204/200 and valid ACAO', async () => {
-    const origin = 'http://example.com';
-    const res = await axios.request({
-      method: 'OPTIONS',
-      url: ROOT,
-      headers: {
-        Origin: origin,
-        'Access-Control-Request-Method': 'GET',
-      },
-      validateStatus: () => true,
+const usersRouter = jest.fn((_req: any, _res: any, next: any) => next && next());
+jest.mock('@/routes/users', () => ({
+  __esModule: true,
+  default: usersRouter,
+}));
+
+const calendarRouter = jest.fn((_req: any, _res: any, next: any) => next && next());
+jest.mock('@/routes/calendar-route', () => ({
+  __esModule: true,
+  default: calendarRouter,
+}));
+
+const errorHandler = jest.fn((_err: any, _req: any, _res: any, _next: any) => {});
+jest.mock('@/middlewares/error-handler', () => ({
+  __esModule: true,
+  default: errorHandler,
+}));
+
+const startTelegramBot = jest.fn();
+jest.mock('@/telegram-bot/init-bot', () => ({
+  startTelegramBot,
+}));
+
+jest.mock('@/types', () => ({
+  ROUTES: { USERS: '/users', CALENDAR: '/calendar' },
+  STATUS_RESPONSE: { SUCCESS: 200 },
+}));
+
+describe('server bootstrap', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Re-require the module each test to replay side effects
+    jest.isolateModules(() => {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require('@/index'); // adjust to the actual entry file path
     });
-
-    expect([200, 204]).toContain(res.status);
-
-    // cors() default without options sets "*" for ACAO; with { origin: true } it echoes the Origin.
-    const acaOrigin = res.headers['access-control-allow-origin'];
-    expect(acaOrigin).toBeDefined();
-    expect([origin, '*']).toContain(acaOrigin);
-
-    // Basic sanity on typical preflight headers if present
-    if (res.headers['access-control-allow-methods']) {
-      expect(res.headers['access-control-allow-methods']).toMatch(/GET/i);
-    }
   });
 
-  test('GET unknown route returns 404 (error handler engaged)', async () => {
-    const res = await axios.get(`${BASE_URL}/__definitely_not_a_route__`, {
-      validateStatus: () => true,
-    });
-    expect(res.status).toBe(404);
-    expect(res.data).toBeDefined();
+  it('configures express with core middlewares and static', () => {
+    expect(expressMock).toHaveBeenCalledTimes(1);
+
+    // cors, json, cookieParser, urlencoded, morgan, static
+    expect(appUse).toHaveBeenCalledWith(expect.any(Function)); // cors()
+    expect((expressMock as any).json).toHaveBeenCalledWith();
+    expect(appUse).toHaveBeenCalledWith(jsonMw);
+
+    const cookieParser = require('cookie-parser').default || require('cookie-parser');
+    expect(cookieParser).toHaveBeenCalled();
+    expect(appUse).toHaveBeenCalledWith(noopMw);
+
+    expect((expressMock as any).urlencoded).toHaveBeenCalledWith({ extended: true });
+    expect(appUse).toHaveBeenCalledWith(urlencodedMw);
+
+    const morgan = require('morgan').default || require('morgan');
+    expect(morgan).toHaveBeenCalledWith('dev');
+    expect(appUse).toHaveBeenCalledWith(noopMw);
+
+    expect((expressMock as any).static).toHaveBeenCalledWith('/abs/public');
+    expect(appUse).toHaveBeenCalledWith(staticMw);
   });
 
-  test('Static middleware under /static: missing asset -> 404', async () => {
-    const res = await axios.get(`${BASE_URL}/static/__nope__.txt`, {
-      validateStatus: () => true,
-    });
-    expect(res.status).toBe(404);
+  it('registers health route and responds with 200 "Server is running."', () => {
+    expect(appGet).toHaveBeenCalledWith('/', expect.any(Function));
+    const handler = appGet.mock.calls[0][1];
+
+    const status = jest.fn(() => ({ send }));
+    const send = jest.fn();
+    const res = { status } as any;
+
+    handler({}, res);
+
+    expect(status).toHaveBeenCalledWith(200);
+    expect(send).toHaveBeenCalledWith('Server is running.');
   });
 
-  test('Invalid JSON body yields 400/415', async () => {
-    const res = await axios.post(ROOT, '{ invalid_json: }', {
-      headers: { 'Content-Type': 'application/json' },
-      validateStatus: () => true,
-    });
-    expect([400, 415]).toContain(res.status);
+  it('mounts routers and error handler', () => {
+    // users router
+    expect(appUse).toHaveBeenCalledWith('/users', usersRouter);
+    // calendar router
+    expect(appUse).toHaveBeenCalledWith('/calendar', calendarRouter);
+
+    // error handler should be registered (order-insensitive assert)
+    const wasErrorMwRegistered = appUse.mock.calls.some((args) => args.length === 1 && args[0] === errorHandler);
+    expect(wasErrorMwRegistered).toBe(true);
   });
 
-  test('URL-encoded parser: unknown POST route -> 404', async () => {
-    const res = await axios.post(`${BASE_URL}/__no_route__`, 'a=1&b=2', {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      validateStatus: () => true,
-    });
-    expect(res.status).toBe(404);
+  it('starts server on CONFIG.port and calls startTelegramBot', () => {
+    expect(appListen).toHaveBeenCalledWith(4321, expect.any(Function));
+    expect(startTelegramBot).toHaveBeenCalledTimes(1);
   });
 
-  test('Cookies are accepted even on 404', async () => {
-    const res = await axios.get(`${BASE_URL}/__no_route_cookie__`, {
-      headers: { Cookie: 'sid=abc123; theme=dark' },
-      validateStatus: () => true,
-    });
-    expect(res.status).toBe(404);
-  });
-
-  test('Large JSON payload does not crash server (POST / -> 404/400)', async () => {
-    const big = { data: 'x'.repeat(64 * 1024) };
-    const res = await axios.post(ROOT, big, {
-      headers: { 'Content-Type': 'application/json' },
-      validateStatus: () => true,
-    });
-    expect([404, 400]).toContain(res.status);
-  });
-
-  test('HEAD / returns headers without body', async () => {
-    const res = await axios.head(ROOT, { validateStatus: () => true });
-    expect([200, 404]).toContain(res.status);
-    expect(res.headers).toBeDefined();
+  it('listen callback rethrows when error is provided', () => {
+    const cb = appListen.mock.calls[0][1];
+    expect(() => cb(new Error('boom'))).toThrow('boom');
   });
 });

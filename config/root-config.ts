@@ -20,6 +20,7 @@ export const CONFIG = {
   telegram_access_token: process.env.TELEGRAM_BOT_ACCESS_TOKEN,
   supabase_url: process.env.SUPABASE_URL,
   supabase_service_role_key: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  testEmail: process.env.TEST_EMAIL,
 };
 
 export const SUPABASE = new SupabaseClient<Database>(CONFIG.supabase_url || '', CONFIG.supabase_service_role_key || '');

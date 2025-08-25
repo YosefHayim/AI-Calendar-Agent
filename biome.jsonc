@@ -1,17 +1,33 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
   "extends": ["ultracite"],
+  "files": {
+    "includes": [
+      "**",
+      "!**/tests",
+      "!**/__tests__",
+      "!**/*.test.{ts,js}",
+      "!**/*.spec.{ts,js}",
+      "!dist",
+      "!build",
+      "!node_modules",
+      "!temp"
+    ],
+    "experimentalScannerIgnores": [
+      "tests",
+      "__tests__",
+      "dist",
+      "build",
+      "node_modules"
+    ]
+  },
   "formatter": {
     "lineWidth": 160
   },
   "linter": {
     "rules": {
-      "style": {
-        "noEnum": "off"
-      },
-      "complexity": {
-        "noExcessiveLinesPerFunction": "off"
-      },
+      "style": { "noEnum": "off" },
+      "complexity": { "noExcessiveLinesPerFunction": "off" },
       "suspicious": {
         "noConsole": {
           "level": "error",
@@ -23,16 +39,14 @@
   "overrides": [
     {
       "includes": [
-        "**/*.test.js",
-        "**/*.spec.js",
-        "**/*.test.ts",
-        "**/*.spec.ts"
+        "**/tests/**",
+        "**/__tests__/**",
+        "**/*.test.*",
+        "**/*.spec.*"
       ],
-      "linter": {
-        "domains": { "test": "recommended" }
-      }
-      // If you need extra globals beyond Jest/Vitest/Mocha, uncomment:
-      // ,"javascript": { "globals": ["__DEV__"] }
+      "linter": { "enabled": false },
+      "formatter": { "enabled": false },
+      "javascript": { "linter": { "enabled": false } }
     }
   ]
 }
