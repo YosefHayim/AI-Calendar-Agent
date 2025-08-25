@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-const noopMw = jest.fn((_req: any, _res: any, next: any) => next && next());
+const noopMw = jest.fn((_req: any, _res: any, next?: () => void) => next?.());
 
 jest.mock('cors', () => jest.fn(() => noopMw));
 jest.mock('cookie-parser', () => jest.fn(() => noopMw));
@@ -11,7 +11,7 @@ const jsonMw = jest.fn();
 const urlencodedMw = jest.fn();
 const appUse = jest.fn();
 const appGet = jest.fn();
-const appListen = jest.fn((_port: number, cb?: (err?: Error) => void) => cb && cb());
+const appListen = jest.fn((_port: number, cb?: (err?: Error) => void) => cb?.());
 
 const expressMock = Object.assign(
   jest.fn(() => ({
@@ -40,13 +40,13 @@ jest.mock('@/config/root-config', () => ({
   CONFIG: { port: 4321 },
 }));
 
-const usersRouter = jest.fn((_req: any, _res: any, next: any) => next && next());
+const usersRouter = jest.fn((_req: any, _res: any, next?: () => void) => next?.());
 jest.mock('@/routes/users', () => ({
   __esModule: true,
   default: usersRouter,
 }));
 
-const calendarRouter = jest.fn((_req: any, _res: any, next: any) => next && next());
+const calendarRouter = jest.fn((_req: any, _res: any, next?: () => void) => next?.());
 jest.mock('@/routes/calendar-route', () => ({
   __esModule: true,
   default: calendarRouter,
@@ -71,29 +71,27 @@ jest.mock('@/types', () => ({
 describe('server bootstrap', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Re-require the module each test to replay side effects
     jest.isolateModules(() => {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@/index'); // adjust to the actual entry file path
+      require('@/index');
     });
   });
 
   it('configures express with core middlewares and static', () => {
     expect(expressMock).toHaveBeenCalledTimes(1);
 
-    // cors, json, cookieParser, urlencoded, morgan, static
     expect(appUse).toHaveBeenCalledWith(expect.any(Function)); // cors()
     expect((expressMock as any).json).toHaveBeenCalledWith();
     expect(appUse).toHaveBeenCalledWith(jsonMw);
 
-    const cookieParser = require('cookie-parser').default || require('cookie-parser');
+    const cookieParser = (require('cookie-parser').default || require('cookie-parser')) as jest.Mock;
     expect(cookieParser).toHaveBeenCalled();
     expect(appUse).toHaveBeenCalledWith(noopMw);
 
     expect((expressMock as any).urlencoded).toHaveBeenCalledWith({ extended: true });
     expect(appUse).toHaveBeenCalledWith(urlencodedMw);
 
-    const morgan = require('morgan').default || require('morgan');
+    const morgan = (require('morgan').default || require('morgan')) as jest.Mock;
     expect(morgan).toHaveBeenCalledWith('dev');
     expect(appUse).toHaveBeenCalledWith(noopMw);
 
@@ -103,10 +101,10 @@ describe('server bootstrap', () => {
 
   it('registers health route and responds with 200 "Server is running."', () => {
     expect(appGet).toHaveBeenCalledWith('/', expect.any(Function));
-    const handler = appGet.mock.calls[0][1];
+    const handler = appGet.mock.calls[0][1] as (req: any, res: any) => void;
 
-    const status = jest.fn(() => ({ send }));
     const send = jest.fn();
+    const status = jest.fn(() => ({ send }));
     const res = { status } as any;
 
     handler({}, res);
@@ -116,13 +114,12 @@ describe('server bootstrap', () => {
   });
 
   it('mounts routers and error handler', () => {
-    // users router
     expect(appUse).toHaveBeenCalledWith('/users', usersRouter);
-    // calendar router
     expect(appUse).toHaveBeenCalledWith('/calendar', calendarRouter);
 
-    // error handler should be registered (order-insensitive assert)
-    const wasErrorMwRegistered = appUse.mock.calls.some((args) => args.length === 1 && args[0] === errorHandler);
+    const wasErrorMwRegistered = appUse.mock.calls.some(
+      (args) => args.length === 1 && args[0] === errorHandler
+    );
     expect(wasErrorMwRegistered).toBe(true);
   });
 
@@ -132,7 +129,7 @@ describe('server bootstrap', () => {
   });
 
   it('listen callback rethrows when error is provided', () => {
-    const cb = appListen.mock.calls[0][1];
+    const cb = appListen.mock.calls[0][1] as (err?: Error) => void;
     expect(() => cb(new Error('boom'))).toThrow('boom');
   });
 });

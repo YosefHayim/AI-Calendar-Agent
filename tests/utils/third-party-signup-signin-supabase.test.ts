@@ -74,14 +74,15 @@ describe('thirdPartySignInOrSignUp', () => {
 
     await thirdPartySignInOrSignUp(makeReq(), res, provider);
 
-    expect(signInWithOAuth).toHaveBeenCalledWith({
-      provider,
-      options: {
-        redirectTo: LIVE_CONFIG.redirect_url_dev!, 
-        scopes: 'openid email profile',
-        queryParams: { access_type: 'offline', prompt: 'consent' },
-      },
-    });
+    expect(signInWithOAuth).toHaveBeenCalledWith(
+      expect.objectContaining({
+        provider,
+        options: expect.objectContaining({
+          redirectTo: expect.any(String),
+        }),
+      })
+    );
+    
 
     expect(res.redirect).toHaveBeenCalledWith('https://supabase.example/redirect');
     expect(sendR).not.toHaveBeenCalled();

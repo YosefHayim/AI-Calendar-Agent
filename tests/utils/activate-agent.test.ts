@@ -10,6 +10,7 @@ jest.mock('@openai/agents', () => ({
 const AGENTS_REGISTRY: Record<string, Agent> = {
   coder: { name: 'Coder' } as Agent,
 };
+
 jest.mock('@/ai-agents/agents', () => ({
   AGENTS: AGENTS_REGISTRY,
 }));
@@ -22,6 +23,10 @@ import { run as openAiRun } from '@openai/agents';
 import { AGENTS } from '@/ai-agents/agents';
 import { activateAgent } from '@/utils/activate-agent';
 
+const openAiRunMock = jest.mocked(openAiRun);
+
+const Agents = AGENTS as unknown as Record<string, Agent>;
+
 describe('activateAgent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -30,41 +35,41 @@ describe('activateAgent', () => {
   });
 
   it('resolves with result when called with agent key (string)', async () => {
-    (openAiRun as jest.Mock).mockResolvedValueOnce({ ok: true, output: 'done' });
+    openAiRunMock.mockResolvedValueOnce({ ok: true, output: 'done' } as any);
 
     const res = await activateAgent('coder' as any, 'build me a thing');
 
-    expect(AGENTS.coder.name).toBe('Coder');
-    expect(openAiRun).toHaveBeenCalledTimes(1);
-    expect(openAiRun).toHaveBeenCalledWith(AGENTS.coder, 'build me a thing');
+    expect(Agents.coder.name).toBe('Coder');
+    expect(openAiRunMock).toHaveBeenCalledTimes(1);
+    expect(openAiRunMock).toHaveBeenCalledWith(Agents.coder, 'build me a thing');
     expect(res).toEqual({ ok: true, output: 'done' });
   });
 
   it('resolves with result when called with an Agent object directly', async () => {
     const customAgent = { name: 'Custom' } as Agent;
-    (openAiRun as jest.Mock).mockResolvedValueOnce('ok');
+    openAiRunMock.mockResolvedValueOnce('ok' as any);
 
     const res = await activateAgent(customAgent, 'hello');
 
-    expect(openAiRun).toHaveBeenCalledWith(customAgent, 'hello');
+    expect(openAiRunMock).toHaveBeenCalledWith(customAgent, 'hello');
     expect(res).toBe('ok');
   });
 
   it('throws when agent key is invalid', async () => {
     delete AGENTS_REGISTRY.coder;
     await expect(activateAgent('coder' as any, 'x')).rejects.toThrow('The provided agent is not valid.');
-    expect(openAiRun).not.toHaveBeenCalled();
+    expect(openAiRunMock).not.toHaveBeenCalled();
   });
 
   it('throws when prompt is empty (after resolving agent name)', async () => {
-    (openAiRun as jest.Mock).mockResolvedValueOnce('should-not-run');
+    openAiRunMock.mockResolvedValueOnce('should-not-run' as any);
     await expect(activateAgent('coder' as any, '')).rejects.toThrow('Please provide the prompt for the agent: Coder');
-    expect(openAiRun).not.toHaveBeenCalled();
+    expect(openAiRunMock).not.toHaveBeenCalled();
   });
 
   it('throws when prompt is falsy even with direct Agent object', async () => {
     const a = { name: 'Direct' } as Agent;
     await expect(activateAgent(a, '')).rejects.toThrow('Please provide the prompt for the agent: Direct');
-    expect(openAiRun).not.toHaveBeenCalled(); // now valid: openAiRun is a jest.fn()
+    expect(openAiRunMock).not.toHaveBeenCalled();
   });
 });
