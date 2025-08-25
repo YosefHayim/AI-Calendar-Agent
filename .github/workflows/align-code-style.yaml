@@ -16,21 +16,28 @@ concurrency:
 
 jobs:
   style:
+    # Avoid running this job on the bot's auto-commit push
+    if: ${{ github.actor != 'github-actions[bot]' }}
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Ensure pnpm only
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f yarn.lock ]; then echo "yarn.lock found. Use pnpm."; exit 1; fi
-          if jq -e '.packageManager | startswith("yarn@")' package.json >/dev/null 2>&1; then
-            echo 'packageManager is Yarn. Set it to pnpm.'
+          if [ -f yarn.lock ]; then
+            echo "yarn.lock found. Use pnpm."
             exit 1
           fi
+          pm="$(jq -r '.packageManager // ""' package.json 2>/dev/null || echo "")"
+          case "$pm" in
+            yarn@*) echo 'packageManager is Yarn. Set it to pnpm.'; exit 1 ;;
+          esac
 
       - name: Setup pnpm (latest)
         uses: pnpm/action-setup@v4
@@ -46,21 +53,49 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Sort package.json
         run: pnpm dlx sort-package-json
 
-      - name: Run format
-        run: pnpm run format
+      # If you use Biome + ultracite, do formatting with --write
+      - name: Format with Biome
+        run: |
+          if pnpm biome --version >/dev/null 2>&1; then
+            pnpm biome check --write .
+          else
+            # fallback to your project script
+            pnpm run -s format
+          fi
 
-      - name: Run lint
-        run: pnpm run lint
+      - name: Lint
+        run: |
+          if pnpm biome --version >/dev/null 2>&1; then
+            pnpm biome ci .
+          else
+            pnpm run -s lint
+          fi
 
-      - name: Auto-commit changes (if any)
+      - name: Fail if there are uncommitted changes on PRs
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          if ! git diff --quiet; then
+            echo "Code style violations detected. Run the formatter locally."
+            git status --porcelain
+            exit 1
+          fi
+
+      - name: Auto-commit changes (push events only)
+        if: ${{ github.event_name == 'push' }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore: sort package.json, format, and lint (CI)"
+          commit_message: "chore: sort package.json, format, and lint (CI) [skip ci]"
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
           add_options: "-A"
+
+      - name: Assert clean working tree after auto-commit
+        if: ${{ github.event_name == 'push' }}
+        run: git diff --quiet
+

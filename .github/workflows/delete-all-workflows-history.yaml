@@ -1,5 +1,4 @@
-# .github/workflows/purge-workflow-history.yml
-name: Purge workflow history
+name: Delete workflows history
 
 on:
   workflow_dispatch:

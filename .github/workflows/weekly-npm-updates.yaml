@@ -1,4 +1,4 @@
-name: Weekly PNPM Updates
+name: Weekly dependencies Updates (pnpm)
 
 on:
   schedule:
