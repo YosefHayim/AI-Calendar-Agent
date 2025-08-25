@@ -8,19 +8,24 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      CI: true
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (latest)
+      - name: Setup Node.js (latest) with pnpm cache
         uses: actions/setup-node@v4
         with:
           node-version: 'latest'
-          cache: 'npm' # cache deps based on lockfile hash
+          cache: 'pnpm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Enable Corepack (pnpm)
+        run: corepack enable
+
+      - name: Install dependencies (pnpm)
+        run: pnpm install --frozen-lockfile
 
       - name: Cache Jest cache
         uses: actions/cache@v4
@@ -32,7 +37,21 @@ jobs:
 
       - name: Run tests with coverage (fail if <95%)
         run: |
-          npm run test -- \
+          pnpm test -- \
             --coverage \
             --cache .jest-cache \
+            --coverageReporters=json-summary \
+            --coverageReporters=text-summary \
+            --coverageReporters=lcov \
+            --coverageDirectory=coverage \
             --coverageThreshold='{"global":{"branches":95,"functions":95,"lines":95,"statements":95}}'
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.run_id }}
+          path: |
+            coverage/**
+            .jest-cache/**
+          retention-days: 14
