@@ -17,12 +17,10 @@ jobs:
   update-deps:
     runs-on: ubuntu-latest
     env:
-      HUSKY: "0" # hard-disable git hooks in CI
+      HUSKY: "0"  # disable git hooks
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false # ensure we only use the PAT below
 
       - name: Verify no Yarn config present
         shell: bash
@@ -63,11 +61,10 @@ jobs:
           pnpm install --no-frozen-lockfile
 
       - name: Create PR with changes
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         env:
-          HUSKY: "0" # also disable inside the action's commit
+          HUSKY: "0"  # also disable inside the action’s commit
         with:
-          token: ${{ secrets.REPO_SCOPED_PAT }} # required if GITHUB_TOKEN is blocked
           branch: chore/weekly-pnpm-updates
           title: "chore: weekly dependency updates (pnpm, minor/patch)"
           commit-message: "chore: weekly dependency updates (pnpm, minor/patch)"
