@@ -153,8 +153,8 @@ describe('server bootstrap', () => {
     expect(appUse).toHaveBeenCalledWith(noopMw);
 
     // express.static(public path) mounted at /static
-    expect(expressMock.static).toHaveBeenCalledWith('/public');
-    expect(appUse).toHaveBeenCalledWith('/public', staticMw);
+    expect(expressMock.static).toHaveBeenCalledWith(expect.stringMatching(/[\\/]public$/));
+    expect(appUse).toHaveBeenCalledWith('/static', staticMw);
   });
 
   it('registers health route and responds with 200 "Server is running."', () => {
