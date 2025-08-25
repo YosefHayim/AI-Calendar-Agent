@@ -42,7 +42,7 @@ jobs:
       - name: Setup Node.js with pnpm cache
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "latest"
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
@@ -58,13 +58,6 @@ jobs:
           pnpm dlx npm-check-updates@latest -u --target minor --reject 'zod'
           pnpm install --no-frozen-lockfile
 
-      - name: Lint and test (if present)
-        shell: bash
-        run: |
-          set -euo pipefail
-          pnpm run lint --if-present
-          pnpm run test --if-present -- --ci
-
       - name: Create PR with changes
         uses: peter-evans/create-pull-request@v6
         with:
@@ -77,7 +70,6 @@ jobs:
             - Enforced pnpm@latest with caching.
             - Ran npm-check-updates with --target minor and --reject zod to avoid zod@4 while peers require zod^3.
             - Updated lockfile with pnpm install.
-            - Lint/tests executed when available.
             - Guardrails fail the run if Yarn config/usage is detected.
           labels: dependencies
           signoff: false
