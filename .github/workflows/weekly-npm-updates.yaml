@@ -19,44 +19,66 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Detect package manager first so we can cache correctly
-      - name: Detect package manager
+      - name: Detect package manager (respect packageManager field)
         id: pm
         shell: bash
         run: |
           set -euo pipefail
-          if [ -f pnpm-lock.yaml ]; then
-            echo "pm=pnpm" >> "$GITHUB_OUTPUT"
-            echo "lockfile=pnpm-lock.yaml" >> "$GITHUB_OUTPUT"
-            corepack enable
-            corepack prepare pnpm@latest --activate
-          elif [ -f yarn.lock ]; then
-            echo "pm=yarn" >> "$GITHUB_OUTPUT"
-            echo "lockfile=yarn.lock" >> "$GITHUB_OUTPUT"
-            corepack enable
+          PM_FIELD="$(jq -r '.packageManager // ""' package.json || true)"
+          if [ -n "$PM_FIELD" ] && [[ "$PM_FIELD" == *@* ]]; then
+            PM_NAME="${PM_FIELD%@*}"
+            PM_VER="${PM_FIELD#*@}"
           else
-            echo "pm=npm" >> "$GITHUB_OUTPUT"
-            echo "lockfile=package-lock.json" >> "$GITHUB_OUTPUT"
+            if [ -f pnpm-lock.yaml ]; then PM_NAME="pnpm"; PM_VER="latest";
+            elif [ -f yarn.lock ]; then PM_NAME="yarn"; PM_VER="stable";
+            else PM_NAME="npm"; PM_VER=""; fi
           fi
+
+          if [ "$PM_NAME" = "pnpm" ]; then
+            LOCKFILE="pnpm-lock.yaml"
+          elif [ "$PM_NAME" = "yarn" ]; then
+            LOCKFILE="yarn.lock"
+          else
+            LOCKFILE="package-lock.json"
+          fi
+
+          if [ "$PM_NAME" = "pnpm" ] || [ "$PM_NAME" = "yarn" ]; then
+            corepack enable
+            corepack prepare "${PM_NAME}@${PM_VER:-latest}" --activate
+          fi
+
+          if [ "$PM_NAME" = "pnpm" ]; then
+            DLX="pnpm dlx"
+          elif [ "$PM_NAME" = "yarn" ]; then
+            DLX="yarn dlx"
+          else
+            DLX="npx"
+          fi
+
+          {
+            echo "pm=$PM_NAME"
+            echo "pm_version=$PM_VER"
+            echo "lockfile=$LOCKFILE"
+            echo "dlx=$DLX"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "latest"
+          node-version: "20"
           cache: ${{ steps.pm.outputs.pm }}
           cache-dependency-path: ${{ steps.pm.outputs.lockfile }}
 
-      # Use ncu without committing it to devDependencies
-      - name: Bump dependencies safely (minor/patch only)
+      - name: Update dependencies (minor/patch only; block zod major)
         shell: bash
         run: |
           set -euo pipefail
-          # Keep zod on v3 while @openai/agents requires it
-          # IMPORTANT: single ncu run with --target minor to avoid accidental majors
-          npx npm-check-updates@latest -u --target minor --reject 'zod'
-
-          # Optional allowlist for specific majors. Example:
-          # npx npm-check-updates@latest -u --target latest --filter '@types/node,typescript'
+          # Single ncu run to avoid unintended majors
+          ${{
+            steps.pm.outputs.dlx
+          }} npm-check-updates@latest \
+             -u --target minor \
+             --reject 'zod'
 
           PM="${{ steps.pm.outputs.pm }}"
           if [ "$PM" = "pnpm" ]; then
@@ -90,10 +112,9 @@ jobs:
           body: |
             Automated weekly dependency refresh.
 
-            Notes:
-            - Used npm-check-updates with --target minor to avoid breaking majors.
-            - Explicitly rejected zod majors while @openai/agents peers zod ^3.
-            - Installed with the detected package manager and refreshed the lockfile.
+            - Used npm-check-updates with --target minor and --reject zod to avoid zod@4 while @openai/agents peers zod^3.
+            - Respected the repo's packageManager via Corepack to prevent PM conflicts.
+            - Installed with the detected package manager and updated the lockfile.
             - Lint/tests executed if available.
           labels: dependencies
           signoff: false
