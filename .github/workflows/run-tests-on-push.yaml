@@ -1,0 +1,38 @@
+name: Run Tests on Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (latest)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
+          cache: 'npm' # cache deps based on lockfile hash
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Jest cache
+        uses: actions/cache@v4
+        with:
+          path: .jest-cache
+          key: ${{ runner.os }}-jest-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-jest-
+
+      - name: Run tests with coverage (fail if <95%)
+        run: |
+          npm run test -- \
+            --coverage \
+            --cache .jest-cache \
+            --coverageThreshold='{"global":{"branches":95,"functions":95,"lines":95,"statements":95}}'
