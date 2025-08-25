@@ -13,9 +13,7 @@ const config: Config = {
   transform: {
     '^.+\\.[tj]sx?$': ['ts-jest', { useESM: true }]
   },
-  transformIgnorePatterns: [
-    '/node_modules/(?!(@openai/agents|@openai/agents-core)/)'
-  ]
+  transformIgnorePatterns: ['/node_modules/(?!(@openai/agents|@openai/agents-core)/)'],
 }
 
 export default config
