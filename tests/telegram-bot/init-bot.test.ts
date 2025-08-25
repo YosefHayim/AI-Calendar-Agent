@@ -25,7 +25,7 @@ jest.mock('@grammyjs/conversations', () => ({
 describe('Telegram Bot initialization', () => {
   it('should wire middlewares and commands correctly', () => {
     jest.isolateModules(() => {
-      const { startTelegramBot } = require('../../src/telegram-bot/init-bot');
+      const { startTelegramBot } = require('@/telegram-bot/init-bot');
       const { Bot } = require('grammy');
       const { run } = require('@grammyjs/runner');
 
