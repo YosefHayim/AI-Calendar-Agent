@@ -5,10 +5,6 @@ on:
     branches:
       - main
 
-concurrency:
-  group: tests-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -19,12 +15,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (LTS) with pnpm cache
+      - name: Setup Node.js (LTS)
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -32,15 +26,22 @@ jobs:
           version: 9
           run_install: false
 
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Unique, file-driven cache key: update .cache-keys/jest.key to force a new cache
       - name: Cache Jest cache
         uses: actions/cache@v4
         with:
           path: .jest-cache
-          key: ${{ runner.os }}-jest-${{ hashFiles('pnpm-lock.yaml', 'jest.config.*', 'tsconfig.json', '.cache-keys/jest.key') }}
+          key: ${{ runner.os }}-jest-${{ hashFiles('pnpm-lock.yaml', 'jest.config.*', 'tsconfig.json') }}
           restore-keys: |
             ${{ runner.os }}-jest-
 
