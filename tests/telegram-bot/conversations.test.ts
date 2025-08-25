@@ -17,8 +17,8 @@ type GCtx = GlobalContext
 
 const mkCtx = () => {
   const replies: string[] = [];
-  const ctx: Partial<Context> = {
-    reply: jest.fn(async (msg: string) => {
+  const ctx: Partial<Context> & { reply: jest.Mock } = {
+    reply: jest.fn(async (msg: string): Promise<any> => {
       replies.push(msg);
     }),
   };

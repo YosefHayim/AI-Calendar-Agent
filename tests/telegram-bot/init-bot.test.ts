@@ -1,4 +1,3 @@
-// __tests__/telegram-bot.test.ts
 import { startTelegramBot } from '@/telegram-bot/init-bot';
 import {expect, jest, test} from '@jest/globals';
 
@@ -26,11 +25,11 @@ jest.mock('@grammyjs/runner', () => ({
   run: jest.fn(),
 }));
 
-jest.mock('../path/to/middleware/auth-tg-handler', () => ({
+jest.mock('@/telegram-bot/middleware/auth-tg-handler', () => ({
   authTgHandler: 'auth-middleware',
 }));
 
-jest.mock('../path/to/conversations', () => ({
+jest.mock('@/telegram-bot/conversations', () => ({
   scheduleEvent: jest.fn(),
 }));
 

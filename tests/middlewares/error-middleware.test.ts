@@ -1,8 +1,6 @@
-// error-handler.test.ts
 import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import type { Request, Response, NextFunction } from 'express';
 
-// ---- Mocks ----
 const sendR = jest.fn();
 jest.mock('@/utils/send-response', () => ({
   __esModule: true,

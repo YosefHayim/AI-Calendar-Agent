@@ -50,7 +50,7 @@ describe('eventsHandler (closer-to-real mocks)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     setCalendarMocks();
-    fetchCredentialsByEmailMock.mockResolvedValue({ access_token: 'tok' });
+    fetchCredentialsByEmailMock.mockResolvedValue({ access_token: 'tok', refresh_token: 'r-tok', scope: 'scope', token_type: 'Bearer', id_token: 'id-tok', expiry_date: 123, refresh_token_expires_in: 123 });
   });
 
   test('400 when email missing', async () => {

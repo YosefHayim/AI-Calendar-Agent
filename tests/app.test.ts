@@ -19,7 +19,7 @@ jest.mock('morgan', () => {
 // Express app/utility mocks (refs reassigned in beforeEach for clean state)
 let staticMw: jest.Mock, jsonMw: jest.Mock, urlencodedMw: jest.Mock;
 let appUse: jest.Mock, appGet: jest.Mock, appListen: jest.Mock;
-let expressMock: any;
+let expressMock: jest.Mock;
 let corsMock: jest.Mock, cookieParserMock: jest.Mock, morganMock: jest.Mock;
 let pathJoinMock: jest.Mock;
 
@@ -28,7 +28,7 @@ const buildExpressMock = () => {
   jsonMw = jest.fn();
   urlencodedMw = jest.fn();
   appUse = jest.fn();
-  appGet = jest.fn();
+  appGet = jest.fn() as jest.Mock<(...args: any[]) => any>;
   appListen = jest.fn((_port: number, cb?: (err?: Error) => void) => cb?.());
 
   const fn: any = jest.fn(() => ({
@@ -39,7 +39,7 @@ const buildExpressMock = () => {
   fn.json = jest.fn(() => jsonMw);
   fn.urlencoded = jest.fn(() => urlencodedMw);
   fn.static = jest.fn(() => staticMw);
-  expressMock = fn;
+  expressMock = fn as jest.Mock;
 
   return {
     __esModule: true,

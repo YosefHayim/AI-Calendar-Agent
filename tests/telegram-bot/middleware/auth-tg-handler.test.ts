@@ -1,8 +1,6 @@
-import type { MiddlewareFn } from 'grammy';
 import type { GlobalContext } from '@/telegram-bot/init-bot';
 import { authTgHandler } from '@/telegram-bot/middleware/auth-tg-handler';
 
-// Mock SUPABASE client with a mutable stub per test
 const fromTable = jest.fn();
 const select = jest.fn();
 const eq = jest.fn();
@@ -14,7 +12,6 @@ jest.mock('@/config/root-config', () => ({
   },
 }));
 
-// Mock isEmail to keep tests deterministic
 jest.mock('validator/lib/isEmail', () => jest.fn((x: string) => x.includes('@')));
 
 import isEmail from 'validator/lib/isEmail';
@@ -48,7 +45,6 @@ const mkCtx = (overrides?: Partial<PartialCtx>): any => {
 };
 
 const resolveDbRow = (row: any) => {
-  // Chain: from('telegram_users').select('...').eq('chat_id', id).single()
   fromTable.mockImplementation((table: string) => {
     expect(table).toBe('telegram_users');
     return { select };
@@ -92,19 +88,16 @@ describe('authTgHandler', () => {
     const ctx = mkCtx();
     expect(ctx.session.chatId).toBe(0);
 
-    // No email in DB and no message with email -> should prompt and NOT call next
     ctx.message = { text: 'hello' } as any;
 
     await authTgHandler(ctx as any, next);
 
-    // Session initialized
     expect(ctx.session.chatId).toBe(ctx.from.id);
     expect(ctx.session.userId).toBe(ctx.from.id);
     expect(ctx.session.username).toBe(ctx.from.username);
     expect(ctx.session.codeLang).toBe(ctx.from.language_code);
     expect(ctx.session.messageCount).toBe(0);
 
-    // Prompted for email and stopped
     expect(ctx.reply).toHaveBeenCalledWith(
       'First time? Please provide your email to authorize:'
     );
@@ -117,17 +110,13 @@ describe('authTgHandler', () => {
     const ctx = mkCtx();
     await authTgHandler(ctx as any, next);
 
-    // Email set from DB
     expect(ctx.session.email).toBe('john@example.com');
 
-    // Greets only when messageCount === 0
     expect(ctx.reply).toHaveBeenCalledWith('Hello there John');
 
-    // messageCount incremented and next called
     expect(ctx.session.messageCount).toBe(1);
     expect(next).toHaveBeenCalledTimes(1);
 
-    // Call again: no greeting this time
     next.mockClear();
     ctx.reply.mockClear();
     await authTgHandler(ctx as any, next);
