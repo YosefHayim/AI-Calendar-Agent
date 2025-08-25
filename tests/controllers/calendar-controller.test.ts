@@ -25,8 +25,7 @@ const makeReq = (overrides: any = {}) =>
     ...overrides,
   } as any);
 
-  const makeNext = () => jest.fn() as unknown as NextFunction;
-  
+const makeNext = () => jest.fn() as unknown as NextFunction;
 
 const sendR = jest.fn();
 jest.mock('@/utils/send-response', () => ({
