@@ -3,15 +3,16 @@
   "extends": ["ultracite"],
   "files": {
     "includes": [
-      "**",
-      "!**/tests",
-      "!**/__tests__",
-      "!**/*.test.{ts,js}",
-      "!**/*.spec.{ts,js}",
-      "!dist",
-      "!build",
-      "!node_modules",
-      "!temp"
+      "**/*.ts",
+      "!**/*.test.ts",
+      "!**/*.test.js",
+      "!**/*.js",
+      "!**/*.css",
+      "!**/*.html",
+      "!**/*.json",
+      "!**/package.json",
+      "!**/*.yaml",
+      "!**/*.yml"
     ],
     "experimentalScannerIgnores": [
       "tests",
@@ -35,18 +36,5 @@
         }
       }
     }
-  },
-  "overrides": [
-    {
-      "includes": [
-        "**/tests/**",
-        "**/__tests__/**",
-        "**/*.test.*",
-        "**/*.spec.*"
-      ],
-      "linter": { "enabled": false },
-      "formatter": { "enabled": false },
-      "javascript": { "linter": { "enabled": false } }
-    }
-  ]
+  }
 }
