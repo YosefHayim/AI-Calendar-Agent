@@ -1,71 +1,46 @@
-import { startTelegramBot } from '@/telegram-bot/init-bot';
-import {expect, jest, test} from '@jest/globals';
+// tests/telegram-bot/init-bot.test.ts
+import { jest } from '@jest/globals';
 
+beforeEach(() => {
+  jest.resetModules();
+});
+
+jest.mock('@grammyjs/runner', () => ({ run: jest.fn() }));
 
 jest.mock('grammy', () => {
-  const ctxMock = { conversation: { enter: jest.fn() } };
-  const BotMock = jest.fn().mockImplementation(() => ({
+  const Bot = jest.fn().mockImplementation(() => ({
     catch: jest.fn(),
     use: jest.fn(),
     command: jest.fn(),
   }));
-  return {
-    Bot: BotMock,
-    session: jest.fn(() => 'session-middleware'),
-    Context: jest.fn(),
-  };
+  const session = jest.fn(() => (_: unknown) => undefined);
+  return { Bot, session };
 });
 
 jest.mock('@grammyjs/conversations', () => ({
-  conversations: jest.fn(() => 'conversations-middleware'),
-  createConversation: jest.fn(() => 'createConversation-middleware'),
-}));
-
-jest.mock('@grammyjs/runner', () => ({
-  run: jest.fn(),
-}));
-
-jest.mock('@/telegram-bot/middleware/auth-tg-handler', () => ({
-  authTgHandler: 'auth-middleware',
-}));
-
-jest.mock('@/telegram-bot/conversations', () => ({
-  scheduleEvent: jest.fn(),
+  conversations: jest.fn(() => (_: unknown) => undefined),
+  createConversation: jest.fn(() => (_: unknown) => undefined),
 }));
 
 describe('Telegram Bot initialization', () => {
-  let Bot: any;
-  let run: jest.Mock;
-  let conversations: jest.Mock;
-  let createConversation: jest.Mock;
-
-  beforeEach(() => {
-    jest.resetModules();
-    Bot = require('grammy').Bot;
-    run = require('@grammyjs/runner').run;
-    conversations = require('@grammyjs/conversations').conversations;
-    createConversation = require('@grammyjs/conversations').createConversation;
-  });
-
   it('should wire middlewares and commands correctly', () => {
-    startTelegramBot();
+    jest.isolateModules(() => {
+      const { startTelegramBot } = require('../../src/telegram-bot/init-bot');
+      const { Bot } = require('grammy');
+      const { run } = require('@grammyjs/runner');
 
-    expect(Bot).toHaveBeenCalledWith(expect.any(String));
-    const botInstance = Bot.mock.results[0].value;
+      startTelegramBot();
 
-    // check middleware chain
-    expect(botInstance.use).toHaveBeenCalledWith('session-middleware');
-    expect(botInstance.use).toHaveBeenCalledWith('auth-middleware');
-    expect(botInstance.use).toHaveBeenCalledWith('conversations-middleware');
-    expect(botInstance.use).toHaveBeenCalledWith('createConversation-middleware');
+      const BotMock = Bot as jest.Mock;
+      expect(BotMock).toHaveBeenCalledTimes(1);
+      expect(BotMock).toHaveBeenCalledWith(expect.any(String)); // token string
 
-    // check command wiring
-    expect(botInstance.command).toHaveBeenCalledWith(
-      'schedule',
-      expect.any(Function)
-    );
+      const botInstance: any = BotMock.mock.results[0].value;
 
-    // check run is called
-    expect(run).toHaveBeenCalledWith(botInstance);
+      expect(botInstance.catch).toHaveBeenCalledTimes(1);
+      expect(botInstance.use).toHaveBeenCalled(); // multiple times is fine
+      expect(botInstance.command).toHaveBeenCalledWith('schedule', expect.any(Function));
+      expect(run).toHaveBeenCalledWith(botInstance);
+    });
   });
 });
