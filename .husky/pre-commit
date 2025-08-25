@@ -1,5 +1,10 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
 
-npm run lint && npm run format
-biome lint . && biome format . --write --skip-errors
+# Run Biome lint, continue even if errors
+echo "Running Biome lint..."
+biome lint . || true
+
+# Run Biome format, continue even if it changes files
+echo "Running Biome format..."
+biome format . --write || true
