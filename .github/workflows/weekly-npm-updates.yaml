@@ -1,0 +1,59 @@
+name: weekly-npm-updates
+on:
+  schedule:
+    - cron: "0 3 * * 1"   # Mondays 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  update-deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Bump dependencies (supports workspaces)
+        run: |
+          set -euo pipefail
+          npm --version
+          node --version
+          if [ -f package.json ]; then
+            npx --yes npm-check-updates -u
+            if command -v jq >/dev/null 2>&1 && jq -e '.workspaces' package.json >/dev/null 2>&1; then
+              echo "Workspaces detected"
+              npx --yes npm-check-updates -u -w
+              npm install -ws
+            else
+              npm install
+            fi
+          fi
+
+      - name: Run lint/tests (if present)
+        run: |
+          npm run lint --if-present
+          npm test --if-present -- --ci
+
+      - name: Create PR with changes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/weekly-npm-updates
+          title: "chore: weekly npm dependency updates"
+          commit-message: "chore: weekly npm dependency updates"
+          body: |
+            Automated weekly dependency refresh.
+            - Updated package.json and lockfile using npm-check-updates and npm install.
+            - CI lint/tests ran in workflow.
+          labels: dependencies
+          signoff: false
+          delete-branch: true
