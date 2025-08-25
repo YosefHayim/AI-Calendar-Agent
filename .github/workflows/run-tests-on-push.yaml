@@ -19,29 +19,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          run_install: false
-
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Cache Jest cache
         uses: actions/cache@v4
         with:
           path: .jest-cache
-          key: ${{ runner.os }}-jest-${{ hashFiles('pnpm-lock.yaml', 'jest.config.*', 'tsconfig.json') }}
+          key: ${{ runner.os }}-jest-${{ hashFiles('package-lock.json', 'jest.config.*', 'tsconfig.json') }}
           restore-keys: |
             ${{ runner.os }}-jest-
 
@@ -50,7 +37,7 @@ jobs:
 
       - name: Run tests with coverage (fail if <95%)
         run: |
-          pnpm test -- \
+          npm run test -- \
             --coverage \
             --cache .jest-cache \
             --coverageReporters=json-summary \
