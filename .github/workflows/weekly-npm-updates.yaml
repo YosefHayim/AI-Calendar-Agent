@@ -1,4 +1,5 @@
-name: weekly-npm-updates
+name: Weekly NPM Updates
+
 on:
   schedule:
     - cron: "0 3 * * 1"
@@ -18,13 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Enable Corepack for pnpm/yarn detection
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "pnpm"
-
+      # Detect package manager first so we can cache correctly
       - name: Detect package manager
         id: pm
         shell: bash
@@ -32,44 +27,38 @@ jobs:
           set -euo pipefail
           if [ -f pnpm-lock.yaml ]; then
             echo "pm=pnpm" >> "$GITHUB_OUTPUT"
+            echo "lockfile=pnpm-lock.yaml" >> "$GITHUB_OUTPUT"
             corepack enable
             corepack prepare pnpm@latest --activate
           elif [ -f yarn.lock ]; then
             echo "pm=yarn" >> "$GITHUB_OUTPUT"
+            echo "lockfile=yarn.lock" >> "$GITHUB_OUTPUT"
             corepack enable
           else
             echo "pm=npm" >> "$GITHUB_OUTPUT"
+            echo "lockfile=package-lock.json" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Install npm-check-updates
-        run: |
-          case "${{ steps.pm.outputs.pm }}" in
-            pnpm) pnpm add -Dw npm-check-updates ;;
-            yarn) yarn add -D npm-check-updates ;;
-            npm)  npm i -D npm-check-updates ;;
-          esac
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
+          cache: ${{ steps.pm.outputs.pm }}
+          cache-dependency-path: ${{ steps.pm.outputs.lockfile }}
 
-      - name: Bump dependencies safely
+      # Use ncu without committing it to devDependencies
+      - name: Bump dependencies safely (minor/patch only)
         shell: bash
         run: |
           set -euo pipefail
+          # Keep zod on v3 while @openai/agents requires it
+          # IMPORTANT: single ncu run with --target minor to avoid accidental majors
+          npx npm-check-updates@latest -u --target minor --reject 'zod'
+
+          # Optional allowlist for specific majors. Example:
+          # npx npm-check-updates@latest -u --target latest --filter '@types/node,typescript'
+
           PM="${{ steps.pm.outputs.pm }}"
-          # Default: minor/patch only to avoid peer explosions
-          # Allowlist majors can be added with --filter
-          case "$PM" in
-            pnpm) npx ncu --target minor -u ;;
-            yarn) npx ncu --target minor -u ;;
-            npm)  npx ncu --target minor -u ;;
-          esac
-
-          # Example: explicitly avoid zod major for now (until @openai/agents supports v4)
-          # Remove this reject once agents supports zod@4
-          npx ncu --reject zod -u
-
-          # Optional: attempt majors for a vetted list
-          # npx ncu --target latest -u --filter "@types/node,typescript"
-
-          # Install & update lockfile using the correct PM
           if [ "$PM" = "pnpm" ]; then
             pnpm install --frozen-lockfile=false
           elif [ "$PM" = "yarn" ]; then
@@ -78,26 +67,33 @@ jobs:
             npm install
           fi
 
-      - name: Run lint/tests (if present)
+      - name: Run lint/tests if present
+        shell: bash
         run: |
-          if [ "${{ steps.pm.outputs.pm }}" = "pnpm" ]; then
-            pnpm run -r -w lint --if-present || true
-            pnpm run -r -w test --if-present -- --ci || true
+          PM="${{ steps.pm.outputs.pm }}"
+          if [ "$PM" = "pnpm" ]; then
+            pnpm -w -r run lint --if-present || true
+            pnpm -w -r run test --if-present -- --ci || true
+          elif [ "$PM" = "yarn" ]; then
+            yarn run lint --if-present || true
+            yarn run test --if-present --ci || true
           else
             npm run lint --if-present || true
             npm test --if-present -- --ci || true
-          fi
 
       - name: Create PR with changes
         uses: peter-evans/create-pull-request@v6
         with:
           branch: chore/weekly-npm-updates
-          title: "chore: weekly dependency updates (safe minor/patch)"
-          commit-message: "chore: weekly dependency updates (safe minor/patch)"
+          title: "chore: weekly dependency updates (minor/patch)"
+          commit-message: "chore: weekly dependency updates (minor/patch)"
           body: |
             Automated weekly dependency refresh.
-            - Used npm-check-updates with --target minor and explicit rejects for breaking peers.
-            - Installed with the repo's package manager and updated the lockfile.
+
+            Notes:
+            - Used npm-check-updates with --target minor to avoid breaking majors.
+            - Explicitly rejected zod majors while @openai/agents peers zod ^3.
+            - Installed with the detected package manager and refreshed the lockfile.
             - Lint/tests executed if available.
           labels: dependencies
           signoff: false
