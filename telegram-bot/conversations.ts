@@ -1,6 +1,6 @@
 import type { Conversation } from '@grammyjs/conversations';
 import type { Context } from 'grammy';
-import { calendarRouterAgent } from '@/ai-agents/agents';
+import { calendarRouterAgent } from '@/ai-agents/text-agents';
 import { activateAgent } from '@/utils/activate-agent';
 import type { GlobalContext } from './init-bot';
 
