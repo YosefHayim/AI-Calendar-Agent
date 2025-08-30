@@ -72,7 +72,6 @@ Behavior
 - If duration is provided, recompute end = start + duration.
 - If a field is not specified, keep its original value.
 - Preserve/propagate timeZone consistently across start/end.
-- Ensure end > start; if not, roll the end to the next day.
 - Return ONLY the tool’s JSON result.`,
 
   deleteEventByIdOrName: `${RECOMMENDED_PROMPT_PREFIX} You delete a calendar event by ID or by matching title/keywords.

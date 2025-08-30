@@ -78,17 +78,24 @@ export const AGENTS = {
   }),
 };
 
-export const calendarRouterAgent = new Agent({
-  name: 'calendar_router_agent',
-  model: CURRENT_MODEL,
-  modelSettings: { parallelToolCalls: true },
-  instructions: AGENT_INSTRUCTIONS.calendarRouterAgent,
-
-  tools: [
-    AGENTS.normalizeEventAgent.asTool({ toolName: 'normalize_event' }),
-    AGENTS.getUserDefaultTimeZone.asTool({ toolName: 'get_user_default_timezone' }),
-    AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
-    AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type_by_event_details' }),
-    AGENTS.insertEvent.asTool({ toolName: 'insert_event' }),
-  ],
-});
+export const HANDS_OFF_AGENTS = {
+  insertEventHandOffAgent: new Agent({
+    name: 'insert_event_handoff_agent',
+    model: CURRENT_MODEL,
+    modelSettings: { parallelToolCalls: true },
+    instructions: AGENT_INSTRUCTIONS.calendarRouterAgent,
+    tools: [
+      AGENTS.normalizeEventAgent.asTool({ toolName: 'normalize_event' }),
+      AGENTS.getUserDefaultTimeZone.asTool({ toolName: 'get_user_default_timezone' }),
+      AGENTS.validateEventFields.asTool({ toolName: 'validate_event_fields' }),
+      AGENTS.analysesCalendarTypeByEventInformation.asTool({ toolName: 'calendar_type_by_event_details' }),
+      AGENTS.insertEvent.asTool({ toolName: 'insert_event' }),
+    ],
+  }),
+  updateEventHandOffAgent: new Agent({
+    name: 'update_event_handoff_agent',
+    model: CURRENT_MODEL,
+    instructions: 'you update an existing calendar event by ID or by matching title/keywords.',
+    tools: [AGENTS.updateEventByIdOrName.asTool({ toolName: 'update_event' })],
+  }),
+};

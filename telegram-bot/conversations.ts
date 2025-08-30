@@ -1,41 +1,27 @@
 import type { Conversation } from '@grammyjs/conversations';
 import type { Context } from 'grammy';
-import { calendarRouterAgent } from '@/ai-agents/agents';
+import { HANDS_OFF_AGENTS } from '@/ai-agents/agents';
 import { activateAgent } from '@/utils/activate-agent';
 import type { GlobalContext } from './init-bot';
 
 export const scheduleEvent = async (conversation: Conversation<GlobalContext>, ctx: Context) => {
-  {
-    const session = await conversation.external((externalCtx) => externalCtx.session);
+  const session = await conversation.external((externalCtx) => externalCtx.session);
 
-    await ctx.reply('Summary of the event:');
-    const titleMsg = await conversation.waitFor(':text', { maxMilliseconds: 15_000 }).catch(() => null);
-    if (!titleMsg?.message?.text) {
-      return ctx.reply('Timed out. Use /schedule to try again.');
+  await ctx.reply('You can chat with the scheduling agent. Type /exit to stop.');
+
+  while (true) {
+    const userMsg = await conversation.waitFor(':text').catch(() => null);
+    if (!userMsg?.message?.text) {
+      continue;
     }
-    const summary = titleMsg.message.text.trim();
 
-    await ctx.reply('Date?');
-    const dateMsg = await conversation.waitFor(':text', { maxMilliseconds: 15_000 }).catch(() => null);
-    if (!dateMsg?.message?.text) {
-      return ctx.reply('Timed out. Use /schedule to try again.');
+    const text = userMsg.message.text.trim();
+    if (text.toLowerCase() === '/exit') {
+      await ctx.reply('Conversation ended.');
+      break;
     }
-    const date = dateMsg.message.text.trim();
 
-    await ctx.reply('Duration of the event?');
-    const durationMsg = await conversation.waitFor(':text', { maxMilliseconds: 15_000 }).catch(() => null);
-    if (!durationMsg?.message?.text) {
-      return ctx.reply('Timed out. Use /schedule to try again.');
-    }
-    const duration = durationMsg.message.text.trim();
-
-    const { finalOutput } = await activateAgent(
-      calendarRouterAgent,
-      `Please insert the event details of the user ${session.email} into his calendar and choose the appropriate calendar Id that fits the event:
-    Event summary: ${summary}
-    Event date: ${date}
-    Event duration: ${duration}`.trim()
-    );
+    const { finalOutput } = await activateAgent(HANDS_OFF_AGENTS.insertEventHandOffAgent, `User ${session.email} says: ${text}`);
 
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
   }
