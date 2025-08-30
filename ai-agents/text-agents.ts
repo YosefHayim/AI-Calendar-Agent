@@ -92,13 +92,13 @@ export const HANDS_OFF_AGENTS = {
       AGENTS.insertEvent.asTool({ toolName: 'insert_event' }),
     ],
   }),
-  updateEventHandOffAgent: new Agent({
+  updateEventOrEventsHandOffAgent: new Agent({
     name: 'update_event_handoff_agent',
     model: CURRENT_MODEL,
     instructions: 'you update an existing calendar event by ID or by matching title/keywords.',
     tools: [AGENTS.updateEventByIdOrName.asTool({ toolName: 'update_event' })],
   }),
-  deleteEventHandOffAgent: new Agent({
+  deleteEventOrEventsHandOffAgent: new Agent({
     name: 'delete_event_handoff_agent',
     model: CURRENT_MODEL,
     instructions: 'you delete a calendar event by ID or by matching title/keywords.',
