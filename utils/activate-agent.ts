@@ -1,5 +1,5 @@
 import { type Agent, run } from '@openai/agents';
-import { AGENTS } from '@/ai-agents/text-agents';
+import { AGENTS } from '@/ai-agents/agents';
 import type { AGENTS_LIST } from '@/types';
 import { asyncHandler } from './async-handlers';
 

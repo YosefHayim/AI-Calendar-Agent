@@ -20,7 +20,7 @@ jest.mock('@/utils/async-handlers', () => ({
 }));
 
 import { run as openAiRun } from '@openai/agents';
-import { AGENTS } from '@/ai-agents/text-agents';
+import { AGENTS } from '@/ai-agents/agents';
 import { activateAgent } from '@/utils/activate-agent';
 
 const openAiRunMock = jest.mocked(openAiRun);

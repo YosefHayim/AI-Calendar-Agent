@@ -11,7 +11,7 @@ jest.mock('@/ai-agents/agents', () => ({
 }));
 
 import { activateAgent } from '@/utils/activate-agent';
-import { calendarRouterAgent } from '@/ai-agents/text-agents';
+import { calendarRouterAgent } from '@/ai-agents/agents';
 
 type GCtx = GlobalContext
 
