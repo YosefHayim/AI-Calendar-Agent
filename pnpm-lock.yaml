@@ -29,6 +29,9 @@ importers:
       '@openai/agents-core':
         specifier: ^0.0.17
         version: 0.0.17(ws@8.18.3)(zod@3.25.76)
+      '@openai/agents-realtime':
+        specifier: ^0.0.17
+        version: 0.0.17(zod@3.25.76)
       '@supabase/supabase-js':
         specifier: ^2.56.0
         version: 2.56.0

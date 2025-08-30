@@ -35,6 +35,7 @@
     "@jest/globals": "^30.0.5",
     "@openai/agents": "^0.0.17",
     "@openai/agents-core": "^0.0.17",
+    "@openai/agents-realtime": "^0.0.17",
     "@supabase/supabase-js": "^2.56.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
