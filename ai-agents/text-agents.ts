@@ -98,4 +98,16 @@ export const HANDS_OFF_AGENTS = {
     instructions: 'you update an existing calendar event by ID or by matching title/keywords.',
     tools: [AGENTS.updateEventByIdOrName.asTool({ toolName: 'update_event' })],
   }),
+  deleteEventHandOffAgent: new Agent({
+    name: 'delete_event_handoff_agent',
+    model: CURRENT_MODEL,
+    instructions: 'you delete a calendar event by ID or by matching title/keywords.',
+    tools: [AGENTS.deleteEventByIdOrName.asTool({ toolName: 'delete_event' })],
+  }),
+  getEventOrEventsHandOffAgent: new Agent({
+    name: 'get_event_handoff_agent',
+    model: CURRENT_MODEL,
+    instructions: 'you retrieve events by ID or by matching title/keywords.',
+    tools: [AGENTS.getEventByIdOrName.asTool({ toolName: 'get_event' })],
+  }),
 };
