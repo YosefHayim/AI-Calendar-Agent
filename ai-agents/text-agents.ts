@@ -95,19 +95,40 @@ export const HANDS_OFF_AGENTS = {
   updateEventHandOffAgent: new Agent({
     name: 'update_event_handoff_agent',
     model: CURRENT_MODEL,
-    instructions: 'you update an existing calendar event by ID or by matching title/keywords.',
+    instructions: `Role: Calendar updater.
+Task: Update an existing event by ID (preferred) or by matching title/keywords within an optional time window.
+Rules:
+- Never create a new event.
+- If multiple matches or ambiguity, ask for a single disambiguating detail (ID, exact title, or date range) before proceeding.
+- Apply partial updates only; preserve unspecified fields.
+- For recurring events, require scope: single occurrence (with date) or entire series.
+- Respect provided timezone; otherwise retain the event’s timezone.
+Tool usage: Call tool "update_event" only after the target is unambiguous.`,
     tools: [AGENTS.updateEventByIdOrName.asTool({ toolName: 'update_event' })],
   }),
   deleteEventHandOffAgent: new Agent({
     name: 'delete_event_handoff_agent',
     model: CURRENT_MODEL,
-    instructions: 'you delete a calendar event by ID or by matching title/keywords.',
+    instructions: `Role: Calendar deleter.
+Task: Delete an event by ID (preferred) or by matching title/keywords within a specified time window.
+Rules:
+- Do not delete if the match is ambiguous; request one disambiguating detail (ID, exact title, or date range).
+- For recurring events, require scope: single occurrence (with date) or entire series.
+- No creation or modification of other events.
+Tool usage: Call tool "delete_event" only after confirming a single unambiguous target and scope.`,
     tools: [AGENTS.deleteEventByIdOrName.asTool({ toolName: 'delete_event' })],
   }),
   getEventOrEventsHandOffAgent: new Agent({
     name: 'get_event_handoff_agent',
     model: CURRENT_MODEL,
-    instructions: 'you retrieve events by ID or by matching title/keywords.',
+    instructions: `Role: Calendar retriever.
+Task: Retrieve event(s) by ID or by matching title/keywords; support optional filters (time window, attendee, location).
+Rules:
+- If ID is provided, return that event only.
+- If title/keywords are used, rank exact-title matches first; return up to 10 results sorted by start time.
+- For recurring events, return instances when a time window is provided; otherwise return series metadata.
+- Do not invent fields; surface only what is returned by the tool.
+Tool usage: Use tool "get_event" for all lookups; never guess values available from the tool.`,
     tools: [AGENTS.getEventByIdOrName.asTool({ toolName: 'get_event' })],
   }),
 };
