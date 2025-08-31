@@ -60,12 +60,23 @@ export const eventsHandler = asyncHandler(
         });
         break;
       }
-      case ACTION.UPDATE:
-        result = await calendarEvents.update({ ...requestConfigBase, eventId: eventData?.id || ('' as string), requestBody: eventData });
+      case ACTION.UPDATE: {
+        const resp = await calendarEvents.update({
+          ...requestConfigBase,
+          eventId: eventData?.id || '',
+          requestBody: eventData,
+        });
+        result = resp.data;
         break;
-      case ACTION.DELETE:
-        result = await calendarEvents.delete({ ...requestConfigBase, eventId: eventData?.id || ('' as string) });
+      }
+      case ACTION.DELETE: {
+        const resp = await calendarEvents.delete({
+          ...requestConfigBase,
+          eventId: eventData?.id || '',
+        });
+        result = resp.data;
         break;
+      }
       default:
         throw errorTemplate('Unsupported calendar action', STATUS_RESPONSE.BAD_REQUEST);
     }
