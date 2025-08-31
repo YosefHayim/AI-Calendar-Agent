@@ -46,6 +46,7 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req: Request, res: Respo
         scope,
         email: user.email,
         created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       })
       .eq('email', user.email)
       .select();

@@ -83,7 +83,7 @@ const updateEvent = reqResAsyncHandler(async (req, res) => {
     id: req.params.eventId,
     ...req.body,
   });
-  sendR(res, STATUS_RESPONSE.NOT_FOUND, 'Event updated successfully', r);
+  sendR(res, STATUS_RESPONSE.SUCCESS, 'Event updated successfully', r);
 });
 
 const deleteEvent = reqResAsyncHandler(async (req, res) => {
