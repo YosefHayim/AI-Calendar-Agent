@@ -113,3 +113,16 @@ export const HANDS_OFF_AGENTS = {
     tools: [AGENTS.getEventByIdOrName.asTool({ toolName: 'get_event' })],
   }),
 };
+
+export const ORCHESTRATOR_AGENT = new Agent({
+  name: 'calendar_orchestrator_agent',
+  model: CURRENT_MODEL,
+  modelSettings: { toolChoice: 'required' },
+  instructions: AGENT_INSTRUCTIONS.orchestratorAgent,
+  tools: [
+    HANDS_OFF_AGENTS.insertEventHandOffAgent.asTool({ toolName: 'insert_event_handoff_agent' }),
+    HANDS_OFF_AGENTS.getEventOrEventsHandOffAgent.asTool({ toolName: 'get_event_handoff_agent' }),
+    HANDS_OFF_AGENTS.updateEventOrEventsHandOffAgent.asTool({ toolName: 'update_event_handoff_agent' }),
+    HANDS_OFF_AGENTS.deleteEventOrEventsHandOffAgent.asTool({ toolName: 'delete_event_handoff_agent' }),
+  ],
+});
