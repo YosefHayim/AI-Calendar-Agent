@@ -99,7 +99,7 @@ export const EXECUTION_TOOLS = {
       throw new Error('Invalid email address.');
     }
     // list extra is passed via extra; eventsHandler uses it for list()
-    return eventsHandler(null, ACTION.GET, {}, { email, calendarId: calendarId ?? 'primary', timeMin: params.timeMin || startOfYear });
+    return eventsHandler(null, ACTION.GET, {}, { email, calendarId: calendarId ?? 'primary', timeMin: params.timeMin ?? startOfYear });
   }),
 
   getCalendarTypesByEventDetails: asyncHandler(async (params: calendar_v3.Schema$Event & { email: string }) => {
@@ -113,7 +113,7 @@ export const EXECUTION_TOOLS = {
     return r.data.items?.map((item) => item.summary);
   }),
 
-  deleteEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
+  deleteEvent: asyncHandler((params: { eventId: string; email: string }) => {
     const { email, eventId } = coerceArgs(params);
     if (!(email && isEmail(email))) {
       throw new Error('Invalid email address.');
