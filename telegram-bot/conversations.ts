@@ -7,7 +7,7 @@ import type { GlobalContext } from './init-bot';
 export const scheduleEvent = async (conversation: Conversation<GlobalContext>, ctx: Context) => {
   const session = await conversation.external((externalCtx) => externalCtx.session);
 
-  await ctx.reply('You can chat with the scheduling agent. Type /exit to stop.');
+  await ctx.reply('You can chat with the get event agent. Type /exit to stop.');
 
   while (true) {
     const userMsg = await conversation.waitFor(':text').catch(() => null);
@@ -21,7 +21,7 @@ export const scheduleEvent = async (conversation: Conversation<GlobalContext>, c
       break;
     }
 
-    const { finalOutput } = await activateAgent(HANDS_OFF_AGENTS.insertEventHandOffAgent, `User ${session.email} says: ${text}`);
+    const { finalOutput } = await activateAgent(HANDS_OFF_AGENTS.getEventOrEventsHandOffAgent, `User ${session.email} says: ${text}`);
 
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
   }

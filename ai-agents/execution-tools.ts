@@ -91,13 +91,13 @@ export const EXECUTION_TOOLS = {
     return eventsHandler(null, ACTION.UPDATE, eventData, { email, calendarId: calendarId ?? 'primary' });
   }),
 
-  getEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
+  getEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string; timeMin: string | null }) => {
     const { email, calendarId } = coerceArgs(params);
     if (!(email && isEmail(email))) {
       throw new Error('Invalid email address.');
     }
     // list extra is passed via extra; eventsHandler uses it for list()
-    return eventsHandler(null, ACTION.GET, {}, { email, calendarId: calendarId ?? 'primary' });
+    return eventsHandler(null, ACTION.GET, {}, { email, calendarId: calendarId ?? 'primary', timeMin: params.timeMin || '' });
   }),
 
   getCalendarTypesByEventDetails: asyncHandler(async (params: calendar_v3.Schema$Event & { email: string }) => {

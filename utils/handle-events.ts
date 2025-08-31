@@ -34,7 +34,7 @@ export const eventsHandler = asyncHandler(
           maxResults: 2500,
           ...listExtra,
         });
-        const items = events.data.items ?? [];
+        const items = events.data.items?.reverse() ?? [];
         const totalEventsFound = items.map((event: calendar_v3.Schema$Event) => {
           const startRaw = event.start?.date || event.start?.dateTime || null;
           const endRaw = event.end?.date || event.end?.dateTime || null;

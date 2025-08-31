@@ -71,7 +71,7 @@ Example:
   "eventId": "abc123def456"
 }`,
 
-  getEvent: `Retrieves all events from the user’s calendar. Requires "email" (execution context parameter). Returns an array of event objects.
+  getEvent: `Retrieves all events from the user’s calendar. Requires "email" and optional timeMin field with RFC3339 date format (execution context parameter). Returns an array of event objects.
 Example:
 {
   // no additional fields required
