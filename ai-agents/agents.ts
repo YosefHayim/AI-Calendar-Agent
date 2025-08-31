@@ -83,7 +83,7 @@ export const HANDS_OFF_AGENTS = {
     name: 'insert_event_handoff_agent',
     model: CURRENT_MODEL,
     modelSettings: { parallelToolCalls: true },
-    instructions: AGENT_INSTRUCTIONS.calendarRouterAgent,
+    instructions: AGENT_INSTRUCTIONS.insertEventHandOffAgent,
     tools: [
       AGENTS.normalizeEventAgent.asTool({ toolName: 'normalize_event' }),
       AGENTS.getUserDefaultTimeZone.asTool({ toolName: 'get_user_default_timezone' }),
@@ -95,129 +95,21 @@ export const HANDS_OFF_AGENTS = {
   updateEventOrEventsHandOffAgent: new Agent({
     name: 'update_event_handoff_agent',
     model: CURRENT_MODEL,
-    instructions: `Role: Calendar updater.
-Task: Update an existing event by ID (preferred) or by matching title/keywords within an optional time window.
-Rules:
-- Never create a new event.
-- If multiple matches or ambiguity, ask for a single disambiguating detail (ID, exact title, or date range) before proceeding.
-- Apply partial updates only; preserve unspecified fields.
-- For recurring events, require scope: single occurrence (with date) or entire series.
-- Respect provided timezone; otherwise retain the event’s timezone.
-Tool usage: Call tool "update_event" only after the target is unambiguous.`,
+    instructions: AGENT_INSTRUCTIONS.updateEventByIdOrNameHandOffAgent,
+    modelSettings: { toolChoice: 'required' },
     tools: [AGENTS.updateEventByIdOrName.asTool({ toolName: 'update_event' })],
   }),
   deleteEventOrEventsHandOffAgent: new Agent({
     name: 'delete_event_handoff_agent',
     model: CURRENT_MODEL,
-    instructions: `Role: Calendar deleter.
-Task: Delete an event by ID (preferred) or by matching title/keywords within a specified time window.
-Rules:
-- Do not delete if the match is ambiguous; request one disambiguating detail (ID, exact title, or date range).
-- For recurring events, require scope: single occurrence (with date) or entire series.
-- No creation or modification of other events.
-Tool usage: Call tool "delete_event" only after confirming a single unambiguous target and scope.`,
+    instructions: AGENT_INSTRUCTIONS.deleteEventByIdOrNameHandOffAgent,
+
     tools: [AGENTS.deleteEventByIdOrName.asTool({ toolName: 'delete_event' })],
   }),
   getEventOrEventsHandOffAgent: new Agent({
     name: 'get_event_handoff_agent',
     model: CURRENT_MODEL,
-    instructions: `Role: Calendar retriever.
-
-Task: Retrieve event(s) by ID or by matching title/keywords; support optional filters (timeMin, attendee, location).
-
-Rules:
-- If ID is provided, return that event only.
-- If title/keywords are used, rank exact-title matches first; return up to 10 results sorted by start time.
-- For recurring events, return instances when a timeMin is provided; otherwise return series metadata.
-- When the user specifies a time reference (e.g., “last week”, “yesterday”, “next month”):
-  • Convert it into an explicit ISO 8601 date string for "timeMin".  
-  • "timeMin" must represent the inclusive start of that period, anchored to today’s date.  
-  • Normalize to YYYY-MM-DD format in UTC unless the tool requires otherwise.
-- Do not invent fields;
-surface;
-only;
-what;
-is;
-returned;
-by;
-the;
-tool.
-- Never
-expose;
-raw;
-JSON.Output;
-format: -Precede;
-the;
-list;
-with a concise
-summary, e.g., “
-Here;
-are;
-your;
-X;
-events;
-since [timeMin].
-”
-- If no events are found, explicitly
-return
-: “No events found.”
-- Each event must be listed in numbered order and include, in this exact sequence:
-  • ID: show only the base event ID (strip recurrence suffixes like '_20250824T050000Z')
-if needed, show the
-full;
-ID in parentheses.
-• Title
-  • Start: show both full format (“Sunday, August 24, 2025 09:00 (GMT+3)”) and short format (“2025-08-24 09:00”)
-  • End: same two formats
-  • Location (
-if provided, otherwise
-“—”)
-  • Description (
-if provided, otherwise
-“—”)
-
-Constraints:
-- Respect the event’s timezone
-never
-alter;
-offsets.
-- Do
-not;
-guess;
-event;
-content;
-or;
-synthesize;
-unavailable;
-fields.
-- Output
-must;
-strictly;
-follow;
-the;
-specified;
-format.Tool;
-usage: -Always;
-use;
-tool;
-('get_event');
-for lookups.
-- Never guess values that
-must;
-come;
-from;
-the;
-tool.
-- Apply
-parsed;
-('timeMin');
-when;
-a;
-time;
-reference;
-is;
-given.
-`,
+    instructions: AGENT_INSTRUCTIONS.getEventOrEventsHandOffAgent,
     tools: [AGENTS.getEventByIdOrName.asTool({ toolName: 'get_event' })],
   }),
 };
