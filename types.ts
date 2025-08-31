@@ -56,6 +56,8 @@ export type SessionData = {
   codeLang: string | undefined;
   messageCount: number;
   email: string | undefined;
+  lastProcessedMsgId: number;
+  agentActive: boolean;
 };
 
 export type TokensProps = {
