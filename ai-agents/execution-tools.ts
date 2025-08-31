@@ -79,7 +79,7 @@ export const EXECUTION_TOOLS = {
     return eventsHandler(null, ACTION.INSERT, eventData, { email, calendarId: calendarId ?? 'primary' });
   }),
 
-  updateEvent: asyncHandler((params: calendar_v3.Params$Resource$Events$Update & { email: string; eventId: string }) => {
+  updateEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string; eventId: string }) => {
     const { email, calendarId, eventId, eventLike } = coerceArgs(params);
     if (!(email && isEmail(email))) {
       throw new Error('Invalid email address.');
@@ -88,7 +88,8 @@ export const EXECUTION_TOOLS = {
       throw new Error('eventId is required for update.');
     }
     const eventData: Event = { ...formatEventData(eventLike as Event), id: eventId };
-    return eventsHandler(null, ACTION.UPDATE, eventData, { email, calendarId: calendarId ?? 'primary' });
+    const insureEventDataWithEventId = { ...eventData, id: eventId };
+    return eventsHandler(null, ACTION.UPDATE, insureEventDataWithEventId, { email, calendarId: calendarId ?? 'primary', eventId });
   }),
 
   getEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string; q?: string | null; timeMin?: string | null }) => {

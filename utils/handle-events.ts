@@ -67,7 +67,7 @@ export const eventsHandler = asyncHandler(
         const resp = await calendarEvents.update({
           ...requestConfigBase,
           eventId: eventData?.id || '',
-          requestBody: eventData,
+          ...eventData,
         });
         result = resp.data;
         break;

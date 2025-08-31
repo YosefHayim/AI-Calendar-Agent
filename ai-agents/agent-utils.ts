@@ -16,7 +16,7 @@ function deepClean<T extends Record<string, any>>(obj: T): T {
       continue;
     }
     if (typeof v === 'object') {
-      const cleaned = deepClean(v as any);
+      const cleaned = deepClean(v as Record<string, unknown>);
       if (Array.isArray(cleaned) ? cleaned.length : Object.keys(cleaned).length) {
         out[k] = cleaned;
       }
