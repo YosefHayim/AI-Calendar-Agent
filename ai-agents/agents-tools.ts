@@ -4,6 +4,16 @@ import { EXECUTION_TOOLS } from './execution-tools';
 import { PARAMETERS_TOOLS } from './parameters-tools';
 
 export const AGENT_TOOLS = {
+  // need to finish this properly the register via db
+  register_user_via_db: tool({
+    name: 'register_user_via_db',
+    description: TOOLS_DESCRIPTION.registerUserViaDb,
+    parameters: PARAMETERS_TOOLS.validateUserDbParametersToRegisterUser,
+    execute: EXECUTION_TOOLS.validateUser,
+    errorFunction: (_, error) => {
+      return `validate_user: ${error}`;
+    },
+  }),
   validate_user_db: tool({
     name: 'validate_user',
     description: TOOLS_DESCRIPTION.validateUser,

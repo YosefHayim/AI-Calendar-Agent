@@ -9,6 +9,14 @@ setDefaultOpenAIKey(CONFIG.open_ai_api_key || '');
 setTracingExportApiKey(CONFIG.open_ai_api_key || '');
 
 export const AGENTS = {
+  // need to finish this properly the register via db
+  registerUserViaDb: new Agent({
+    name: 'register_user_via_db_agent',
+    instructions: AGENT_INSTRUCTIONS.registerUserViaDb,
+    modelSettings: { toolChoice: 'required' },
+    handoffDescription: AGENT_HANDOFFS.validateUserAuth,
+    tools: [AGENT_TOOLS.register_user_via_db],
+  }),
   validateUserAuth: new Agent({
     name: 'validate_user_db_agent',
     instructions: AGENT_INSTRUCTIONS.validateUserAuth,
@@ -111,6 +119,13 @@ export const HANDS_OFF_AGENTS = {
     model: CURRENT_MODEL,
     instructions: AGENT_INSTRUCTIONS.getEventOrEventsHandOffAgent,
     tools: [AGENTS.getEventByIdOrName.asTool({ toolName: 'get_event' })],
+  }),
+  // need to finish this properly the register via db
+  registerUserHandOffAgent: new Agent({
+    name: 'register_user_handoff_agent',
+    model: CURRENT_MODEL,
+    instructions: AGENT_INSTRUCTIONS.registerUserHandOffAgent,
+    tools: [AGENTS.validateUserAuth.asTool({ toolName: 'register_user_via_db' })],
   }),
 };
 

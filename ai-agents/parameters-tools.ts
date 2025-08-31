@@ -21,6 +21,8 @@ const makeFullEventParams = () =>
   });
 
 export const PARAMETERS_TOOLS = {
+  // need to finish this properly the register via db
+  validateUserDbParametersToRegisterUser: z.object({ email: emailSchema }).describe('Register user to our db.'),
   validateUserDbParameter: z.object({ email: emailSchema }).describe('Validate user by email.'),
   getUserDefaultTimeZone: z.object({ email: emailSchema }).describe('Fetch user default timezone.'),
   getEventParameters: z

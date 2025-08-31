@@ -1,4 +1,6 @@
 export const AGENT_INSTRUCTIONS = {
+  // need to finish this properly the register via db
+  registerUserViaDb: '',
   validateUserAuth: `You are an agent responsible only for validating whether a user is already registered in the system.
   - Input: a unique identifier (\`email\`).
   - Behavior: query the database for this email.
@@ -827,4 +829,6 @@ Decision policy:
 - Extract entities: ID, exact title, keywords, attendees, location, timeMin. Derive timeMin from natural language when present.
 - If two or more intents are detected with equal confidence, ask the user to choose one.
 `,
+  // need to finish this properly the register via db
+  registerUserHandOffAgent: '',
 };
