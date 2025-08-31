@@ -9,7 +9,7 @@ import { fetchCredentialsByEmail } from './get-user-calendar-tokens';
 import { initCalendarWithUserTokensAndUpdateTokens } from './init-calendar-with-user-tokens-and-update-tokens';
 
 export const eventsHandler = asyncHandler(
-  async (req?: Request | null, action?: ACTION, eventData?: SCHEMA_EVENT_PROPS | Record<string, string>, extra?: Record<string, string>) => {
+  async (req?: Request | null, action?: ACTION, eventData?: SCHEMA_EVENT_PROPS | Record<string, string>, extra?: Record<string, unknown>) => {
     const email = (req as AuthedRequest | undefined)?.user?.email ?? (typeof extra?.email === 'string' ? (extra.email as string) : undefined);
     if (!email) {
       throw errorTemplate('Email is required to resolve calendar credentials', STATUS_RESPONSE.BAD_REQUEST);
@@ -28,6 +28,9 @@ export const eventsHandler = asyncHandler(
     switch (action) {
       case ACTION.GET: {
         const { email: _omit, ...listExtra } = extra ?? {};
+        if (listExtra.q === undefined || listExtra.q === '' || listExtra.q === null) {
+          listExtra.q = null;
+        }
         const events = await calendarEvents.list({
           ...requestConfigBase,
           prettyPrint: true,
