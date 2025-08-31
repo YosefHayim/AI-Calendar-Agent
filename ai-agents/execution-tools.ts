@@ -79,7 +79,7 @@ export const EXECUTION_TOOLS = {
     return eventsHandler(null, ACTION.INSERT, eventData, { email, calendarId: calendarId ?? 'primary' });
   }),
 
-  updateEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string; eventId: string }) => {
+  updateEvent: asyncHandler((params: calendar_v3.Params$Resource$Events$Update & { email: string; eventId: string }) => {
     const { email, calendarId, eventId, eventLike } = coerceArgs(params);
     if (!(email && isEmail(email))) {
       throw new Error('Invalid email address.');
