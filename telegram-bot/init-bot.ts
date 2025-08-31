@@ -51,7 +51,7 @@ bot.on('message', async (ctx) => {
   // start/stop "loop" via session flag; no while(true)
   if (!ctx.session.agentActive) {
     ctx.session.agentActive = true;
-    await ctx.reply('You can chat with the get event agent. Type /exit to stop.');
+    await ctx.reply('Type /exit to stop.');
   }
 
   if (userMsgText.toLowerCase() === '/exit') {
@@ -65,7 +65,7 @@ bot.on('message', async (ctx) => {
   }
 
   try {
-    const { finalOutput } = await activateAgent(HANDS_OFF_AGENTS.getEventOrEventsHandOffAgent, `User ${ctx.session.email} says: ${userMsgText}`);
+    const { finalOutput } = await activateAgent(HANDS_OFF_AGENTS.updateEventOrEventsHandOffAgent, `User ${ctx.session.email} says: ${userMsgText}`);
 
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
   } catch (e) {

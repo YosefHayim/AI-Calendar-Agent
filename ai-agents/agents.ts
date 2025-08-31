@@ -105,14 +105,14 @@ export const HANDS_OFF_AGENTS = {
     model: CURRENT_MODEL,
     instructions: AGENT_INSTRUCTIONS.updateEventByIdOrNameHandOffAgent,
     modelSettings: { toolChoice: 'required' },
-    tools: [AGENTS.updateEventByIdOrName.asTool({ toolName: 'update_event' })],
+    tools: [AGENTS.getEventByIdOrName.asTool({ toolName: 'get_event' }), AGENTS.updateEventByIdOrName.asTool({ toolName: 'update_event' })],
   }),
   deleteEventOrEventsHandOffAgent: new Agent({
     name: 'delete_event_handoff_agent',
     model: CURRENT_MODEL,
     instructions: AGENT_INSTRUCTIONS.deleteEventByIdOrNameHandOffAgent,
 
-    tools: [AGENTS.deleteEventByIdOrName.asTool({ toolName: 'delete_event' })],
+    tools: [AGENTS.getEventByIdOrName.asTool({ toolName: 'get_event' }), AGENTS.deleteEventByIdOrName.asTool({ toolName: 'delete_event' })],
   }),
   getEventOrEventsHandOffAgent: new Agent({
     name: 'get_event_handoff_agent',

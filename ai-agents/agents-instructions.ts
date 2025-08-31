@@ -643,6 +643,7 @@ Task: Retrieve event(s) by ID or by matching title/keywords; support optional fi
 
 Rules:
 - If ID is provided, return that event only.
+- If no timeMin provided set it to the beginning of current year ${new Date().toISOString().split('T')[0]}.
 - If title/keywords are used, rank exact-title matches first; return up to 10 results sorted by start time.
 - For recurring events, return instances when a timeMin is provided; otherwise return series metadata.
 - When the user specifies a time reference (e.g., “last week”, “yesterday”, “next month”):
@@ -740,6 +741,7 @@ Task: Update an existing event by ID (preferred) or by matching title/keywords; 
 
 Rules:
 - Never create a new event.
+- If no timeMin provided set it to the beginning of current year ${new Date().toISOString().split('T')[0]}.
 - If multiple matches or ambiguity occurs, request one disambiguating detail (ID, exact title, or timeMin) before proceeding.
 - Apply partial updates only; preserve all unspecified fields exactly as-is.
 - For recurring events, require explicit scope:
@@ -772,6 +774,7 @@ Task: Delete an event by ID (preferred) or by matching title/keywords; support o
 
 Rules:
 - Never create or modify events; deletion only.
+- If no timeMin provided set it to the beginning of current year ${new Date().toISOString().split('T')[0]}.
 - If multiple matches or ambiguity occurs, request one disambiguating detail (ID, exact title, or timeMin) before proceeding.
 - For recurring events, require explicit scope:
   • Single occurrence (must include date)
