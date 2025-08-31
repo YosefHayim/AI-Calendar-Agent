@@ -5,17 +5,38 @@ const emailSchema = z.string().refine((v) => validator.isEmail(v), { message: 'I
 
 const makeEventTime = () =>
   z.object({
-    date: z.string().nullable(),
-    dateTime: z.string().nullable(),
-    timeZone: z.string(),
+    date: z
+      .string({
+        description: 'The date, in the format "yyyy-mm-dd", if this is an all-day event.',
+        invalid_type_error: 'Invalid date format.',
+        message: 'Invalid date format.',
+      })
+      .nullable(),
+    dateTime: z
+      .string({
+        coerce: true,
+        description:
+          'The time, as a combined date-time value (formatted according to RFC3339). A time zone offset is required unless a time zone is explicitly specified in timeZone.',
+        invalid_type_error: 'Invalid date-time format.',
+        message: 'Invalid date-time format.',
+      })
+      .nullable(),
+    timeZone: z
+      .string({
+        coerce: true,
+        invalid_type_error: 'Must be a valid IANA Time Zone Database name.',
+        message: 'Must be a valid IANA Time Zone Database name.',
+        description: 'The time zone in which the time is specified. (Formatted as an IANA Time Zone Database name, e.g. "Asia/Jerusalem".) ',
+      })
+      .nullable(),
   });
 
 const makeFullEventParams = () =>
   z.object({
-    calendarId: z.string().nullable(),
-    summary: z.string(),
-    description: z.string().nullable(),
-    location: z.string().nullable(),
+    calendarId: z.string({ description: 'The ID of the calendar to which the event belongs.', coerce: true }).nullable(),
+    summary: z.string({ description: 'Title of the event.', coerce: true }),
+    description: z.string({ description: 'Description of the event.', coerce: true }).nullable(),
+    location: z.string({ description: 'Geographic location of the event.', coerce: true }).nullable(),
     start: makeEventTime(),
     end: makeEventTime(),
   });
