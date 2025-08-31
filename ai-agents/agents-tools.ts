@@ -11,7 +11,7 @@ export const AGENT_TOOLS = {
     parameters: PARAMETERS_TOOLS.validateUserDbParametersToRegisterUser,
     execute: EXECUTION_TOOLS.validateUser,
     errorFunction: (_, error) => {
-      return `validate_user: ${error}`;
+      return `register_user_via_db: ${error}`;
     },
   }),
   validate_user_db: tool({
