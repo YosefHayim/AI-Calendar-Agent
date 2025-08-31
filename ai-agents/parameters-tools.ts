@@ -26,7 +26,15 @@ export const PARAMETERS_TOOLS = {
   validateUserDbParameter: z.object({ email: emailSchema }).describe('Validate user by email.'),
   getUserDefaultTimeZone: z.object({ email: emailSchema }).describe('Fetch user default timezone.'),
   getEventParameters: z
-    .object({ email: emailSchema, timeMin: z.string().nullable(), q: z.string().nullable() })
+    .object({
+      email: emailSchema,
+      timeMin: z.string().nullable(),
+      q: z
+        .string({
+          description: 'Optional parameter to search for text matches across all event fields in Google Calendar.',
+        })
+        .nullable(),
+    })
     .describe('Fetch events for the user email for the maximum date of time provided.'),
   getCalendarTypesByEventParameters: z.object({ email: emailSchema }).describe('Fetch all calendars for the user.'),
   insertEventParameters: makeFullEventParams().extend({ email: emailSchema }).describe('Insert a new event into the user calendar.'),
