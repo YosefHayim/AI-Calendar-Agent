@@ -55,7 +55,6 @@ export const PARAMETERS_TOOLS = {
   validateUserDbParametersToRegisterUser: z.object({ email: emailSchema }).describe('Register user to our db.'),
   validateUserDbParameter: z.object({ email: emailSchema }).describe('Validate user by email.'),
   getUserDefaultTimeZone: z.object({ email: emailSchema }).describe('Fetch user default timezone.'),
-
   getEventParameters: z
     .object({
       email: emailSchema,
@@ -68,22 +67,18 @@ export const PARAMETERS_TOOLS = {
     .describe('Fetch events for the user email for the maximum date of time provided.'),
 
   getCalendarTypesByEventParameters: z.object({ email: emailSchema }).describe('Fetch all calendars for the user.'),
-
   insertEventParameters: makeFullEventParams().extend({ email: emailSchema }).describe('Insert a new event into the user calendar.'),
-
   updateEventParameters: makeFullEventParams()
     .extend({
       eventId: requiredString('The ID of the event to update.', 'Event ID is required.'),
       email: emailSchema,
     })
     .describe('Update an existing event by ID.'),
-
   deleteEventParameter: z
     .object({
       eventId: requiredString('The ID of the event to delete.', 'Event ID is required.'),
       email: emailSchema,
     })
     .describe('Delete an event by ID.'),
-
   normalizedEventParams: makeFullEventParams().extend({ email: emailSchema }).describe('Normalize an event payload for insertion/update.'),
 };
