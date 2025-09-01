@@ -70,13 +70,13 @@ export const EXECUTION_TOOLS = {
     return { ...formatted, email };
   }),
 
-  insertEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
+  insertEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string; customEvents?: boolean }) => {
     const { email, calendarId, eventLike } = coerceArgs(params);
     if (!(email && isEmail(email))) {
       throw new Error('Invalid email address.');
     }
     const eventData: Event = formatEventData(eventLike as Event);
-    return eventsHandler(null, ACTION.INSERT, eventData, { email, calendarId: calendarId ?? 'primary' });
+    return eventsHandler(null, ACTION.INSERT, eventData, { email, calendarId: calendarId ?? 'primary', customEvents: params.customEvents ?? false });
   }),
 
   updateEvent: asyncHandler((params: calendar_v3.Schema$Event & { email: string; eventId: string }) => {

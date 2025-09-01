@@ -1,45 +1,51 @@
 import validator from 'validator';
 import { z } from 'zod';
+import { TIMEZONE } from '@/types';
 
-const emailSchema = z.string().refine((v) => validator.isEmail(v), { message: 'Invalid email address.' });
+const emailSchema = z
+  .string({ description: 'The email address of the user, used for authentication and authorization via database and google calendar.' })
+  .includes('@', { message: 'Must include @ symbol' })
+  .refine((v) => validator.isEmail(v), { message: 'Invalid email address.' });
 
 const makeEventTime = () =>
-  z.object({
-    date: z
-      .string({
-        description: 'The date, in the format "yyyy-mm-dd", if this is an all-day event.',
-        invalid_type_error: 'Invalid date format.',
-        message: 'Invalid date format.',
-      })
-      .nullable(),
-    dateTime: z
-      .string({
-        coerce: true,
-        description:
-          'The time, as a combined date-time value (formatted according to RFC3339). A time zone offset is required unless a time zone is explicitly specified in timeZone.',
-        invalid_type_error: 'Invalid date-time format.',
-        message: 'Invalid date-time format.',
-      })
-      .nullable(),
-    timeZone: z
-      .string({
-        coerce: true,
-        invalid_type_error: 'Must be a valid IANA Time Zone Database name.',
-        message: 'Must be a valid IANA Time Zone Database name.',
-        description: 'The time zone in which the time is specified. (Formatted as an IANA Time Zone Database name, e.g. "Asia/Jerusalem".) ',
-      })
-      .nullable(),
-  });
+  z
+    .object({
+      date: z.coerce
+        .string({
+          description: 'The date, in the format "yyyy-mm-dd", if this is an all-day event.',
+          invalid_type_error: 'Invalid date format. Example: "2025-07-17"',
+          message: 'Invalid date format.',
+        })
+        .nullable(),
+      dateTime: z.coerce
+        .string({
+          description:
+            'The time, as a combined date-time value (formatted according to RFC3339). A time zone offset is required unless a time zone is explicitly specified in timeZone.',
+          invalid_type_error: `Invalid date-time format. Example:"${new Date().toISOString()}" `,
+          message: 'Invalid date-time format.',
+        })
+        .nullable(),
+      timeZone: z.coerce
+        .string({
+          invalid_type_error: 'Must be a valid IANA Time Zone Database name.',
+          message: `Must be a valid IANA Time Zone Database name. Example:"${TIMEZONE.ASIA_JERUSALEM}":`,
+          description: 'The time zone in which the time is specified. (Formatted as an IANA Time Zone Database name, e.g. "Asia/Jerusalem".) ',
+        })
+        .nullable(),
+    })
+    .describe('Event start or end time, with optional timezone.');
 
 const makeFullEventParams = () =>
-  z.object({
-    calendarId: z.string({ description: 'The ID of the calendar to which the event belongs.', coerce: true }).nullable(),
-    summary: z.string({ description: 'Title of the event.', coerce: true }),
-    description: z.string({ description: 'Description of the event.', coerce: true }).nullable(),
-    location: z.string({ description: 'Geographic location of the event.', coerce: true }).nullable(),
-    start: makeEventTime(),
-    end: makeEventTime(),
-  });
+  z
+    .object({
+      calendarId: z.coerce.string({ description: 'The ID of the calendar to which the event belongs.' }).nullable(),
+      summary: z.coerce.string({ description: 'Title of the event.' }),
+      description: z.coerce.string({ description: 'Description of the event.' }).nullable(),
+      location: z.coerce.string({ description: 'Geographic location of the event.' }).nullable(),
+      start: makeEventTime(),
+      end: makeEventTime(),
+    })
+    .describe('Full event parameters including summary, description, location, start, and end times.');
 
 export const PARAMETERS_TOOLS = {
   // need to finish this properly the register via db
@@ -49,11 +55,14 @@ export const PARAMETERS_TOOLS = {
   getEventParameters: z
     .object({
       email: emailSchema,
-      timeMin: z.string().nullable(),
-      q: z
+      timeMin: z.coerce.string({ description: 'The minimum date and time for events to return, formatted as RFC3339 timestamp.' }).nullable(),
+      q: z.coerce
         .string({
           description: 'Optional parameter to search for text matches across all event fields in Google Calendar.',
         })
+        .nullable(),
+      customEvents: z.coerce
+        .boolean({ description: 'Optional parameter whether we want to receive back custom event object or not, default to false.' })
         .nullable(),
     })
     .describe('Fetch events for the user email for the maximum date of time provided.'),
@@ -61,13 +70,13 @@ export const PARAMETERS_TOOLS = {
   insertEventParameters: makeFullEventParams().extend({ email: emailSchema }).describe('Insert a new event into the user calendar.'),
   updateEventParameters: makeFullEventParams()
     .extend({
-      eventId: z.string(),
+      eventId: z.coerce.string({ description: 'The ID of the event to update.' }),
       email: emailSchema,
     })
     .describe('Update an existing event by ID.'),
   deleteEventParameter: z
     .object({
-      eventId: z.string(),
+      eventId: z.coerce.string({ description: 'The ID of the event to delete.' }),
       email: emailSchema,
     })
     .describe('Delete an event by ID.'),

@@ -37,21 +37,23 @@ export const eventsHandler = asyncHandler(
           maxResults: 2500,
           ...listExtra,
         });
-        const items = events.data.items?.reverse() ?? [];
-        const totalEventsFound = items.map((event: calendar_v3.Schema$Event) => {
-          const startRaw = event.start?.date || event.start?.dateTime || null;
-          const endRaw = event.end?.date || event.end?.dateTime || null;
-          return {
-            eventId: event.id || 'No ID',
-            summary: event.summary || 'Untitled Event',
-            durationOfEvent: startRaw && endRaw ? getEventDurationString(startRaw as string, endRaw as string) : null,
-            description: event.description || null,
-            location: event.location || null,
-            start: startRaw as string | null,
-          };
-        });
-
-        result = { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };
+        if (extra?.customEvents ?? false) {
+          const items = events.data.items?.reverse() ?? [];
+          const totalEventsFound = items.map((event: calendar_v3.Schema$Event) => {
+            const startRaw = event.start?.date || event.start?.dateTime || null;
+            const endRaw = event.end?.date || event.end?.dateTime || null;
+            return {
+              eventId: event.id || 'No ID',
+              summary: event.summary || 'Untitled Event',
+              durationOfEvent: startRaw && endRaw ? getEventDurationString(startRaw as string, endRaw as string) : null,
+              description: event.description || null,
+              location: event.location || null,
+              start: startRaw as string | null,
+            };
+          });
+          result = { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };
+        }
+        result = events.data;
         break;
       }
       case ACTION.INSERT: {
