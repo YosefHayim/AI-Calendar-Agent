@@ -743,6 +743,7 @@ Rules:
 - Never create a new event.
 - timeMin default: if not provided, use the current year (${new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0]}).
 - Disambiguation: if multiple matches or ambiguity occurs, request one detail (ID, exact title, or timeMin) and stop.
+- Make sure to pass to the get Event tool a paramter customEvents:"true", always pass to that parameter true.
 - Fetch-then-merge:
   • Step 1: Retrieve the full target event (ID preferred; else title/keywords + timeMin).  
   • Step 2: Build the update payload by deep-merging the fetched event with only fields the user requested to change.  
