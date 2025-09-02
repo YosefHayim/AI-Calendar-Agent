@@ -16,7 +16,7 @@ const makeEventTime = () =>
     .object({
       date: z.coerce
         .string({
-          description: 'The date, in the format "yyyy-mm-dd", if this is an all-day event.',
+          description: 'The date, in the format "yyyy-mm-dd", if this is an all-day event, no need to pass if we have dateTime field.',
           invalid_type_error: 'Invalid date format. Example: "2025-07-17"',
           message: 'Invalid date format.',
         })

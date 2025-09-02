@@ -179,8 +179,6 @@ export enum ACTION {
   DELETE = 'delete',
 }
 
-export type SCHEMA_EVENT_PROPS = calendar_v3.Schema$Event;
-
 export enum TIMEZONE {
   DEFAULT = 'Etc/UTC',
   AFRICA_ABIDJAN = 'Africa/Abidjan',

@@ -1,7 +1,7 @@
 import type { Request } from 'express';
 import type { calendar_v3 } from 'googleapis';
 import { requestConfigBase } from '@/config/root-config';
-import { ACTION, type AuthedRequest, type SCHEMA_EVENT_PROPS, STATUS_RESPONSE } from '@/types';
+import { ACTION, type AuthedRequest, STATUS_RESPONSE } from '@/types';
 import { asyncHandler } from './async-handlers';
 import errorTemplate from './error-template';
 import { getEventDurationString } from './get-event-duration-string';
@@ -9,7 +9,7 @@ import { fetchCredentialsByEmail } from './get-user-calendar-tokens';
 import { initCalendarWithUserTokensAndUpdateTokens } from './init-calendar-with-user-tokens-and-update-tokens';
 
 export const eventsHandler = asyncHandler(
-  async (req?: Request | null, action?: ACTION, eventData?: SCHEMA_EVENT_PROPS | Record<string, string>, extra?: Record<string, unknown>) => {
+  async (req?: Request | null, action?: ACTION, eventData?: calendar_v3.Schema$Event | Record<string, string>, extra?: Record<string, unknown>) => {
     const email = (req as AuthedRequest | undefined)?.user?.email ?? (typeof extra?.email === 'string' ? (extra.email as string) : undefined);
     if (!email) {
       throw errorTemplate('Email is required to resolve calendar credentials', STATUS_RESPONSE.BAD_REQUEST);
