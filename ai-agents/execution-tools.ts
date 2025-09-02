@@ -11,6 +11,18 @@ import { formatEventData } from './agent-utils';
 
 type Event = calendar_v3.Schema$Event;
 
+function cleanObject<T extends Record<string, unknown>>(obj: T): T {
+  const newObj: Record<string, unknown> = {};
+  for (const key in obj) {
+    if (Object.hasOwn(obj, key)) {
+      const value = obj[key];
+      if (value !== null && value !== '') {
+        newObj[key] = value;
+      }
+    }
+  }
+  return newObj as T;
+}
 function coerceArgs(raw: unknown) {
   // 1) accept stringified input
   const base = typeof (raw as { input?: string })?.input === 'string' ? safeParse((raw as { input: string }).input) : raw;
@@ -41,15 +53,11 @@ function coerceArgs(raw: unknown) {
     end: inner?.end,
   };
 
-  return { email, calendarId, eventId, eventLike };
+  return { email, calendarId, eventId, eventLike: cleanObject(eventLike) };
 }
 
 function safeParse(s: string) {
-  try {
-    return JSON.parse(s);
-  } catch {
-    return {};
-  }
+  return JSON.parse(s);
 }
 
 export const EXECUTION_TOOLS = {
