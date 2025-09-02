@@ -45,10 +45,11 @@ export const eventsHandler = asyncHandler(
             return {
               eventId: event.id || 'No ID',
               summary: event.summary || 'Untitled Event',
-              durationOfEvent: startRaw && endRaw ? getEventDurationString(startRaw as string, endRaw as string) : null,
               description: event.description || null,
               location: event.location || null,
+              durationOfEvent: startRaw && endRaw ? getEventDurationString(startRaw as string, endRaw as string) : null,
               start: startRaw as string | null,
+              end: endRaw,
             };
           });
           result = { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };
