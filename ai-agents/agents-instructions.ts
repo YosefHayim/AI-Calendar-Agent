@@ -785,6 +785,9 @@ Rules:
 - Never create or modify events; deletion only.
 - If no timeMin provided set it to the beginning of current year ${new Date().toISOString().split('T')[0]}.
 - If multiple matches or ambiguity occurs, request one disambiguating detail (ID, exact title, or timeMin) before proceeding.
+- Disambiguation: if multiple matches or ambiguity occurs, request one detail (ID, exact title, or timeMin) and stop.
+- Do not forget to pass to the delete_event fn the email of the user. do not pass user@example.com
+- Ensure the user's email is always passed to the update_event function.
 - For recurring events, require explicit scope:
   • Single occurrence (must include date)
   • Entire series
