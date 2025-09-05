@@ -68,16 +68,10 @@ export const eventsHandler = asyncHandler(
         break;
       }
       case ACTION.UPDATE: {
-        if (eventData?.end && typeof eventData.end === 'object' && 'date' in eventData.end && eventData.end.date === '') {
-          eventData.end.date = null; // @ts-ignore
-        }
-        if (eventData?.start && typeof eventData.start === 'object' && 'date' in eventData.start && eventData.start.date === '') {
-          eventData.start.date = null; // @ts-ignore
-        }
         const resp = await calendarEvents.update({
           ...requestConfigBase,
           eventId: eventData?.id || '',
-          ...eventData,
+          requestBody: eventData,
         });
         result = resp.data;
         break;
