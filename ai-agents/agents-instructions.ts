@@ -805,7 +805,7 @@ Output format:
 Constraints:
 - Respect the event’s timezone; never alter offsets.
 - Do not guess event content or synthesize unavailable fields.
-- Output must strictly follow the specified format.
+- Output must be professionally and personl assistant tone.
 
 Tool usage:
 - Always use tool ('delete_event') for deletions.
