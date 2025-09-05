@@ -91,7 +91,7 @@ const deleteEvent = reqResAsyncHandler(async (req, res) => {
     return sendR(res, STATUS_RESPONSE.BAD_REQUEST, 'Event ID is required in order to delete event.');
   }
   const r = await eventsHandler(req, ACTION.DELETE, { id: req.params.eventId });
-  sendR(res, STATUS_RESPONSE.NOT_FOUND, 'Event deleted successfully', r);
+  sendR(res, STATUS_RESPONSE.SUCCESS, 'Event deleted successfully', r);
 });
 
 export default {

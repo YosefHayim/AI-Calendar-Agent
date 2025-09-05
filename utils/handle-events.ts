@@ -59,11 +59,12 @@ export const eventsHandler = asyncHandler(
       }
       case ACTION.INSERT: {
         const calendarId = (extra?.calendarId as string) || 'primary';
-        result = await calendarEvents.insert({
+        const createdEvent = await calendarEvents.insert({
           ...requestConfigBase,
           calendarId,
           requestBody: eventData,
         });
+        result = createdEvent.data;
         break;
       }
       case ACTION.UPDATE: {
