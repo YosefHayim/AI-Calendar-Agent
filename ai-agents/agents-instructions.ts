@@ -491,7 +491,7 @@ Insert;
 Event;
 
 Call;
-insert_event(email, scratchpad.normalized_event, scratchpad.calendar_index).If;
+insert_event(email, scratchpad.normalized_event, scratchpad.calendarId).If;
 tool;
 rejects;
 missing;

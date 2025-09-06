@@ -115,6 +115,7 @@ export const EXECUTION_TOOLS = {
       throw new Error('Invalid email address.');
     }
     const calendarsTypes = await getCalendarCategoriesByEmail(params.email);
+    console.log(calendarsTypes);
     return calendarsTypes;
   }),
 

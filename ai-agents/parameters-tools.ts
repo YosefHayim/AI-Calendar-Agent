@@ -44,11 +44,13 @@ const makeEventTime = () =>
 const makeFullEventParams = () =>
   z
     .object({
+      calendarId: calendarSchema,
       summary: requiredString('Title of the event.', 'Summary is required.'),
       description: z.coerce.string({ description: 'Description of the event.' }).nullable(),
       location: z.coerce.string({ description: 'Geographic location of the event.' }).nullable(),
       start: makeEventTime(),
       end: makeEventTime(),
+      email: emailSchema,
     })
     .describe('Full event parameters including summary, description, location, start, and end times.');
 
@@ -70,7 +72,7 @@ export const PARAMETERS_TOOLS = {
   getCalendarTypesByEventParameters: z
     .object({ email: emailSchema })
     .describe('Fetch all calendars Ids for the user to find out the best matching calendar type for the event.'),
-  insertEventParameters: makeFullEventParams().extend({ email: emailSchema, calendarSchema }).describe('Insert a new event into the user calendar.'),
+  insertEventParameters: makeFullEventParams().describe('Insert a new event into the user calendar.'),
   updateEventParameters: makeFullEventParams()
     .extend({
       eventId: requiredString('The ID of the event to update.', 'Event ID is required.'),
