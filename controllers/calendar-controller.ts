@@ -34,7 +34,7 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
     return;
   }
 
-  const updateCalendarsCategories = await updateCalenderCategories(allCalendars || [], user.email || '',userId: user.id);
+  const updateCalendarsCategories = await updateCalenderCategories(allCalendars || [], user.email || '', user.id);
 
   if (updateCalendarsCategories) {
     console.log('Successfully updated calendar categories in database.');
