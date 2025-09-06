@@ -4,7 +4,9 @@ import { TIMEZONE } from '@/types';
 
 const requiredString = (description: string, message = 'Required.') => z.coerce.string({ description }).trim().min(1, { message });
 
-const emailSchema = z
+const calendarSchema = z.coerce.string({ description: 'The ID of the calendar to which the event belongs to, if provided use, else pass primary.' }).nullable();
+
+const emailSchema = z.coerce
   .string({
     description: 'The email address of the user, used for authentication and authorization via database and google calendar.',
   })
@@ -42,7 +44,6 @@ const makeEventTime = () =>
 const makeFullEventParams = () =>
   z
     .object({
-      calendarId: z.coerce.string({ description: 'The ID of the calendar to which the event belongs.' }).nullable(),
       summary: requiredString('Title of the event.', 'Summary is required.'),
       description: z.coerce.string({ description: 'Description of the event.' }).nullable(),
       location: z.coerce.string({ description: 'Geographic location of the event.' }).nullable(),
@@ -69,7 +70,7 @@ export const PARAMETERS_TOOLS = {
   getCalendarTypesByEventParameters: z
     .object({ email: emailSchema })
     .describe('Fetch all calendars Ids for the user to find out the best matching calendar type for the event.'),
-  insertEventParameters: makeFullEventParams().extend({ email: emailSchema }).describe('Insert a new event into the user calendar.'),
+  insertEventParameters: makeFullEventParams().extend({ email: emailSchema, calendarSchema }).describe('Insert a new event into the user calendar.'),
   updateEventParameters: makeFullEventParams()
     .extend({
       eventId: requiredString('The ID of the event to update.', 'Event ID is required.'),
