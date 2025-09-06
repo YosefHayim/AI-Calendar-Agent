@@ -15,7 +15,6 @@ type ListExtra = Partial<calendar_v3.Params$Resource$Events$List> & {
 
 export const eventsHandler = asyncHandler(
   async (req?: Request | null, action?: ACTION, eventData?: calendar_v3.Schema$Event | Record<string, string>, extra?: Record<string, unknown>) => {
-    
     const email = (req as AuthedRequest | undefined)?.user?.email ?? (typeof extra?.email === 'string' ? (extra.email as string) : undefined);
 
     if (!email) {
@@ -67,18 +66,22 @@ export const eventsHandler = asyncHandler(
               end: endRaw || null,
             };
           });
-          return { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound }; // EARLY RETURN
+          return { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };
         }
 
-        return events.data; // default payload
+        return events.data;
       }
 
       case ACTION.INSERT: {
-        const calendarId = (extra?.calendarId as string) || 'primary';
+        const body = (eventData as calendar_v3.Schema$Event & { calendarId?: string; email?: string }) || {};
+        const calendarId = (extra?.calendarId as string) || body.calendarId || 'primary';
+
+        const { calendarId: _cid, email: _email, ...requestBody } = body;
+
         const createdEvent = await calendarEvents.insert({
           ...requestConfigBase,
           calendarId,
-          requestBody: eventData,
+          requestBody,
         });
         return createdEvent.data;
       }

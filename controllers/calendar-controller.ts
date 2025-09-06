@@ -16,7 +16,7 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
     return sendR(res, STATUS_RESPONSE.NOT_FOUND, 'User credentials not found in order to retrieve all calendars.');
   }
   const calendar = await initCalendarWithUserTokensAndUpdateTokens(tokenData as TokensProps);
-  const r = await calendar.calendarList.list();
+  const r = await calendar.calendarList.list({ prettyPrint: true });
 
   const allCalendars = r.data.items?.map((item: calendar_v3.Schema$CalendarListEntry) => {
     return {
@@ -80,7 +80,7 @@ const getAllFilteredEvents = reqResAsyncHandler(async (req, res) => {
 });
 
 const createEvent = reqResAsyncHandler(async (req, res) => {
-  const r = await eventsHandler(req, ACTION.INSERT, req.body);
+  const r = await eventsHandler(req, ACTION.INSERT, req.body, { calendarId: req.body.calendarId, email: req.body.email });
   sendR(res, STATUS_RESPONSE.CREATED, 'Event created successfully', r);
 });
 
