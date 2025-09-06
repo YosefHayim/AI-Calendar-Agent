@@ -44,7 +44,7 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req: Request, res: Respo
         token_type,
         id_token,
         scope,
-        is_active:true,
+        is_active: true,
         email: user.email,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
