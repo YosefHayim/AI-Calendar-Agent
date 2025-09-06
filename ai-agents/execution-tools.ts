@@ -65,7 +65,12 @@ export const EXECUTION_TOOLS = {
     if (!(params.email && isEmail(params.email))) {
       throw new Error('Invalid email address.');
     }
-    const calendarsTypes = await getCalendarCategoriesByEmail(params.email);
+    const calendarsTypes = (await getCalendarCategoriesByEmail(params.email)).map((c) => {
+      return {
+        calendarId: c.calendar_name,
+        calendarName: c.calendar_name,
+      };
+    });
     return calendarsTypes;
   }),
 
