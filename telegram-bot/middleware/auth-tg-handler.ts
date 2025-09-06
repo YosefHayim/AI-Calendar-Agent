@@ -21,7 +21,7 @@ export const authTgHandler: MiddlewareFn<GlobalContext> = async (ctx, next) => {
   }
 
   // Try to load from DB
-  const { data } = await SUPABASE.from('telegram_users').select('email,first_name').eq('chat_id', session.chatId).single();
+  const { data } = await SUPABASE.from('user_telegram_links').select('email,first_name').eq('chat_id', session.chatId).single();
 
   if (data?.email) {
     if (!session.email) {
@@ -44,7 +44,7 @@ export const authTgHandler: MiddlewareFn<GlobalContext> = async (ctx, next) => {
 
     // Save email
     session.email = text;
-    await SUPABASE.from('telegram_users').upsert({
+    await SUPABASE.from('user_telegram_links').upsert({
       chat_id: from.id,
       user_id: from.id,
       username: from.username,

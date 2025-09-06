@@ -61,7 +61,7 @@ describe('updateTokensOfUser', () => {
 
     const result = await updateTokensOfUser(oldTokens, newTokenPayload);
 
-    expect(SUPABASE.from).toHaveBeenCalledWith('calendars_of_users');
+    expect(SUPABASE.from).toHaveBeenCalledWith('user_calendar_tokens');
     expect(update).toHaveBeenCalledWith(
       expect.objectContaining({
         email: 'user@example.com',

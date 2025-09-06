@@ -46,7 +46,7 @@ const mkCtx = (overrides?: Partial<PartialCtx>): any => {
 
 const resolveDbRow = (row: any) => {
   fromTable.mockImplementation((table: string) => {
-    expect(table).toBe('telegram_users');
+    expect(table).toBe('user_telegram_links');
     return { select };
   });
   select.mockImplementation((_sel: string) => ({ eq }));
@@ -143,7 +143,7 @@ describe('authTgHandler', () => {
     const upsert = jest.fn().mockResolvedValue({ data: {}, error: null });
     // Extend SUPABASE.from to also be used for upsert call path
     fromTable.mockImplementation((table: string) => {
-      expect(table).toBe('telegram_users');
+      expect(table).toBe('user_telegram_links');
       return {
         select,
         upsert,

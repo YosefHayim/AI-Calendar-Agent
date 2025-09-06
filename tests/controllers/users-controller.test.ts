@@ -150,7 +150,7 @@ describe('generateAuthGoogleUrl', () => {
     });
     (jwt.decode as jest.Mock).mockReturnValueOnce({ email: 'u@test.com' });
 
-    mockUpdateEqSelect('calendars_of_users', { data: [{ id: 1 }], error: null });
+    mockUpdateEqSelect('user_calendar_tokens', { data: [{ id: 1 }], error: null });
 
     await userController.generateAuthGoogleUrl(req, res, mockNext);
 
@@ -169,7 +169,7 @@ describe('generateAuthGoogleUrl', () => {
     (OAUTH2CLIENT.getToken as jest.Mock).mockResolvedValueOnce({ tokens: { id_token: 'x' } });
     (jwt.decode as jest.Mock).mockReturnValueOnce({ email: 'e@test.com' });
 
-    mockUpdateEqSelect('calendars_of_users', { data: null, error: new Error('db error') });
+    mockUpdateEqSelect('user_calendar_tokens', { data: null, error: new Error('db error') });
 
     await userController.generateAuthGoogleUrl(req, res, mockNext);
 
@@ -268,18 +268,18 @@ describe('deActivateUser', () => {
     const req = mockReq({ body: { email: 'e@test.com' } });
     const res = mockRes();
 
-    mockSelectEq('calendars_of_users', { data: null, error: new Error('select failed') });
+    mockSelectEq('user_calendar_tokens', { data: null, error: new Error('select failed') });
 
     await userController.deActivateUser(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to find user.', expect.any(Error));
   });
 
-  it('updates is_active=false when user exists', async () => {
+  it('updates user_telegram_links=false when user exists', async () => {
     const req = mockReq({ body: { email: 'e@test.com' } });
     const res = mockRes();
 
-    mockSelectEq('calendars_of_users', { data: [{ email: 'e@test.com' }], error: null });
-    mockUpdateEq('calendars_of_users', { error: null });
+    mockSelectEq('user_calendar_tokens', { data: [{ email: 'e@test.com' }], error: null });
+    mockUpdateEq('user_calendar_tokens', { error: null });
 
     await userController.deActivateUser(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.SUCCESS, 'User deactivated successfully.');
@@ -289,8 +289,8 @@ describe('deActivateUser', () => {
     const req = mockReq({ body: { email: 'e@test.com' } });
     const res = mockRes();
 
-    mockSelectEq('calendars_of_users', { data: [{ email: 'e@test.com' }], error: null });
-    mockUpdateEq('calendars_of_users', { error: new Error('update failed') });
+    mockSelectEq('user_calendar_tokens', { data: [{ email: 'e@test.com' }], error: null });
+    mockUpdateEq('user_calendar_tokens', { error: new Error('update failed') });
 
     await userController.deActivateUser(req, res, mockNext);
     expect(sendR).toHaveBeenCalledWith(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to deactivate user.', expect.any(Error));
@@ -300,7 +300,7 @@ describe('deActivateUser', () => {
     const req = mockReq({ body: { email: 'none@test.com' } });
     const res = mockRes();
 
-    mockSelectEq('calendars_of_users', { data: [], error: null });
+    mockSelectEq('user_calendar_tokens', { data: [], error: null });
 
     await userController.deActivateUser(req, res, mockNext);
     expect(sendR).not.toHaveBeenCalled();

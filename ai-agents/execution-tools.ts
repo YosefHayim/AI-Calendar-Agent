@@ -62,7 +62,7 @@ function safeParse(s: string) {
 
 export const EXECUTION_TOOLS = {
   validateUser: asyncHandler(async ({ email }: { email: string }) => {
-    const { data, error } = await SUPABASE.from('calendars_of_users').select(TOKEN_FIELDS).eq('email', email.trim().toLowerCase());
+    const { data, error } = await SUPABASE.from('user_calendar_tokens').select(TOKEN_FIELDS).eq('email', email.trim().toLowerCase());
     if (error) {
       throw error;
     }

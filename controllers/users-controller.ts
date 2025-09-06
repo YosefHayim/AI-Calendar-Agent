@@ -35,7 +35,7 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req: Request, res: Respo
 
     const user = jwt.decode(id_token || '') as GoogleIdTokenPayloadProps;
 
-    const { data, error } = await SUPABASE.from('calendars_of_users')
+    const { data, error } = await SUPABASE.from('user_calendar_tokens')
       .update({
         refresh_token_expires_in,
         refresh_token,
@@ -44,6 +44,7 @@ const generateAuthGoogleUrl = reqResAsyncHandler(async (req: Request, res: Respo
         token_type,
         id_token,
         scope,
+        is_active:true,
         email: user.email,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -98,12 +99,12 @@ const getUserInformation = (req: Request, res: Response) => {
 };
 
 const deActivateUser = reqResAsyncHandler(async (req: Request, res: Response) => {
-  const { data, error } = await SUPABASE.from('calendars_of_users').select('email').eq('email', req.body.email);
+  const { data, error } = await SUPABASE.from('user_calendar_tokens').select('email').eq('email', req.body.email);
   if (error) {
     return sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to find user.', error);
   }
   if (data && data.length > 0) {
-    const { error: updateError } = await SUPABASE.from('calendars_of_users').update({ is_active: false }).eq('email', req.body.email);
+    const { error: updateError } = await SUPABASE.from('user_calendar_tokens').update({ is_active: false }).eq('email', req.body.email);
     if (updateError) {
       return sendR(res, STATUS_RESPONSE.INTERNAL_SERVER_ERROR, 'Failed to deactivate user.', updateError);
     }

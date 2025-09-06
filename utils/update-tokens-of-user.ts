@@ -9,7 +9,7 @@ export const updateTokensOfUser = asyncHandler(async (oldTokens: TokensProps, ne
     expiry_date: newTokens.expiry_date,
     updated_at: new Date().toISOString(),
   };
-  const { error } = await SUPABASE.from('calendars_of_users')
+  const { error } = await SUPABASE.from('user_calendar_tokens')
     .update(updatedTokens)
     .eq('email', oldTokens.email || '');
   if (error) {
