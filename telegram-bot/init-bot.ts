@@ -1,6 +1,6 @@
 import { run } from '@grammyjs/runner';
 import { Bot, type Context, type SessionFlavor, session } from 'grammy';
-import { HANDS_OFF_AGENTS } from '@/ai-agents/agents';
+import { HANDS_OFF_AGENTS, ORCHESTRATOR_AGENT } from '@/ai-agents/agents';
 import { CONFIG } from '@/config/root-config';
 import type { SessionData } from '@/types';
 import { activateAgent } from '@/utils/activate-agent';
@@ -65,7 +65,7 @@ bot.on('message', async (ctx) => {
   }
 
   try {
-    const { finalOutput } = await activateAgent(HANDS_OFF_AGENTS.updateEventOrEventsHandOffAgent, `User ${ctx.session.email} says: ${userMsgText}`);
+    const { finalOutput } = await activateAgent(ORCHESTRATOR_AGENT, `User ${ctx.session.email} says: ${userMsgText}`);
 
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
   } catch (e) {
