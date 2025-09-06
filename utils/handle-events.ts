@@ -33,16 +33,17 @@ export const eventsHandler = asyncHandler(
     switch (action) {
       case ACTION.GET: {
         // Normalize extra/list params
-        const rawExtra: ListExtra = { ...(extra as ListExtra), ...(req?.body ?? {}) ,...(req?.query ?? {}) };
+        const rawExtra: ListExtra = { ...(extra as ListExtra), ...(req?.body ?? {}), ...(req?.query ?? {}) };
 
         const customFlag = Boolean(rawExtra.customEvents);
-        const { email: _omitEmail, customEvents: _omitCustom, ...listExtraRaw } = rawExtra;
+        const { email: _omitEmail, customEvents: _omitCustom, calendarId, ...listExtraRaw } = rawExtra;
 
         // Build a clean param object only with allowed fields for events.list
         const listExtra: calendar_v3.Params$Resource$Events$List = {
           ...requestConfigBase,
           prettyPrint: true,
           maxResults: 2499,
+          calendarId: calendarId ?? 'primary',
           ...listExtraRaw,
         };
 

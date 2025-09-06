@@ -70,8 +70,12 @@ const getSpecificEvent = reqResAsyncHandler(async (req, res) => {
   }
 
   const calendar = await initCalendarWithUserTokensAndUpdateTokens(tokenData as TokensProps);
+
+  const calendarId = (req.query?.calendarId as string) ?? 'primary';
+  
   const r = await calendar.events.get({
     ...requestConfigBase,
+    calendarId,
     eventId: req.params.eventId,
   });
 
