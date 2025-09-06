@@ -65,7 +65,7 @@ bot.on('message', async (ctx) => {
   }
 
   try {
-    const { finalOutput } = await activateAgent(HANDS_OFF_AGENTS.deleteEventOrEventsHandOffAgent, `User ${ctx.session.email} says: ${userMsgText}`);
+    const { finalOutput } = await activateAgent(HANDS_OFF_AGENTS.updateEventOrEventsHandOffAgent, `User ${ctx.session.email} says: ${userMsgText}`);
 
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
   } catch (e) {
