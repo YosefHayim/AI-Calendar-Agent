@@ -118,3 +118,52 @@ export const getCalendarCategoriesByEmail = asyncHandler(async (email: string) =
   }
   return data;
 });
+
+function cleanObject<T extends Record<string, unknown>>(obj: T): T {
+  const newObj: Record<string, unknown> = {};
+  for (const key in obj) {
+    if (Object.hasOwn(obj, key)) {
+      const value = obj[key];
+      if (value !== null && value !== '') {
+        newObj[key] = value;
+      }
+    }
+  }
+  return newObj as T;
+}
+export function coerceArgs(raw: unknown) {
+  // 1) accept stringified input
+  const base = typeof (raw as { input?: string })?.input === 'string' ? safeParse((raw as { input: string }).input) : raw;
+
+  // 2) unwrap common nestings
+  const outer = base?.fullEventParameters ?? base;
+  const inner = outer?.eventParameters ?? base?.eventParameters ?? base;
+
+  // 3) collect fields
+  const email = base?.email ?? outer?.email ?? inner?.email;
+  const calendarId = outer?.calendarId ?? base?.calendarId;
+  const eventId = base?.eventId ?? outer?.eventId;
+
+  // 4) extract event fields (summary/start/end/…)
+  const eventLike: Partial<Event> = {
+    id: inner?.id,
+    summary: inner?.summary,
+    description: inner?.description,
+    location: inner?.location,
+    attendees: inner?.attendees,
+    reminders: inner?.reminders,
+    recurrence: inner?.recurrence,
+    colorId: inner?.colorId,
+    conferenceData: inner?.conferenceData,
+    transparency: inner?.transparency,
+    visibility: inner?.visibility,
+    start: inner?.start,
+    end: inner?.end,
+  };
+
+  return { email, calendarId, eventId, eventLike: cleanObject(eventLike) };
+}
+
+export function safeParse(s: string) {
+  return JSON.parse(s);
+}
