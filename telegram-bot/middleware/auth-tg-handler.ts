@@ -46,7 +46,6 @@ export const authTgHandler: MiddlewareFn<GlobalContext> = async (ctx, next) => {
     session.email = text;
     await SUPABASE.from('user_telegram_links').upsert({
       chat_id: from.id,
-      user_id: from.id,
       username: from.username,
       first_name: from.first_name,
       language_code: from.language_code,

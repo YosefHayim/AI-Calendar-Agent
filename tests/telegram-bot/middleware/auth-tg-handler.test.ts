@@ -164,7 +164,6 @@ describe('authTgHandler', () => {
     // Upsert called with expected payload
     expect(upsert).toHaveBeenCalledWith({
       chat_id: ctx.from.id,
-      user_id: ctx.from.id,
       username: ctx.from.username,
       first_name: ctx.from.first_name,
       language_code: ctx.from.language_code,
