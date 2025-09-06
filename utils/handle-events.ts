@@ -33,7 +33,7 @@ export const eventsHandler = asyncHandler(
     switch (action) {
       case ACTION.GET: {
         // Normalize extra/list params
-        const rawExtra: ListExtra = { ...(extra as ListExtra), ...(req?.body ?? {}) ,...(req?.query ?? {}) };
+        const rawExtra: ListExtra = { ...(extra as ListExtra), ...(req?.body ?? {}), ...(req?.query ?? {}) };
 
         const customFlag = Boolean(rawExtra.customEvents);
         const { email: _omitEmail, customEvents: _omitCustom, ...listExtraRaw } = rawExtra;
