@@ -4,6 +4,7 @@ import { requestConfigBase } from '@/config/root-config';
 import { ACTION, type AuthedRequest, STATUS_RESPONSE } from '@/types';
 import { asyncHandler } from './async-handlers';
 import errorTemplate from './error-template';
+import formatDate from './format-date';
 import { getEventDurationString } from './get-event-duration-string';
 import { fetchCredentialsByEmail } from './get-user-calendar-tokens';
 import { initCalendarWithUserTokensAndUpdateTokens } from './init-calendar-with-user-tokens-and-update-tokens';
@@ -54,16 +55,16 @@ export const eventsHandler = asyncHandler(
         if (customFlag) {
           const items = (events.data.items ?? []).slice().reverse();
           const totalEventsFound = items.map((event: calendar_v3.Schema$Event) => {
-            const startRaw = event.start?.date || event.start?.dateTime || null;
-            const endRaw = event.end?.date || event.end?.dateTime || null;
+            const startDate = event.start?.date || event.start?.dateTime || null;
+            const endDate = event.end?.date || event.end?.dateTime || null;
             return {
               eventId: event.id || 'No ID',
               summary: event.summary || 'Untitled Event',
               description: event.description || null,
               location: event.location || null,
-              durationOfEvent: startRaw && endRaw ? getEventDurationString(startRaw as string, endRaw as string) : null,
-              start: (startRaw as string) || null,
-              end: endRaw || null,
+              durationOfEvent: startDate && endDate ? getEventDurationString(startDate as string, endDate as string) : null,
+              start: formatDate(startDate, true) || null,
+              end: formatDate(endDate, true) || null,
             };
           });
           return { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };

@@ -1,5 +1,5 @@
 // src/utils/format-date.ts
-const formatDate = (date: Date | string | null | undefined): string => {
+const formatDate = (date: Date | string | null | undefined, withTime = false, desiredLanguage = 'he-IL'): string => {
   if (!date) {
     return 'Invalid date';
   }
@@ -17,7 +17,18 @@ const formatDate = (date: Date | string | null | undefined): string => {
     return 'Invalid date';
   }
 
-  return parsed.toLocaleDateString('en-US', {
+  if (withTime) {
+    return parsed.toLocaleDateString(desiredLanguage, {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    });
+  }
+
+  return parsed.toLocaleDateString(desiredLanguage, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

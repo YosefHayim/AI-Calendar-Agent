@@ -33,7 +33,6 @@ export const CALENDAR = google.calendar({
 });
 
 export const requestConfigBase = {
-  calendarId: 'primary',
   sendUpdates: 'all',
   supportsAttachments: true,
 };
