@@ -1,16 +1,18 @@
 import type { calendar_v3 } from 'googleapis';
+import { SUPABASE } from '@/config/root-config';
 import { TIMEZONE } from '@/types';
+import { asyncHandler } from '@/utils/async-handlers';
 
 type Event = calendar_v3.Schema$Event;
 type EDT = calendar_v3.Schema$EventDateTime;
 
 const ALLOWED_TZ = new Set<string>(Object.values(TIMEZONE) as string[]);
 
-function deepClean<T extends Record<string, any>>(obj: T): T {
+function deepClean<T extends Record<string, unknown>>(obj: T): T {
   if (!obj || typeof obj !== 'object') {
     return obj;
   }
-  const out: any = Array.isArray(obj) ? [] : {};
+  const out: unknown = Array.isArray(obj) ? [] : {};
   for (const [k, v] of Object.entries(obj)) {
     if (v === '' || v === undefined || v === null) {
       continue;
@@ -108,3 +110,11 @@ export const formatEventData = (params: Partial<Event>): Event => {
 
   return deepClean(event);
 };
+
+export const getCalendarCategoriesByEmail = asyncHandler(async (email: string) => {
+  const { data, error } = await SUPABASE.from('calendar_categories').select('*').eq('email', email);
+  if (error) {
+    throw error;
+  }
+  return data;
+});

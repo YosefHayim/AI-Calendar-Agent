@@ -78,8 +78,11 @@ Example:
   // no additional fields required
 }`,
 
-  getCalendarTypesByEventParameters: `Lists all calendars linked to the user via Google Calendar API. Requires "email" (execution context parameter). Returns an array of calendar names.
-Example:
-["Family and Friends", "Studies", "Meetings"]`,
+  getCalendarTypesByEventParameters: `Lists all calendars linked to the user via Google Calendar API. Requires "email" (execution context parameter). Returns an array of calendar names and calendar Ids.
+Example how data is returned:
+[{
+"calendarName": "משפחה וחברים",
+"calendarId": "49508390rfjdkslfhsdku4302rdfjdksljfksdl@group.calendar.google.com",
+}]`,
   getUserDefaultTimeZone: `Retrieves the user's default timezone. Requires "email" (execution context parameter).`,
 } as const;

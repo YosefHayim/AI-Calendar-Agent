@@ -7,7 +7,7 @@ import { fetchCredentialsByEmail } from '@/utils/get-user-calendar-tokens';
 import { eventsHandler } from '@/utils/handle-events';
 import { initCalendarWithUserTokensAndUpdateTokens } from '@/utils/init-calendar-with-user-tokens-and-update-tokens';
 import { TOKEN_FIELDS } from '@/utils/storage';
-import { formatEventData } from './agent-utils';
+import { formatEventData, getCalendarCategoriesByEmail } from './agent-utils';
 
 type Event = calendar_v3.Schema$Event;
 
@@ -110,15 +110,12 @@ export const EXECUTION_TOOLS = {
     return eventsHandler(null, ACTION.GET, {}, { email, calendarId: calendarId ?? 'primary', timeMin: params.timeMin ?? startOfYear, q: params.q || '' });
   }),
 
-  getCalendarTypesByEventDetails: asyncHandler(async (params: calendar_v3.Schema$Event & { email: string }) => {
-    const { email } = coerceArgs(params);
-    if (!(email && isEmail(email))) {
+  getCalendarTypesByEventDetails: asyncHandler(async (params: { email: string }) => {
+    if (!(params.email && isEmail(params.email))) {
       throw new Error('Invalid email address.');
     }
-    const tokenProps = await fetchCredentialsByEmail(email);
-    const CALENDAR = await initCalendarWithUserTokensAndUpdateTokens(tokenProps);
-    const r = await CALENDAR.calendarList.list();
-    return r.data.items?.map((item) => item.summary);
+    const calendarsTypes = await getCalendarCategoriesByEmail(params.email);
+    return calendarsTypes;
   }),
 
   deleteEvent: asyncHandler((params: { eventId: string; email: string }) => {

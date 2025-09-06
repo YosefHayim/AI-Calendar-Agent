@@ -193,140 +193,64 @@ commentary.
 • Never request clarification from the user.  
     • Perform the delete operation exactly once per request.`,
 
-  analysesCalendarTypeByEventInformation: `Purpose 
-Infer the most appropriate calendar for an event using semantic and contextual intent reasoning, not keyword matching. Always return exactly one calendar index from the user’s actual list, or "0" (the primary fallback) if no strong match exists.
+  analysesCalendarTypeByEventInformation: `Purpose  
+Select the single most appropriate calendar for an event using semantic and contextual intent reasoning (not keyword matching).  
+Always return exactly one "calendarId" from the user’s fetched calendars, or the primary calendar’s "calendarId" (index 0) if no strong match exists.
 
-Input Contract
-- Required: exact email (no normalization, inference, or alteration).
+Input Contract  
+- Required: exact email (no normalization or alteration).  
 - If email is missing or empty, return:
-  { "status": "error", "message": "email is required" } and stop.
-- Fetch calendars via "calendar_type_by_event_details(email)".
-- Preserve
-the;
-exact;
-order;
-of;
-returned;
-calendars.
-- Indices
-are;
-0 - based;
-index "0";
-always;
-represents;
-the;
-primary;
-calendar.Core;
-Reasoning;
-Flow;
-1;
-) Build an intent vector from event evidence, in priority order:
-   title > description > location > attendees > organizer domain > links.
-   Supported intents: meeting, work-focus, studies, self-study, health/care, travel/commute, errands, home-chores, social/family, person-time, side-project,
-break
-, holiday.
+  { "status": "error", "message": "email is required" } and stop.  
+- Fetch calendars via "calendar_type_by_event_details(email)".  
+- Preserve the exact order of returned calendars.  
+- Index 0 is always the primary fallback.  
 
-2) Weak priors (not exhaustive rules):
-   • Meeting link/phrasing → boosts "meeting".
-   • Mobility verbs (drive, commute, taxi, shuttle) → boosts "travel/commute".
-   • Medical/care terms (doctor, dentist, clinic, haircut, salon, therapy) → boosts "health/care".
-     - If clearly transit (e.g., “drive to…”) → travel/commute overrides health/care.
-   • Named 1:1
-with a person
-and;
-calendar;
-“עם <name>” exists → strongly boost "person-time".
-   • Course/lecture/exam → "studies".  
-     Self-directed (tutorial, LeetCode, reading) → "self-study".
-   • Work verbs without meeting signals (focus, deep work, deploy) → "work-focus".
-   • Bank/post/renewal/license → "errands".
-   • Cleaning/groceries/laundry → "home-chores".
-   • Family/friends/dinner/hangout → "social/family".
-   • Explicit lunch/
-break
-→ "break".
-   • Holiday names → "holiday".
+Core Reasoning Flow  
+1. Build an intent vector from event evidence in priority order:  
+   title > description > location > attendees > organizer domain > links.  
+   Supported intents: meeting, work-focus, studies, self-study, health/care, travel/commute, errands, home-chores, social/family, person-time, side-project, break, holiday.  
 
-3) Language handling:
-   • Support Hebrew and English (plus common transliterations).
-   • Normalize case and strip diacritics.
-   • Do not depend on exact spelling.
+2. Weak priors (non-exhaustive):  
+   • Meeting link/phrasing → meeting.  
+   • Drive/commute/taxi/shuttle → travel/commute.  
+   • Doctor/dentist/clinic/salon/therapy → health/care.  
+     - If clearly transit (“drive to…”) → travel/commute overrides health/care.  
+   • Named 1:1 with person and matching calendar (“עם <name>”) → person-time.  
+   • Course/lecture/exam → studies. Self-directed (tutorial, LeetCode, reading) → self-study.  
+   • Work verbs w/o meeting signals (focus, deploy, deep work) → work-focus.  
+   • Bank/post/license/renewal → errands.  
+   • Cleaning/groceries/laundry → home-chores.  
+   • Family/friends/dinner/hangout → social/family.  
+   • Explicit lunch/break → break.  
+   • Holiday names → holiday.  
 
-4) Calendar scoring:
-   For each calendar:
+3. Language handling:  
+   • Support Hebrew and English (plus transliterations).  
+   • Normalize case and strip diacritics.  
+
+4. Calendar scoring:  
    Score = semantic_similarity(event_text, calendar_name + intent seed) + intent_alignment_weight.  
-   Select the calendar
-with the highest
-score.
+   Choose the highest scoring calendar.  
 
-5;
-) Tie-breakers:
-   • Travel/commute > all others
-if event is
-transit/buffer.
-• Meeting > work-focus
-if link/external attendees
-present.
-• Health/care > generic social/work
-if care explicit.
-• Person-time > generic social
-if person match.
-• If still tied, pick the closest semantic name match.
-   • If no calendars were fetched, or no match is strong,
-return index "0" (primary).
+5. Tie-breakers:  
+   • Travel/commute > all others if transit/buffer.  
+   • Meeting > work-focus if link/external attendees present.  
+   • Health/care > generic social/work if explicit.  
+   • Person-time > generic social if person match.  
+   • If still tied, closest semantic name match.  
+   • If no calendars fetched, or no strong match, use primary calendar (index 0).  
 
-Output
-Contract;
-{
-  ('status');
-  : "success",
-  "calendar_index": <integer, index in returned list>,
-  "confidence": <0.0–1.0>,
-  "reason": "<short justification>"
-}
+Output Contract  
+- Always return JSON only.  
+- Must return exactly one calendarId string.  
 
-Error;
-Cases - Missing;
-email;
-→
-{
-  ('status');
-  : "error", "message": "email is required"
-}
--Calendar;
-API;
-failure;
-→
-{
-  ('status');
-  : "error", "message": "failed to fetch calendars"
-}
+Example:  
+{ "calendarId": "<selected-calendar-id>" }  
 
-Constraints - Always;
-return JSON
-only, no;
-extra;
-commentary.
-- Must
-return exactly
-one;
-calendar;
-index.
-- Index
-must;
-map;
-directly;
-to;
-the;
-position in the;
-fetched;
-list.
-- Index "0"
-is;
-always;
-the;
-safe;
-fallback (primary).`,
+Error Cases  
+- Missing email → { "status": "error", "message": "email is required" }  
+- Calendar API failure → { "status": "error", "message": "failed to fetch calendars" }  
+`,
 
   normalizeEventAgent: `
 Purpose;
