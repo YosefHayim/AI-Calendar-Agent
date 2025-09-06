@@ -89,17 +89,25 @@ export const eventsHandler = asyncHandler(
       }
 
       case ACTION.UPDATE: {
+        const body = (eventData as calendar_v3.Schema$Event & { calendarId?: string; email?: string }) || {};
+        const calendarId = (extra?.calendarId as string) || body.calendarId || (req?.query.calendarId as string) || 'primary';
+
         const resp = await calendarEvents.update({
           ...requestConfigBase,
           eventId: (eventData?.id as string) || '',
           requestBody: eventData,
+          calendarId,
         });
+
         return resp.data;
       }
 
       case ACTION.DELETE: {
+        const calendarId = (extra?.calendarId as string) || (req?.body.calendarId as string) || (req?.query.calendarId as string) || 'primary';
+
         const resp = await calendarEvents.delete({
           ...requestConfigBase,
+          calendarId,
           eventId: (eventData?.id as string) || '',
         });
         return resp.data;
