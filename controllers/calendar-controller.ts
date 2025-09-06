@@ -17,9 +17,19 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   }
   const calendar = await initCalendarWithUserTokensAndUpdateTokens(tokenData as TokensProps);
   const r = await calendar.calendarList.list();
-  const allCalendars = r.data.items?.map((item: calendar_v3.Schema$CalendarListEntry) => item.summary);
 
-  sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully received your current calendars', allCalendars);
+  const allCalendars = r.data.items?.map((item: calendar_v3.Schema$CalendarListEntry) => {
+    return {
+      calendarName: item.summary,
+      calendarId: item.id,
+      calendarColorForEvents: item.colorId,
+      accessRole: item.accessRole,
+      timeZoneForCalendar: item.timeZone,
+      defaultReminders: item.defaultReminders,
+    };
+  });
+
+  sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully received all calendars', allCalendars);
 });
 
 const getCalendarColors = reqResAsyncHandler(async (req, res) => {
@@ -94,7 +104,16 @@ const deleteEvent = reqResAsyncHandler(async (req, res) => {
   sendR(res, STATUS_RESPONSE.SUCCESS, 'Event deleted successfully', r);
 });
 
+const calendarOverview = reqResAsyncHandler(async (req, res) => {
+  const user = (req as Request & { user: User }).user;
+  const tokenData = await fetchCredentialsByEmail(user.email || '');
+  const calendar = await initCalendarWithUserTokensAndUpdateTokens(tokenData as TokensProps);
+  const r = await calendar.calendars.get({ calendarId: 'primary' });
+  sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully received calendar overview', r.data);
+});
+
 export default {
+  calendarOverview,
   getAllCalendars,
   getAllEvents,
   createEvent,

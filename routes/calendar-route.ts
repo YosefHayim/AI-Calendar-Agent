@@ -9,6 +9,9 @@ router.use(authHandler);
 // get info about all the calendars the user has
 router.get('/', calendarController.getAllCalendars);
 
+// get calendar overview
+router.get('/overview', calendarController.calendarOverview);
+
 // get calendar colors
 router.get('/colors', calendarController.getCalendarColors);
 

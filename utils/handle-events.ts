@@ -15,6 +15,7 @@ type ListExtra = Partial<calendar_v3.Params$Resource$Events$List> & {
 
 export const eventsHandler = asyncHandler(
   async (req?: Request | null, action?: ACTION, eventData?: calendar_v3.Schema$Event | Record<string, string>, extra?: Record<string, unknown>) => {
+    
     const email = (req as AuthedRequest | undefined)?.user?.email ?? (typeof extra?.email === 'string' ? (extra.email as string) : undefined);
 
     if (!email) {
