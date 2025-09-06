@@ -14,10 +14,10 @@ type Event = calendar_v3.Schema$Event;
 export const EXECUTION_TOOLS = {
   validateUser: asyncHandler(async ({ email }: { email: string }) => {
     const { data, error } = await SUPABASE.from('user_calendar_tokens').select(TOKEN_FIELDS).eq('email', email.trim().toLowerCase());
-    if (error) {
-      throw error;
+    if (error || !data || data.length === 0) {
+      throw new Error('User not found or no tokens available.');
     }
-    return data;
+    return data[0];
   }),
 
   validateEventFields: asyncHandler((params: calendar_v3.Schema$Event & { email: string }) => {
@@ -67,7 +67,7 @@ export const EXECUTION_TOOLS = {
     }
     const calendarsTypes = (await getCalendarCategoriesByEmail(params.email)).map((c) => {
       return {
-        calendarId: c.calendar_name,
+        calendarId: c.calendar_id,
         calendarName: c.calendar_name,
       };
     });

@@ -90,6 +90,7 @@ export const HANDS_OFF_AGENTS = {
   insertEventHandOffAgent: new Agent({
     name: 'insert_event_handoff_agent',
     model: CURRENT_MODEL,
+
     modelSettings: { parallelToolCalls: true },
     instructions: AGENT_INSTRUCTIONS.insertEventHandOffAgent,
     tools: [
