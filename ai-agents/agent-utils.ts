@@ -8,11 +8,11 @@ type EDT = calendar_v3.Schema$EventDateTime;
 
 const ALLOWED_TZ = new Set<string>(Object.values(TIMEZONE) as string[]);
 
-function deepClean<T extends Record<string, unknown>>(obj: T): T {
+function deepClean<T extends Record<string, any>>(obj: T): T {
   if (!obj || typeof obj !== 'object') {
     return obj;
   }
-  const out: unknown = Array.isArray(obj) ? [] : {};
+  const out: any = Array.isArray(obj) ? [] : {};
   for (const [k, v] of Object.entries(obj)) {
     if (v === '' || v === undefined || v === null) {
       continue;
