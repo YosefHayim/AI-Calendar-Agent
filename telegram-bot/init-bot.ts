@@ -1,6 +1,6 @@
 import { run } from '@grammyjs/runner';
 import { Bot, type Context, type SessionFlavor, session } from 'grammy';
-import { HANDS_OFF_AGENTS, ORCHESTRATOR_AGENT } from '@/ai-agents/agents';
+import { ORCHESTRATOR_AGENT } from '@/ai-agents/agents';
 import { CONFIG } from '@/config/root-config';
 import type { SessionData } from '@/types';
 import { activateAgent } from '@/utils/activate-agent';
@@ -38,6 +38,10 @@ bot.on('message', async (ctx) => {
   const msgId = ctx.message.message_id;
   const userMsgText = ctx.message.text?.trim();
 
+  if (userMsgText?.includes('/start')) {
+    return;
+  }
+
   // de-dupe: process each message once
   if (ctx.session.lastProcessedMsgId === msgId) {
     return;
@@ -51,6 +55,7 @@ bot.on('message', async (ctx) => {
   // start/stop "loop" via session flag; no while(true)
   if (!ctx.session.agentActive) {
     ctx.session.agentActive = true;
+    await ctx.reply('Agent is running in background...');
     await ctx.reply('Type /exit to stop.');
   }
 

@@ -133,7 +133,7 @@ export const HANDS_OFF_AGENTS = {
 export const ORCHESTRATOR_AGENT = new Agent({
   name: 'calendar_orchestrator_agent',
   model: CURRENT_MODEL,
-  modelSettings: { toolChoice: 'required' },
+  modelSettings: { parallelToolCalls: true },
   instructions: AGENT_INSTRUCTIONS.orchestratorAgent,
   tools: [
     HANDS_OFF_AGENTS.insertEventHandOffAgent.asTool({ toolName: 'insert_event_handoff_agent' }),
