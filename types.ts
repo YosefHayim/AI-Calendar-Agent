@@ -10,6 +10,15 @@ export type EventParametersProps = {
   end?: calendar_v3.Schema$EventDateTime | undefined;
 };
 
+export type UpdateCalendarCategoriesProps = {
+  calendarName: string | null | undefined;
+  calendarId: string | null | undefined;
+  calendarColorForEvents: string | null | undefined;
+  accessRole: string | null | undefined;
+  timeZoneForCalendar: string | null | undefined;
+  defaultReminders: calendar_v3.Schema$EventReminder[] | undefined;
+};
+
 export type AuthedRequest = Request & { user: User };
 
 export type GoogleIdTokenPayloadProps = {

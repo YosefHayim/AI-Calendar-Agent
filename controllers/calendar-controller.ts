@@ -8,6 +8,7 @@ import { fetchCredentialsByEmail } from '@/utils/get-user-calendar-tokens';
 import { eventsHandler } from '@/utils/handle-events';
 import { initCalendarWithUserTokensAndUpdateTokens } from '@/utils/init-calendar-with-user-tokens-and-update-tokens';
 import sendR from '@/utils/send-response';
+import { updateCalenderCategories } from '@/utils/update-calendar-categories';
 
 const getAllCalendars = reqResAsyncHandler(async (req, res) => {
   const user = (req as Request & { user: User }).user;
@@ -29,6 +30,15 @@ const getAllCalendars = reqResAsyncHandler(async (req, res) => {
     };
   });
 
+  if (!allCalendars) {
+    return;
+  }
+
+  const updateCalendarsCategories = await updateCalenderCategories(allCalendars || [], user.email || '',userId: user.id);
+
+  if (updateCalendarsCategories) {
+    console.log('Successfully updated calendar categories in database.');
+  }
   sendR(res, STATUS_RESPONSE.SUCCESS, 'Successfully received all calendars', allCalendars);
 });
 
