@@ -81,7 +81,7 @@ Behavior
 - If multiple matches exist, prefer exact title; otherwise the most recent upcoming event.
 - Return ONLY the tool’s JSON result.`,
 
-  analysesCalendarTypeByEventInformation: `${RECOMMENDED_PROMPT_PREFIX} You analyze event details and return the best-fit calendar type.
+  analysesCalendarTypeByEventInformation: `${RECOMMENDED_PROMPT_PREFIX} You analyze event details and return the best-fit calendar type with the calendarId.
 
 Behavior
 - Infer calendar type from content (e.g., "work", "personal", team/project names).

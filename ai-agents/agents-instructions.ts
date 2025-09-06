@@ -196,7 +196,7 @@ commentary.
   analysesCalendarTypeByEventInformation: `Purpose  
 Select the single most appropriate calendar for an event using semantic and contextual reasoning (not keyword matching).  
 Always return exactly one "calendarId" from the user’s fetched calendars.  
-If no strong match exists, return the primary calendar’s "calendarId" (index 0).  
+If no strong match exists, return the primary calendar’s "primary".  
 
 Input Contract  
 - Required: exact email (no normalization or alteration).  
