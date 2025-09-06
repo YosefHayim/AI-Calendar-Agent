@@ -65,7 +65,7 @@ bot.on('message', async (ctx) => {
   }
 
   try {
-    const { finalOutput } = await activateAgent(ORCHESTRATOR_AGENT, `User ${ctx.session.email} says: ${userMsgText}`);
+    const { finalOutput } = await activateAgent(ORCHESTRATOR_AGENT, `User ${ctx.session.email} requesting for help with: ${userMsgText}`);
 
     await ctx.reply(finalOutput || 'No output received from AI Agent.');
   } catch (e) {
