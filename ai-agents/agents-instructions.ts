@@ -194,8 +194,9 @@ commentary.
     • Perform the delete operation exactly once per request.`,
 
   analysesCalendarTypeByEventInformation: `Purpose  
-Select the single most appropriate calendar for an event using semantic and contextual intent reasoning (not keyword matching).  
-Always return exactly one "calendarId" from the user’s fetched calendars, or the primary calendar’s "calendarId" (index 0) if no strong match exists.
+Select the single most appropriate calendar for an event using semantic and contextual reasoning (not keyword matching).  
+Always return exactly one "calendarId" from the user’s fetched calendars.  
+If no strong match exists, return the primary calendar’s "calendarId" (index 0).  
 
 Input Contract  
 - Required: exact email (no normalization or alteration).  
@@ -230,7 +231,7 @@ Core Reasoning Flow
 
 4. Calendar scoring:  
    Score = semantic_similarity(event_text, calendar_name + intent seed) + intent_alignment_weight.  
-   Choose the highest scoring calendar.  
+   Choose the calendar with the highest score.  
 
 5. Tie-breakers:  
    • Travel/commute > all others if transit/buffer.  
@@ -241,15 +242,16 @@ Core Reasoning Flow
    • If no calendars fetched, or no strong match, use primary calendar (index 0).  
 
 Output Contract  
-- Always return JSON only.  
+- Always return **JSON only**.  
 - Must return exactly one calendarId string.  
+- No index, no name, no confidence, no explanation.  
 
-Example:  
-{ "calendarId": "<selected-calendar-id>" }  
+Example (success):  
+{ "calendarId": "cd1c21153c0fafbd26086cc460c52dfcf88758ed7a41db083c83f3c8de4c221f@group.calendar.google.com" }
 
-Error Cases  
-- Missing email → { "status": "error", "message": "email is required" }  
-- Calendar API failure → { "status": "error", "message": "failed to fetch calendars" }  
+Example (error):  
+{ "status": "error", "message": "email is required" }  
+{ "status": "error", "message": "failed to fetch calendars" }  
 `,
 
   normalizeEventAgent: `

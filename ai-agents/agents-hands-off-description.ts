@@ -87,5 +87,5 @@ Behavior
 - Infer calendar type from content (e.g., "work", "personal", team/project names).
 - If no clear fit, return "primary".
 - Output ONLY a compact JSON object:
-{ "calendarType": string }`,
+{ "calendarId": string }`,
 };
