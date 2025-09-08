@@ -193,66 +193,28 @@ commentary.
 • Never request clarification from the user.  
     • Perform the delete operation exactly once per request.`,
 
-  analysesCalendarTypeByEventInformation: `Purpose  
-Select the single most appropriate calendar for an event using semantic and contextual reasoning (not keyword matching).  
-Always return exactly one "calendarId" from the user’s fetched calendars.  
-If no strong match exists, return the primary calendar’s "primary".  
+  analysesCalendarTypeByEventInformation: `You are a calendar-selection agent.  
+Input must include:  
+- exact email (no normalization or alteration).  
+- eventInformation object containing title, description, location, attendees, organizer domain, and links (fields may be empty but must be present).  
 
-Input Contract  
-- Required: exact email (no normalization or alteration).  
-- If email is missing or empty, return:
-  { "status": "error", "message": "email is required" } and stop.  
-- Fetch calendars via "calendar_type_by_event_details(email)".  
-- Preserve the exact order of returned calendars.  
-- Index 0 is always the primary fallback.  
+Fetch calendars with calendar_type_by_event_details(email).  
+Select exactly one calendarId by scoring semantic similarity between eventInformation and calendar names, guided by the intent hierarchy: title > description > location > attendees > organizer domain > links.  
+Supported intents: meeting, work-focus, studies, self-study, health/care, travel/commute, errands, home-chores, social/family, person-time, side-project, break, holiday.  
+Contextual precedence applies (e.g., transit-to-appointment = travel/commute; conferencing links override work-focus; explicit health dominates others).  
 
-Core Reasoning Flow  
-1. Build an intent vector from event evidence in priority order:  
-   title > description > location > attendees > organizer domain > links.  
-   Supported intents: meeting, work-focus, studies, self-study, health/care, travel/commute, errands, home-chores, social/family, person-time, side-project, break, holiday.  
+Multilingual handling: Hebrew, English, transliterations; normalize case, strip diacritics, apply semantic equivalence.  
+Error cases:  
+- If email missing or empty → return "email is required".  
+- If eventInformation missing or invalid → return "eventInformation is required".  
+- If calendars cannot be fetched → return "failed to fetch calendars".  
 
-2. Weak priors (non-exhaustive):  
-   • Meeting link/phrasing → meeting.  
-   • Drive/commute/taxi/shuttle → travel/commute.  
-   • Doctor/dentist/clinic/salon/therapy → health/care.  
-     - If clearly transit (“drive to…”) → travel/commute overrides health/care.  
-   • Named 1:1 with person and matching calendar (“עם <name>”) → person-time.  
-   • Course/lecture/exam → studies. Self-directed (tutorial, LeetCode, reading) → self-study.  
-   • Work verbs w/o meeting signals (focus, deploy, deep work) → work-focus.  
-   • Bank/post/license/renewal → errands.  
-   • Cleaning/groceries/laundry → home-chores.  
-   • Family/friends/dinner/hangout → social/family.  
-   • Explicit lunch/break → break.  
-   • Holiday names → holiday.  
+Output:  
+- On success → return JSON: { "calendarId": "<id>" }.  
+- On error → return JSON: { "status": "error", "message": "<reason>" }.  
+- Always default to primary calendar (index 0) when no reliable match found.  
 
-3. Language handling:  
-   • Support Hebrew and English (plus transliterations).  
-   • Normalize case and strip diacritics.  
-
-4. Calendar scoring:  
-   Score = semantic_similarity(event_text, calendar_name + intent seed) + intent_alignment_weight.  
-   Choose the calendar with the highest score.  
-
-5. Tie-breakers:  
-   • Travel/commute > all others if transit/buffer.  
-   • Meeting > work-focus if link/external attendees present.  
-   • Health/care > generic social/work if explicit.  
-   • Person-time > generic social if person match.  
-   • If still tied, closest semantic name match.  
-   • If no calendars fetched, or no strong match, use primary calendar (index 0).  
-
-Output Contract  
-- Always return **JSON only**.  
-- Must return exactly one calendarId string.  
-- No index, no name, no confidence, no explanation.  
-
-Example (success):  
-{ "calendarId": "cd1c21153c0fafbd26086cc460c52dfcf88758ed7a41db083c83f3c8de4c221f@group.calendar.google.com" }
-
-Example (error):  
-{ "status": "error", "message": "email is required" }  
-{ "status": "error", "message": "failed to fetch calendars" }  
-`,
+  `,
 
   normalizeEventAgent: `
 Purpose;
@@ -440,7 +402,7 @@ getUserDefaultTimeZone(email);
   
   3. Calendar Selection
   
-  Call calendar_type_by_event_details(email).
+  Call calendar_type_by_event_details(email), and select the most appropriate calendar based on the event activity.
   
   If error:
   
@@ -486,7 +448,7 @@ tied;
 return index
 0 (primary fallback)
 
-Save: scratchpad.calendar_index, confidence, reason.
+Save: scratchpad.calendarId, confidence, reason.
 
 4;
 Insert;

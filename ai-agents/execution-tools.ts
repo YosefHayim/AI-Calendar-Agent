@@ -61,7 +61,7 @@ export const EXECUTION_TOOLS = {
     return eventsHandler(null, ACTION.GET, {}, { email, calendarId: calendarId ?? 'primary', timeMin: params.timeMin ?? startOfYear, q: params.q || '' });
   }),
 
-  getCalendarTypesByEventDetails: asyncHandler(async (params: { email: string }) => {
+  getCalendarTypesByEventDetails: asyncHandler(async (params: { eventInformation: calendar_v3.Schema$Event; email: string }) => {
     if (!(params.email && isEmail(params.email))) {
       throw new Error('Invalid email address.');
     }

@@ -70,7 +70,7 @@ export const PARAMETERS_TOOLS = {
     .describe('Fetch events for the user email for the maximum date of time provided.'),
 
   getCalendarTypesByEventParameters: z
-    .object({ email: emailSchema })
+    .object({ email: emailSchema, eventInformation: makeFullEventParams() })
     .describe('Fetch all calendars Ids for the user to find out the best matching calendar type for the event.'),
   insertEventParameters: makeFullEventParams().describe('Insert a new event into the user calendar.'),
   updateEventParameters: makeFullEventParams()
