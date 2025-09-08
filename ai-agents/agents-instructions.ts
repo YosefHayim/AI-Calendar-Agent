@@ -401,6 +401,8 @@ getUserDefaultTimeZone(email);
   Else: store in scratchpad.normalized_event.
   
   3. Calendar Selection
+  Required: email
+  Required: The event Information
   
   Call calendar_type_by_event_details(email), and select the most appropriate calendar based on the event activity.
   
