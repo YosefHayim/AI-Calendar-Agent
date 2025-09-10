@@ -1,5 +1,5 @@
 export const TOOLS_DESCRIPTION = {
-  registerUserViaDb: '',
+  registerUserViaDb: "",
   validateUser: `Checks if a user is registered in the system. Requires "email" (execution context parameter). Returns an array of matching user records, or an empty array if none are found.
 Example:
 {

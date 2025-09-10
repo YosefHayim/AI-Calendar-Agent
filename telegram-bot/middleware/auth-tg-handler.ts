@@ -1,7 +1,7 @@
-import type { MiddlewareFn } from 'grammy';
-import isEmail from 'validator/lib/isEmail';
-import { SUPABASE } from '@/config/root-config';
-import type { GlobalContext } from '../init-bot';
+import type { MiddlewareFn } from "grammy";
+import isEmail from "validator/lib/isEmail";
+import { SUPABASE } from "@/config/root-config";
+import type { GlobalContext } from "../init-bot";
 
 export const authTgHandler: MiddlewareFn<GlobalContext> = async (ctx, next) => {
   const from = ctx.from;
@@ -15,13 +15,13 @@ export const authTgHandler: MiddlewareFn<GlobalContext> = async (ctx, next) => {
   if (!session.chatId) {
     session.chatId = from.id;
     session.userId = from.id;
-    session.username = from.username ?? '';
-    session.codeLang = from.language_code ?? 'en';
+    session.username = from.username ?? "";
+    session.codeLang = from.language_code ?? "en";
     session.messageCount = 0;
   }
 
   // Try to load from DB
-  const { data } = await SUPABASE.from('user_telegram_links').select('email,first_name').eq('chat_id', session.chatId).single();
+  const { data } = await SUPABASE.from("user_telegram_links").select("email,first_name").eq("chat_id", session.chatId).single();
 
   if (data?.email) {
     if (!session.email) {
@@ -38,20 +38,20 @@ export const authTgHandler: MiddlewareFn<GlobalContext> = async (ctx, next) => {
   if (!session.email) {
     const text = ctx.message?.text?.trim();
     if (!(text && isEmail(text))) {
-      await ctx.reply('First time? Please provide your email to authorize:');
+      await ctx.reply("First time? Please provide your email to authorize:");
       return; // do NOT call next()
     }
 
     // Save email
     session.email = text;
-    await SUPABASE.from('user_telegram_links').upsert({
+    await SUPABASE.from("user_telegram_links").upsert({
       chat_id: from.id,
       username: from.username,
       first_name: from.first_name,
       language_code: from.language_code,
       email: text,
     });
-    await ctx.reply('Email has been saved successfully!');
+    await ctx.reply("Email has been saved successfully!");
     session.messageCount++;
     return next();
   }

@@ -1,13 +1,13 @@
-import type { Request } from 'express';
-import type { calendar_v3 } from 'googleapis';
-import { requestConfigBase } from '@/config/root-config';
-import { ACTION, type AuthedRequest, STATUS_RESPONSE } from '@/types';
-import { asyncHandler } from './async-handlers';
-import errorTemplate from './error-template';
-import formatDate from './format-date';
-import { getEventDurationString } from './get-event-duration-string';
-import { fetchCredentialsByEmail } from './get-user-calendar-tokens';
-import { initCalendarWithUserTokensAndUpdateTokens } from './init-calendar-with-user-tokens-and-update-tokens';
+import type { Request } from "express";
+import type { calendar_v3 } from "googleapis";
+import { requestConfigBase } from "@/config/root-config";
+import { ACTION, type AuthedRequest, STATUS_RESPONSE } from "@/types";
+import { asyncHandler } from "./async-handlers";
+import errorTemplate from "./error-template";
+import formatDate from "./format-date";
+import { getEventDurationString } from "./get-event-duration-string";
+import { fetchCredentialsByEmail } from "./get-user-calendar-tokens";
+import { initCalendarWithUserTokensAndUpdateTokens } from "./init-calendar-with-user-tokens-and-update-tokens";
 
 type ListExtra = Partial<calendar_v3.Params$Resource$Events$List> & {
   email?: string;
@@ -16,10 +16,10 @@ type ListExtra = Partial<calendar_v3.Params$Resource$Events$List> & {
 
 export const eventsHandler = asyncHandler(
   async (req?: Request | null, action?: ACTION, eventData?: calendar_v3.Schema$Event | Record<string, string>, extra?: Record<string, unknown>) => {
-    const email = (req as AuthedRequest | undefined)?.user?.email ?? (typeof extra?.email === 'string' ? (extra.email as string) : undefined);
+    const email = (req as AuthedRequest | undefined)?.user?.email ?? (typeof extra?.email === "string" ? (extra.email as string) : undefined);
 
     if (!email) {
-      throw new Error('Email is required to resolve calendar credentials');
+      throw new Error("Email is required to resolve calendar credentials");
     }
 
     const credentials = await fetchCredentialsByEmail(email);
@@ -27,7 +27,7 @@ export const eventsHandler = asyncHandler(
     const calendarEvents = calendar.events;
 
     if ((action === ACTION.UPDATE || action === ACTION.DELETE) && !eventData?.id) {
-      throw new Error('Event ID is required for update or delete action');
+      throw new Error("Event ID is required for update or delete action");
     }
 
     switch (action) {
@@ -43,7 +43,7 @@ export const eventsHandler = asyncHandler(
           ...requestConfigBase,
           prettyPrint: true,
           maxResults: 2499,
-          calendarId: calendarId ?? 'primary',
+          calendarId: calendarId ?? "primary",
           ...listExtraRaw,
         };
 
@@ -59,8 +59,8 @@ export const eventsHandler = asyncHandler(
             const startDate = event.start?.date || event.start?.dateTime || null;
             const endDate = event.end?.date || event.end?.dateTime || null;
             return {
-              eventId: event.id || 'No ID',
-              summary: event.summary || 'Untitled Event',
+              eventId: event.id || "No ID",
+              summary: event.summary || "Untitled Event",
               description: event.description || null,
               location: event.location || null,
               durationOfEvent: startDate && endDate ? getEventDurationString(startDate as string, endDate as string) : null,
@@ -76,7 +76,7 @@ export const eventsHandler = asyncHandler(
 
       case ACTION.INSERT: {
         const body = (eventData as calendar_v3.Schema$Event & { calendarId?: string; email?: string }) || {};
-        const calendarId = (extra?.calendarId as string) || body.calendarId || 'primary';
+        const calendarId = (extra?.calendarId as string) || body.calendarId || "primary";
 
         const { calendarId: _cid, email: _email, ...requestBody } = body;
 
@@ -90,11 +90,11 @@ export const eventsHandler = asyncHandler(
 
       case ACTION.UPDATE: {
         const body = (eventData as calendar_v3.Schema$Event & { calendarId?: string; email?: string }) || {};
-        const calendarId = (extra?.calendarId as string) || body.calendarId || (req?.query.calendarId as string) || 'primary';
+        const calendarId = (extra?.calendarId as string) || body.calendarId || (req?.query.calendarId as string) || "primary";
 
         const resp = await calendarEvents.update({
           ...requestConfigBase,
-          eventId: (eventData?.id as string) || '',
+          eventId: (eventData?.id as string) || "",
           requestBody: eventData,
           calendarId,
         });
@@ -103,18 +103,18 @@ export const eventsHandler = asyncHandler(
       }
 
       case ACTION.DELETE: {
-        const calendarId = (extra?.calendarId as string) || (req?.body.calendarId as string) || (req?.query.calendarId as string) || 'primary';
+        const calendarId = (extra?.calendarId as string) || (req?.body.calendarId as string) || (req?.query.calendarId as string) || "primary";
 
         const resp = await calendarEvents.delete({
           ...requestConfigBase,
           calendarId,
-          eventId: (eventData?.id as string) || '',
+          eventId: (eventData?.id as string) || "",
         });
         return resp.data;
       }
 
       default:
-        throw errorTemplate('Unsupported calendar action', STATUS_RESPONSE.BAD_REQUEST);
+        throw errorTemplate("Unsupported calendar action", STATUS_RESPONSE.BAD_REQUEST);
     }
   }
 );
