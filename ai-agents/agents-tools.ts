@@ -1,11 +1,11 @@
-import { tool } from '@openai/agents';
-import { TOOLS_DESCRIPTION } from './description-tools';
-import { EXECUTION_TOOLS } from './execution-tools';
-import { PARAMETERS_TOOLS } from './parameters-tools';
+import { tool } from "@openai/agents";
+import { TOOLS_DESCRIPTION } from "./description-tools";
+import { EXECUTION_TOOLS } from "./execution-tools";
+import { PARAMETERS_TOOLS } from "./parameters-tools";
 
 export const AGENT_TOOLS = {
   generate_user_cb_google_url: tool({
-    name: 'generate_user_cb_google_url',
+    name: "generate_user_cb_google_url",
     description: TOOLS_DESCRIPTION.generateUserCbGoogleUrlDescription,
     parameters: PARAMETERS_TOOLS.generateUserCbGoogleUrlParameters,
     execute: EXECUTION_TOOLS.generateUserCbGoogleUrl,
@@ -14,7 +14,7 @@ export const AGENT_TOOLS = {
     },
   }),
   register_user_via_db: tool({
-    name: 'register_user_via_db',
+    name: "register_user_via_db",
     description: TOOLS_DESCRIPTION.registerUserViaDb,
     parameters: PARAMETERS_TOOLS.registerUserParameters,
     execute: EXECUTION_TOOLS.registerUser,
@@ -23,7 +23,7 @@ export const AGENT_TOOLS = {
     },
   }),
   validate_user_db: tool({
-    name: 'validate_user',
+    name: "validate_user",
     description: TOOLS_DESCRIPTION.validateUser,
     parameters: PARAMETERS_TOOLS.validateUserDbParameter,
     execute: EXECUTION_TOOLS.validateUser,
@@ -32,7 +32,7 @@ export const AGENT_TOOLS = {
     },
   }),
   validate_event_fields: tool({
-    name: 'validate_event_fields',
+    name: "validate_event_fields",
     description: TOOLS_DESCRIPTION.validateEventFields,
     parameters: PARAMETERS_TOOLS.normalizedEventParams,
     execute: EXECUTION_TOOLS.validateEventFields,
@@ -41,7 +41,7 @@ export const AGENT_TOOLS = {
     },
   }),
   insert_event: tool({
-    name: 'insert_event',
+    name: "insert_event",
     description: TOOLS_DESCRIPTION.insertEvent,
     parameters: PARAMETERS_TOOLS.insertEventParameters,
     execute: EXECUTION_TOOLS.insertEvent,
@@ -50,7 +50,7 @@ export const AGENT_TOOLS = {
     },
   }),
   get_event: tool({
-    name: 'get_event',
+    name: "get_event",
     description: TOOLS_DESCRIPTION.getEvent,
     parameters: PARAMETERS_TOOLS.getEventParameters,
     execute: EXECUTION_TOOLS.getEvent,
@@ -59,7 +59,7 @@ export const AGENT_TOOLS = {
     },
   }),
   update_event: tool({
-    name: 'update_event',
+    name: "update_event",
     description: TOOLS_DESCRIPTION.updateEvent,
     parameters: PARAMETERS_TOOLS.updateEventParameters,
     execute: EXECUTION_TOOLS.updateEvent,
@@ -68,7 +68,7 @@ export const AGENT_TOOLS = {
     },
   }),
   delete_event: tool({
-    name: 'delete_event',
+    name: "delete_event",
     description: TOOLS_DESCRIPTION.deleteEvent,
     parameters: PARAMETERS_TOOLS.deleteEventParameter,
     execute: EXECUTION_TOOLS.deleteEvent,
@@ -77,7 +77,7 @@ export const AGENT_TOOLS = {
     },
   }),
   calendar_type: tool({
-    name: 'calendar_type_by_event_details',
+    name: "calendar_type_by_event_details",
     description: TOOLS_DESCRIPTION.getCalendarTypesByEventDetails,
     parameters: PARAMETERS_TOOLS.getCalendarTypesByEventParameters,
     execute: EXECUTION_TOOLS.getCalendarTypesByEventDetails,
@@ -86,7 +86,7 @@ export const AGENT_TOOLS = {
     },
   }),
   get_user_default_timezone: tool({
-    name: 'get_user_default_timezone',
+    name: "get_user_default_timezone",
     description: TOOLS_DESCRIPTION.getUserDefaultTimeZone,
     parameters: PARAMETERS_TOOLS.getUserDefaultTimeZone,
     execute: EXECUTION_TOOLS.getUserDefaultTimeZone,

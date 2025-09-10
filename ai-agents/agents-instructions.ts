@@ -1,4 +1,4 @@
-import { RECOMMENDED_PROMPT_PREFIX } from '@openai/agents-core/extensions';
+import { RECOMMENDED_PROMPT_PREFIX } from "@openai/agents-core/extensions";
 
 export const AGENT_INSTRUCTIONS = {
   generateUserCbGoogleUrl: `${RECOMMENDED_PROMPT_PREFIX}
