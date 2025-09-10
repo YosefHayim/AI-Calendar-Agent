@@ -71,7 +71,7 @@ export const eventsHandler = asyncHandler(
           return { totalNumberOfEventsFound: totalEventsFound.length, totalEventsFound };
         }
 
-        return events.data;
+        return events;
       }
 
       case ACTION.INSERT: {
