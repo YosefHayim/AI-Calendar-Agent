@@ -230,6 +230,8 @@ Rules:
 - Relative time → normalize to YYYY-MM-DD UTC (start of range).
 - Prefer IDs when available.
 - If details are missing: assume scope=entire series, time=all (unless a handoff agent specifies different defaults).
+- If user email is unknown or undefined or null call the register_user_via_db_agent agent
+- If one of the agents respond that he failed to insert,retrieve,update,delete event than call the generate_user_cb_google_url_agent agent and return the url
 Output: one-line confirmation of inferred intent and key params, then invoke exactly one handoff:
   - insert → insertEventHandOffAgent
   - retrieve → getEventOrEventsHandOffAgent
