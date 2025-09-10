@@ -1,6 +1,5 @@
 export const AGENT_INSTRUCTIONS = {
-  // need to finish this properly the register via db
-  registerUserViaDb: "",
+  registerUserViaDb: "You are agent responsible for register user to our database.",
   validateUserAuth: `You are an agent responsible only for validating whether a user is already registered in the system.
   - Input: a unique identifier (\`email\`).
   - Behavior: query the database for this email.

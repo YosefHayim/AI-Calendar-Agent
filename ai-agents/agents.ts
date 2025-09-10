@@ -9,12 +9,11 @@ setDefaultOpenAIKey(CONFIG.open_ai_api_key || "");
 setTracingExportApiKey(CONFIG.open_ai_api_key || "");
 
 export const AGENTS = {
-  // need to finish this properly the register via db
   registerUserViaDb: new Agent({
     name: "register_user_via_db_agent",
     instructions: AGENT_INSTRUCTIONS.registerUserViaDb,
     modelSettings: { toolChoice: "required" },
-    handoffDescription: AGENT_HANDOFFS.validateUserAuth,
+    handoffDescription: AGENT_HANDOFFS.registerUserViaDb,
     tools: [AGENT_TOOLS.register_user_via_db],
   }),
   validateUserAuth: new Agent({
