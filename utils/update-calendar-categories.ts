@@ -1,10 +1,10 @@
-import { SUPABASE } from '@/config/root-config';
-import type { Tables, TablesInsert } from '@/database.types';
-import type { UpdateCalendarCategoriesProps } from '@/types';
-import { asyncHandler } from './async-handlers';
+import { SUPABASE } from "@/config/root-config";
+import type { Tables, TablesInsert } from "@/database.types";
+import type { UpdateCalendarCategoriesProps } from "@/types";
+import { asyncHandler } from "./async-handlers";
 
 export const updateCalenderCategories = asyncHandler(
-  async (payload: UpdateCalendarCategoriesProps[] | undefined, email: string, userId: string | null): Promise<Tables<'calendar_categories'>[] | false> => {
+  async (payload: UpdateCalendarCategoriesProps[] | undefined, email: string, userId: string | null): Promise<Tables<"calendar_categories">[] | false> => {
     if (!(payload?.length && email)) {
       return false;
     }
@@ -20,13 +20,13 @@ export const updateCalenderCategories = asyncHandler(
         default_reminders: p.defaultReminders ?? null,
         updated_at: new Date().toISOString(),
         user_id: userId,
-      })) as TablesInsert<'calendar_categories'>[];
+      })) as TablesInsert<"calendar_categories">[];
 
     if (!rows.length) {
       return false;
     }
 
-    const { data, error } = await SUPABASE.from('calendar_categories').upsert(rows).select();
+    const { data, error } = await SUPABASE.from("calendar_categories").upsert(rows).select();
 
     if (error) {
       throw error;

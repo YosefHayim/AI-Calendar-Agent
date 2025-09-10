@@ -1,13 +1,13 @@
-import { SUPABASE } from '@/config/root-config';
-import type { TokensProps } from '@/types';
-import { asyncHandler } from './async-handlers';
-import { TOKEN_FIELDS } from './storage';
+import { SUPABASE } from "@/config/root-config";
+import type { TokensProps } from "@/types";
+import { asyncHandler } from "./async-handlers";
+import { TOKEN_FIELDS } from "./storage";
 
 export const fetchCredentialsByEmail = asyncHandler(async (email: string): Promise<TokensProps> => {
-  const { data, error } = await SUPABASE.from('user_calendar_tokens')
+  const { data, error } = await SUPABASE.from("user_calendar_tokens")
     .select(TOKEN_FIELDS)
-    .eq('email', email.trim().toLowerCase())
-    .order('updated_at', { ascending: false })
+    .eq("email", email.trim().toLowerCase())
+    .order("updated_at", { ascending: false })
     .limit(1)
     .single();
 

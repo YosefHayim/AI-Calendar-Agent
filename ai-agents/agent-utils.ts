@@ -1,7 +1,7 @@
-import type { calendar_v3 } from 'googleapis';
-import { SUPABASE } from '@/config/root-config';
-import { TIMEZONE } from '@/types';
-import { asyncHandler } from '@/utils/async-handlers';
+import type { calendar_v3 } from "googleapis";
+import { SUPABASE } from "@/config/root-config";
+import { TIMEZONE } from "@/types";
+import { asyncHandler } from "@/utils/async-handlers";
 
 type Event = calendar_v3.Schema$Event;
 type EDT = calendar_v3.Schema$EventDateTime;
@@ -9,15 +9,15 @@ type EDT = calendar_v3.Schema$EventDateTime;
 const ALLOWED_TZ = new Set<string>(Object.values(TIMEZONE) as string[]);
 
 function deepClean<T extends Record<string, any>>(obj: T): T {
-  if (!obj || typeof obj !== 'object') {
+  if (!obj || typeof obj !== "object") {
     return obj;
   }
   const out: any = Array.isArray(obj) ? [] : {};
   for (const [k, v] of Object.entries(obj)) {
-    if (v === '' || v === undefined || v === null) {
+    if (v === "" || v === undefined || v === null) {
       continue;
     }
-    if (typeof v === 'object') {
+    if (typeof v === "object") {
       const cleaned = deepClean(v as Record<string, unknown>);
       if (Array.isArray(cleaned) ? cleaned.length : Object.keys(cleaned).length) {
         out[k] = cleaned;
@@ -34,7 +34,7 @@ function normalizeEDT(input: Partial<EDT>): EDT {
 
   // Remove empty fields early
   for (const k of Object.keys(e) as (keyof EDT)[]) {
-    if (e[k] === '' || e[k] === undefined || e[k] === null) {
+    if (e[k] === "" || e[k] === undefined || e[k] === null) {
       delete e[k];
     }
   }
@@ -59,13 +59,13 @@ export const formatEventData = (params: Partial<Event>): Event => {
   const end = normalizeEDT((cleaned.end ?? {}) as Partial<EDT>);
 
   if (!cleaned.summary) {
-    throw new Error('Event summary is required.');
+    throw new Error("Event summary is required.");
   }
   if (!(start.dateTime || start.date)) {
-    throw new Error('Event start is required.');
+    throw new Error("Event start is required.");
   }
   if (!(end.dateTime || end.date)) {
-    throw new Error('Event end is required.');
+    throw new Error("Event end is required.");
   }
 
   // Time zone rules: only for timed events
@@ -73,17 +73,17 @@ export const formatEventData = (params: Partial<Event>): Event => {
   const tzEnd = end.dateTime ? (end.timeZone ?? tzStart) : undefined;
 
   if ((start.dateTime || end.dateTime) && !(tzStart || tzEnd)) {
-    throw new Error('Event timeZone is required for timed events.');
+    throw new Error("Event timeZone is required for timed events.");
   }
 
   if (tzStart && !ALLOWED_TZ.has(tzStart)) {
-    throw new Error(`Invalid timeZone: ${tzStart}. Allowed: ${Array.from(ALLOWED_TZ).join(', ')}`);
+    throw new Error(`Invalid timeZone: ${tzStart}. Allowed: ${Array.from(ALLOWED_TZ).join(", ")}`);
   }
   if (tzEnd && !ALLOWED_TZ.has(tzEnd)) {
-    throw new Error(`Invalid timeZone: ${tzEnd}. Allowed: ${Array.from(ALLOWED_TZ).join(', ')}`);
+    throw new Error(`Invalid timeZone: ${tzEnd}. Allowed: ${Array.from(ALLOWED_TZ).join(", ")}`);
   }
   if (tzStart && tzEnd && tzStart !== tzEnd) {
-    throw new Error('Start and end time zones must match.');
+    throw new Error("Start and end time zones must match.");
   }
 
   if (start.dateTime) {
@@ -112,7 +112,7 @@ export const formatEventData = (params: Partial<Event>): Event => {
 };
 
 export const getCalendarCategoriesByEmail = asyncHandler(async (email: string) => {
-  const { data, error } = await SUPABASE.from('calendar_categories').select('*').eq('email', email);
+  const { data, error } = await SUPABASE.from("calendar_categories").select("*").eq("email", email);
   if (error) {
     throw error;
   }
@@ -124,7 +124,7 @@ function cleanObject<T extends Record<string, unknown>>(obj: T): T {
   for (const key in obj) {
     if (Object.hasOwn(obj, key)) {
       const value = obj[key];
-      if (value !== null && value !== '') {
+      if (value !== null && value !== "") {
         newObj[key] = value;
       }
     }
@@ -133,7 +133,7 @@ function cleanObject<T extends Record<string, unknown>>(obj: T): T {
 }
 export function coerceArgs(raw: unknown) {
   // 1) accept stringified input
-  const base = typeof (raw as { input?: string })?.input === 'string' ? safeParse((raw as { input: string }).input) : raw;
+  const base = typeof (raw as { input?: string })?.input === "string" ? safeParse((raw as { input: string }).input) : raw;
 
   // 2) unwrap common nestings
   const outer = base?.fullEventParameters ?? base;

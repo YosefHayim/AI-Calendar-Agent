@@ -1,4 +1,4 @@
-import { RECOMMENDED_PROMPT_PREFIX } from '@openai/agents-core/extensions';
+import { RECOMMENDED_PROMPT_PREFIX } from "@openai/agents-core/extensions";
 
 export const AGENT_HANDOFFS = {
   validateUserAuth: `${RECOMMENDED_PROMPT_PREFIX} You validate user authentication against the database.
