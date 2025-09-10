@@ -70,7 +70,7 @@ export const AGENT_TOOLS = {
   }),
   calendar_type: tool({
     name: 'calendar_type_by_event_details',
-    description: TOOLS_DESCRIPTION.getCalendarTypesByEventParameters,
+    description: TOOLS_DESCRIPTION.getCalendarTypesByEventDetails,
     parameters: PARAMETERS_TOOLS.getCalendarTypesByEventParameters,
     execute: EXECUTION_TOOLS.getCalendarTypesByEventDetails,
     errorFunction: (_, error) => {
