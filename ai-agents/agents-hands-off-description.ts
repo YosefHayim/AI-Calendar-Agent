@@ -1,6 +1,14 @@
-import { RECOMMENDED_PROMPT_PREFIX } from "@openai/agents-core/extensions";
+import { RECOMMENDED_PROMPT_PREFIX } from '@openai/agents-core/extensions';
 
 export const AGENT_HANDOFFS = {
+  generateUserCbGoogleUrl: `${RECOMMENDED_PROMPT_PREFIX}
+Role: Google OAuth URL Generator.
+Goal: Provide a URL for the user to authenticate with Google Calendar.
+Input: None.
+Behavior:
+- Generate a Google OAuth consent URL.
+Output: A single URL string.
+Constraints: No input required. Returns only the URL.`,
   registerUserViaDb: `${RECOMMENDED_PROMPT_PREFIX}
 Role: User Registrar.
 Input: { email: string, password:string }

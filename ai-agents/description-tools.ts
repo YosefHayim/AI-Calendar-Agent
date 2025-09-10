@@ -1,4 +1,7 @@
 export const TOOLS_DESCRIPTION = {
+  generateUserCbGoogleUrlDescription:
+    'Generates a new Google OAuth consent URL for the user to authorize or reauthorize calendar access. No input required. Returns a single URL string that the user must visit to complete authentication.',
+
   registerUserViaDb:
     'Registers a new user in the auth system. Requires "email" and "password". Validates email and password length. On success returns the auth provider’s JSON response; otherwise throws an error.',
 
