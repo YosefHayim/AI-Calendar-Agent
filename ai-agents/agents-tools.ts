@@ -4,7 +4,6 @@ import { EXECUTION_TOOLS } from './execution-tools';
 import { PARAMETERS_TOOLS } from './parameters-tools';
 
 export const AGENT_TOOLS = {
-  // need to finish this properly the register via db
   register_user_via_db: tool({
     name: 'register_user_via_db',
     description: TOOLS_DESCRIPTION.registerUserViaDb,
