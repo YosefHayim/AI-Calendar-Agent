@@ -1,14 +1,14 @@
-import { run } from '@grammyjs/runner';
-import { Bot, type Context, type SessionFlavor, session } from 'grammy';
-import { ORCHESTRATOR_AGENT } from '@/ai-agents/agents';
-import { CONFIG } from '@/config/root-config';
-import type { SessionData } from '@/types';
-import { activateAgent } from '@/utils/activate-agent';
-import { authTgHandler } from './middleware/auth-tg-handler';
+import { run } from "@grammyjs/runner";
+import { Bot, type Context, type SessionFlavor, session } from "grammy";
+import { ORCHESTRATOR_AGENT } from "@/ai-agents/agents";
+import { CONFIG } from "@/config/root-config";
+import type { SessionData } from "@/types";
+import { activateAgent } from "@/utils/activate-agent";
+import { authTgHandler } from "./middleware/auth-tg-handler";
 
 export type GlobalContext = SessionFlavor<SessionData> & Context;
 
-const bot = new Bot<GlobalContext>(CONFIG.telegram_access_token || '');
+const bot = new Bot<GlobalContext>(CONFIG.telegram_access_token || "");
 
 bot.catch((err) => {
   const ctx = err.ctx;
@@ -34,11 +34,11 @@ bot.use(
 
 bot.use(authTgHandler);
 
-bot.on('message', async (ctx) => {
+bot.on("message", async (ctx) => {
   const msgId = ctx.message.message_id;
   const userMsgText = ctx.message.text?.trim();
 
-  if (userMsgText?.includes('/start')) {
+  if (userMsgText?.includes("/start")) {
     return;
   }
 
@@ -55,13 +55,13 @@ bot.on('message', async (ctx) => {
   // start/stop "loop" via session flag; no while(true)
   if (!ctx.session.agentActive) {
     ctx.session.agentActive = true;
-    await ctx.reply('Agent is running in background...');
-    await ctx.reply('Type /exit to stop.');
+    await ctx.reply("Agent is running in background...");
+    await ctx.reply("Type /exit to stop.");
   }
 
-  if (userMsgText.toLowerCase() === '/exit') {
+  if (userMsgText.toLowerCase() === "/exit") {
     ctx.session.agentActive = false;
-    await ctx.reply('Conversation ended.');
+    await ctx.reply("Conversation ended.");
     return;
   }
 
@@ -75,10 +75,10 @@ bot.on('message', async (ctx) => {
       `Current date and time is ${new Date().toISOString()}. User ${ctx.session.email} requesting for help with: ${userMsgText}`
     );
 
-    await ctx.reply(finalOutput || 'No output received from AI Agent.');
+    await ctx.reply(finalOutput || "No output received from AI Agent.");
   } catch (e) {
-    console.error('Agent error:', e);
-    await ctx.reply('Error processing your request.');
+    console.error("Agent error:", e);
+    await ctx.reply("Error processing your request.");
   }
 });
 

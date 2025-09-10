@@ -1,6 +1,6 @@
 export const AGENT_INSTRUCTIONS = {
   // need to finish this properly the register via db
-  registerUserViaDb: '',
+  registerUserViaDb: "",
   validateUserAuth: `You are an agent responsible only for validating whether a user is already registered in the system.
   - Input: a unique identifier (\`email\`).
   - Behavior: query the database for this email.
@@ -533,7 +533,7 @@ Task: Retrieve event(s) by ID or by matching title/keywords; support optional fi
 
 Rules:
 - If ID is provided, return that event only.
-- If no timeMin provided set it to the beginning of current year ${new Date().toISOString().split('T')[0]}.
+- If no timeMin provided set it to the beginning of current year ${new Date().toISOString().split("T")[0]}.
 - If title/keywords are used, rank exact-title matches first; return up to 10 results sorted by start time.
 - For recurring events, return instances when a timeMin is provided; otherwise return series metadata.
 - When the user specifies a time reference (e.g., “last week”, “yesterday”, “next month”):
@@ -631,7 +631,7 @@ Task: Update an existing event by ID (preferred) or by matching title/keywords; 
 
 Rules:
 - Never create a new event.
-- timeMin default: if not provided, use the current year (${new Date(new Date().getFullYear(), 0, 1).toISOString().split('T')[0]}).
+- timeMin default: if not provided, use the current year (${new Date(new Date().getFullYear(), 0, 1).toISOString().split("T")[0]}).
 - Disambiguation: if multiple matches or ambiguity occurs, request one detail (ID, exact title, or timeMin) and stop.
 - Do not forget to pass to the update_event fn the email of the user. do not pass user@example.com
 - Ensure the user's email is always passed to the update_event function.
@@ -673,7 +673,7 @@ Task: Delete an event by ID (preferred) or by matching title/keywords; support o
 
 Rules:
 - Never create or modify events; deletion only.
-- If no timeMin provided set it to the beginning of current year ${new Date().toISOString().split('T')[0]}.
+- If no timeMin provided set it to the beginning of current year ${new Date().toISOString().split("T")[0]}.
 - If multiple matches or ambiguity occurs, request one disambiguating detail (ID, exact title, or timeMin) before proceeding.
 - Disambiguation: if multiple matches or ambiguity occurs, request one detail (ID, exact title, or timeMin) and stop.
 - Do not forget to pass to the delete_event fn the email of the user. do not pass user@example.com
@@ -704,5 +704,5 @@ Tool usage:
   orchestratorAgent: `Role: Calendar orchestrator. Task: Parse user requests, infer intent (retrieve, insert, update, delete), normalize parameters (title/keywords, ID, attendees, location, timeMin), and delegate directly to exactly one hands-off agent. Rules: Never ask the user clarifying questions; always infer intent and act. If multiple intents appear, resolve internally with priority Delete > Update > Insert > Retrieve. If details are missing (time, scope, ID), assume defaults: time=all, scope=entire recurring series, ID/title=apply to all matches. Always normalize relative time to ISO 8601 YYYY-MM-DD UTC. Prefer IDs if available. Output: Return only a short confirmation of inferred intent and parameters, then call exactly one hands-off agent. If unsupported intent, state so directly. Decision policy: Insert/add/create → insert_event_handoff_agent; Get/find/show/list → get_event_handoff_agent; Update/edit/change/reschedule → update_event_handoff_agent; Delete/remove/cancel → delete_event_handoff_agent. Constraints: No JSON exposure, no multiple delegations, no clarifying prompts. Always analyze internally what the user ultimately wants and perform that action.
 `,
   // need to finish this properly the register via db
-  registerUserHandOffAgent: '',
+  registerUserHandOffAgent: "",
 };
