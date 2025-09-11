@@ -128,7 +128,6 @@ export const HANDS_OFF_AGENTS = {
     instructions: AGENT_INSTRUCTIONS.getEventOrEventsHandOffAgent,
     tools: [AGENTS.getEventByIdOrName.asTool({ toolName: "get_event" })],
   }),
-  // need to finish this properly the register via db
   registerUserHandOffAgent: new Agent({
     name: "register_user_handoff_agent",
     model: CURRENT_MODEL,
@@ -147,5 +146,7 @@ export const ORCHESTRATOR_AGENT = new Agent({
     HANDS_OFF_AGENTS.getEventOrEventsHandOffAgent.asTool({ toolName: "get_event_handoff_agent" }),
     HANDS_OFF_AGENTS.updateEventOrEventsHandOffAgent.asTool({ toolName: "update_event_handoff_agent" }),
     HANDS_OFF_AGENTS.deleteEventOrEventsHandOffAgent.asTool({ toolName: "delete_event_handoff_agent" }),
+    HANDS_OFF_AGENTS.registerUserHandOffAgent.asTool({ toolName: "register_user_handoff_agent" }),
+    AGENTS.generateUserCbGoogleUrl.asTool({ toolName: "generate_user_cb_google_url" }),
   ],
 });

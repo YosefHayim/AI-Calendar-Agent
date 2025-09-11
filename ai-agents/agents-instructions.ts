@@ -243,7 +243,7 @@ Constraints:
 
   registerUserHandOffAgent: `${RECOMMENDED_PROMPT_PREFIX}
 Role: Registration Handoff.
-Input: { email: string, name?: string, metadata?: object }
+Input: { email: string; password:string; metadata?:object }
 Flow:
 1) Call validate_user(email).
    - If exists → return "User already registered."
