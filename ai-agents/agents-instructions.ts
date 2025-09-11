@@ -231,8 +231,7 @@ Rules:
 - Prefer IDs when available.
 - If details are missing: assume scope=entire series, time=all (unless a handoff agent specifies different defaults).
 - If user email is unknown or undefined or null call the register_user_via_db_agent agent
-- If one of the agents respond that he failed to insert,retrieve,update,delete event than call the generate_user_cb_google_url_agent agent and return the url
-- If none of the requests are in control of your logic, please request from user to clarify is request.
+- If any agent responsible for interacting with the user’s Google Calendar (insert, retrieve, update, or delete events) fails to respond with a success or failure status, then invoke the generate_user_cb_google_url_agent agent and return the generated URL.- If none of the requests are in control of your logic, please request from user to clarify is request.
 Output: one-line confirmation of inferred intent and key params, then invoke exactly one handoff:
   - insert → insertEventHandOffAgent
   - retrieve → getEventOrEventsHandOffAgent
