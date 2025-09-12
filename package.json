@@ -24,7 +24,7 @@
     "lint": "npx ultracite lint",
     "prepare": "husky install",
     "sort": "npx sort-package-json",
-    "start": "node dist/app.js",
+    "prod": "node dist/app.js",
     "test": "jest"
   },
   "dependencies": {
