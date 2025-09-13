@@ -1,34 +1,38 @@
 # ---- Builder ----
-  FROM node:latest AS builder
+  FROM node:22-slim AS builder
   WORKDIR /app
   
-  # Faster, reproducible installs
-  COPY package*.json ./
-  RUN pnpm i
+  # Enable pnpm via corepack
+  RUN corepack enable
   
-  # Copy the rest and build
+  # Install deps (cached) and build
+  COPY package.json pnpm-lock.yaml* ./
+  RUN pnpm install --frozen-lockfile
+  
   COPY . .
-  RUN npm run build
+  RUN pnpm run build
   
   # ---- Runtime ----
   FROM node:22-slim AS runtime
   WORKDIR /app
-  
-  # Install Doppler (runtime only; inject secrets at start)
-  RUN apt-get update -y && apt-get install -y curl ca-certificates && rm -rf /var/lib/apt/lists/* \
-    && curl -Ls https://cli.doppler.com/install.sh | sh
-  
   ENV NODE_ENV=production
   
-  # Only production deps
-  COPY package*.json ./
-  RUN npm ci --omit=dev
+  # Doppler CLI + corepack
+  RUN apt-get update -y && apt-get install -y curl ca-certificates && rm -rf /var/lib/apt/lists/* \
+    && curl -Ls https://cli.doppler.com/install.sh | sh \
+    && corepack enable
+  
+  # Prod deps only
+  COPY package.json pnpm-lock.yaml* ./
+  RUN pnpm install --prod --frozen-lockfile
   
   # Bring compiled JS
   COPY --from=builder /app/dist ./dist
-
-  # Adjust if your server listens on a different port
-  EXPOSE 3000
   
-  # Use Doppler at runtime (requires DOPPLER_TOKEN provided at container start)
-  CMD ["npm", "run", "start"]
+  # Entrypoint will fetch .env from Doppler and start
+  COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+  RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+  
+  EXPOSE 3000
+  ENTRYPOINT ["docker-entrypoint.sh"]
+  
