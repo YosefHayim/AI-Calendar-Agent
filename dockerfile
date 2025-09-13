@@ -2,13 +2,12 @@
   FROM node:22-slim AS builder
   WORKDIR /app
   
-  # Enable pnpm via corepack
+  # pnpm via corepack
   RUN corepack enable
   
   # Install deps (cached) and build
   COPY package.json pnpm-lock.yaml* ./
   RUN pnpm install --frozen-lockfile
-  
   COPY . .
   RUN pnpm run build
   
@@ -26,13 +25,18 @@
   COPY package.json pnpm-lock.yaml* ./
   RUN pnpm install --prod --frozen-lockfile
   
-  # Bring compiled JS
+  # Compiled app
   COPY --from=builder /app/dist ./dist
   
-  # Entrypoint will fetch .env from Doppler and start
-  COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-  RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+  # Inline entrypoint (no external file needed)
+  RUN printf '%s\n' \
+    '#!/bin/sh' \
+    'set -e' \
+    'TOK="${DOPPLER_TOKEN:-${DOPPLER_SERVICE_TOKEN:-}}"' \
+    'if [ -n "$TOK" ]; then DOPPLER_TOKEN="$TOK" doppler secrets download --no-file --format env > .env; fi' \
+    'exec npm run start' > /usr/local/bin/docker-entrypoint \
+    && chmod +x /usr/local/bin/docker-entrypoint
   
   EXPOSE 3000
-  ENTRYPOINT ["docker-entrypoint.sh"]
+  ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
   
