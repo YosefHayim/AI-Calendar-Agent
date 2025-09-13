@@ -6,8 +6,7 @@ import morgan from "morgan";
 import { CONFIG } from "@/config/root-config";
 import errorHandler from "@/middlewares/error-handler";
 import calendarRoute from "@/routes/calendar-route";
-import usersRoute from "@/routes/users";
-import whatsAppRoute from "@/routes/whatsapp-route";
+import usersRouter from "@/routes/users";
 import { startTelegramBot } from "./telegram-bot/init-bot";
 import { ROUTES, STATUS_RESPONSE } from "./types";
 
@@ -25,9 +24,8 @@ app.get("/", (_req, res) => {
   res.status(STATUS_RESPONSE.SUCCESS).send("Server is running.");
 });
 
-app.use(ROUTES.USERS, usersRoute);
+app.use(ROUTES.USERS, usersRouter);
 app.use(ROUTES.CALENDAR, calendarRoute);
-app.use(ROUTES.WHATSAPP, whatsAppRoute);
 
 app.use(errorHandler);
 
