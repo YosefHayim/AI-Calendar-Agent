@@ -8,10 +8,10 @@
     "isolatedModules": true,
     "strict": true,
     "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["*"]
-    }
-  },
-  "include": [".", "tests", "jest.config.ts"]
+        "baseUrl": ".",
+        "paths": {
+ "@/*": ["./*"] },
+        "outDir": "dist",
+    },
+  "include": [".", "tests", "jest.config.ts"],
 }

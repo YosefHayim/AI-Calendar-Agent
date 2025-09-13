@@ -16,7 +16,8 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "build": "tsc",
+      "build": "tsc -p tsconfig.json",
+    "start": "node -r tsconfig-paths/register dist/app.js",
     "dev": "nodemon",
     "download-env": "doppler secrets download --no-file --format env > .env ",
     "format": "npx ultracite format --unsafe",
