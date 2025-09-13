@@ -24,6 +24,14 @@ node_modules/
 dist/
 build/
 *.log
+*.js
+*.d.ts.map
+*config.js.map
+*js.map
+*d.ts
+*config.types.map
+*types.d.ts
+
 
 coverage/
 .coverage

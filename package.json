@@ -13,19 +13,19 @@
   },
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
-  "main": "app.js",
+  "type": "module",
+  "main": "dist/app.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "nodemon",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json --addExtensions",
+    "start": "npm run build && node --enable-source-maps dist/app.js",
+    "dev": "nodemon --watch . --ext ts,tsx,js,json --exec \"npm run build && node --enable-source-maps dist/app.js\"",
     "download-env": "doppler secrets download --no-file --format env > .env ",
-    "format": "npx ultracite format --unsafe",
+    "fix": "npx ultracite fix --unsafe",
     "get-updated-db-types": "npx supabase gen types typescript --project-id vdwjfekcsnurtjsieojv --schema public > database.types.ts",
-    "lint": "npx ultracite lint",
+    "check": "npx ultracite check",
     "prepare": "husky install",
-    "prod": "node dist/app.js",
+    "prod": "node --enable-source-maps dist/app.js",
     "sort": "npx sort-package-json",
-    "start": "node -r tsconfig-paths/register dist/app.js",
     "test": "jest"
   },
   "dependencies": {
@@ -43,6 +43,7 @@
     "@openai/agents-core": "^0.1.0",
     "@openai/agents-realtime": "^0.1.0",
     "@supabase/supabase-js": "^2.57.2",
+    "@tsconfig/node22": "^22.0.2",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
@@ -76,7 +77,8 @@
     "typescript-eslint": "^8.42.0",
     "ultracite": "5.3.4",
     "validator": "^13.15.15",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "tsc-alias": "^1.8.10"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

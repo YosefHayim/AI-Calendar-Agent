@@ -1,18 +1,28 @@
 {
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "resolveJsonModule": true,
+    "rootDir": ".",
+    "outDir": "dist",
+
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
-    "noEmitOnError": false,
-    "isolatedModules": true,
+    "target": "esnext",
+    "lib": ["esnext"],
+    "types": ["node"],
+
     "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
     "skipLibCheck": true,
-        "baseUrl": ".",
-        "paths": {
- "@/*": ["./*"] },
-        "outDir": "dist",
-    },
-  "include": [".", "tests", "jest.config.ts"],
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"]
 }
