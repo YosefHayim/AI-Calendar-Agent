@@ -1,10 +1,10 @@
 # ---- Builder ----
-  FROM node:22-slim AS builder
+  FROM node:latest AS builder
   WORKDIR /app
   
   # Faster, reproducible installs
   COPY package*.json ./
-  RUN npm ci
+  RUN pnpm i
   
   # Copy the rest and build
   COPY . .
@@ -26,17 +26,9 @@
   
   # Bring compiled JS
   COPY --from=builder /app/dist ./dist
-  
-  # Optional: keep minimal artifacts you actually need at runtime
-  # COPY --from=builder /app/database.types.ts ./  # if used at runtime
-  
-  # Security hardening
-  RUN useradd --create-home --uid 10001 appuser
-  USER appuser
-  
+
   # Adjust if your server listens on a different port
   EXPOSE 3000
   
   # Use Doppler at runtime (requires DOPPLER_TOKEN provided at container start)
-  CMD ["doppler", "run", "--", "node", "dist/app.js"]
-  
+  CMD ["npm", "run", "start"]
