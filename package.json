@@ -16,8 +16,7 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-      "build": "tsc -p tsconfig.json",
-    "start": "node -r tsconfig-paths/register dist/app.js",
+    "build": "tsc -p tsconfig.json",
     "dev": "nodemon",
     "download-env": "doppler secrets download --no-file --format env > .env ",
     "format": "npx ultracite format --unsafe",
@@ -26,6 +25,7 @@
     "prepare": "husky install",
     "prod": "node dist/app.js",
     "sort": "npx sort-package-json",
+    "start": "node -r tsconfig-paths/register dist/app.js",
     "test": "jest"
   },
   "dependencies": {
