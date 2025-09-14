@@ -1,7 +1,7 @@
 {
-  "name": "ai-calendar-server",
+  "name": "ai-google-calendar-assistant",
   "version": "1.0.0",
-  "description": "AI Calendar assistant",
+  "description": "ai-google-calendar-assistant",
   "keywords": [],
   "homepage": "https://github.com/YosefHayim/AI-Calendar-Server#readme",
   "bugs": {
@@ -19,12 +19,12 @@
     "build": "tsc",
     "check": "npx ultracite check",
     "dev": "nodemon",
-    "download-env": "doppler secrets  download --ai-google-calendar-assitant --no-file --format env > .env ",
+    "download-env": "doppler secrets  download --ai-google-calendar-assistant --no-file --format env > .env ",
     "fix": "npx ultracite fix --unsafe",
     "get-updated-db-types": "npx supabase gen types typescript --project-id vdwjfekcsnurtjsieojv --schema public > database.types.ts",
     "prepare": "husky install",
     "sort": "npx sort-package-json",
-    "start": "node dist ./app.js",
+    "start": "./dist/app.js",
     "test": "jest"
   },
   "dependencies": {
