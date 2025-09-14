@@ -1,11 +1,9 @@
-FROM node:20-alpine
+FROM node:latest
 WORKDIR /app
-
-ENV NODE_ENV=dev
 
 # Install only prod deps
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install
 
 # Copy source (node_modules from host is ignored by .dockerignore)
 COPY . .
