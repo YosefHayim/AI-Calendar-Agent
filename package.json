@@ -24,7 +24,7 @@
     "get-updated-db-types": "npx supabase gen types typescript --project-id vdwjfekcsnurtjsieojv --schema public > database.types.ts",
     "prepare": "husky install",
     "sort": "npx sort-package-json",
-    "start": "node dist/app.js",
+    "start": "node dist ./app.js",
     "test": "jest"
   },
   "dependencies": {
