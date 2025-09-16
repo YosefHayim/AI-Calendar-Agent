@@ -20,12 +20,11 @@
   
   # --- Runtime -------------------------------------------------
   ENV NODE_ENV=production
-  ENV PORT=8080
   
   # Run as non-root
   USER node
   
-  EXPOSE 3000
+  EXPOSE 8080
   
   # Start via your package.json "start" script (e.g. `ts-node src/index.ts`)
   # If you use ESM: set "type":"module" and make start script: `node --loader ts-node/esm src/index.ts`
