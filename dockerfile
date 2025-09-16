@@ -20,8 +20,7 @@
   
   # --- Runtime -------------------------------------------------
   ENV NODE_ENV=production
-  ENV HOST=0.0.0.0
-  ENV PORT=3000
+  ENV PORT=8080
   
   # Run as non-root
   USER node

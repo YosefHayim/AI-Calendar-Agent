@@ -31,7 +31,7 @@ app.use(ROUTES.WHATSAPP, whatsAppRoute);
 
 app.use(errorHandler);
 
-app.listen(PORT, (error?: Error) => {
+app.listen(8080, (error?: Error) => {
   if (error) {
     throw error;
   }
