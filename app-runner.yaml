@@ -1,0 +1,59 @@
+version: 1.0
+runtime: nodejs22
+build:
+  commands:
+    - corepack enable
+    - pnpm install --frozen-lockfile
+    - pnpm build
+run:
+  command: pnpm start
+  network:
+    port: 8080
+  health_check:
+    protocol: HTTP
+    path: /health
+    interval: 5
+    timeout: 2
+    healthy_threshold: 1
+    unhealthy_threshold: 3
+  secrets:
+    - name: BASE_URL
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:BASE_URL::"
+    - name: DEV_WHATS_APP_ACCESS_TOKEN
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:DEV_WHATS_APP_ACCESS_TOKEN::"
+    - name: DOPPLER_CONFIG
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:DOPPLER_CONFIG::"
+    - name: DOPPLER_ENVIRONMENT
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:DOPPLER_ENVIRONMENT::"
+    - name: DOPPLER_PROJECT
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:DOPPLER_PROJECT::"
+    - name: GITHUB_CLIENT_ID
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:GITHUB_CLIENT_ID::"
+    - name: GITHUB_CLIENT_SECRET
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:GITHUB_CLIENT_SECRET::"
+    - name: GOOGLE_API_KEY
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:GOOGLE_API_KEY::"
+    - name: GOOGLE_CLIENT_ID
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:GOOGLE_CLIENT_ID::"
+    - name: GOOGLE_CLIENT_SECRET
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:GOOGLE_CLIENT_SECRET::"
+    - name: NODE_ENV
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:NODE_ENV::"
+    - name: OPEN_API_KEY
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:OPEN_API_KEY::"
+    - name: PORT
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:PORT::"
+    - name: PROJECT_ID
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:PROJECT_ID::"
+    - name: REDIRECT_URL
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:REDIRECT_URL::"
+    - name: REDIRECT_URL_PROD
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:REDIRECT_URL_PROD::"
+    - name: SUPABASE_ANON_KEY
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:SUPABASE_ANON_KEY::"
+    - name: SUPABASE_SERVICE_ROLE_KEY
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:SUPABASE_SERVICE_ROLE_KEY::"
+    - name: SUPABASE_URL
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:SUPABASE_URL::"
+    - name: TELEGRAM_BOT_ACCESS_TOKEN
+      value-from: "arn:aws:secretsmanager:REGION:ACCOUNT_ID:secret:prod/app/env:TELEGRAM_BOT_ACCESS_TOKEN::"
