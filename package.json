@@ -17,13 +17,13 @@
   "main": "app.js",
   "scripts": {
     "check": "npx ultracite check",
-    "dev": "nodemon",
+    "dev": "NODE_OPTIONS='--max-old-space-size=4096' nodemon",
     "download-env": "doppler secrets  download --ai-google-calendar-assistant --no-file --format env > .env ",
     "fix": "npx ultracite fix --unsafe",
     "get-updated-db-types": "npx supabase gen types typescript --project-id vdwjfekcsnurtjsieojv --schema public > database.types.ts",
     "prepare": "husky install",
     "sort": "npx sort-package-json",
-    "start": "ts-node -r tsconfig-paths/register app.ts",
+    "start": "NODE_OPTIONS='--max-old-space-size=4096' ts-node -r tsconfig-paths/register app.ts",
     "test": "jest"
   },
   "dependencies": {
