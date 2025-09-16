@@ -31,11 +31,6 @@ app.use(ROUTES.WHATSAPP, whatsAppRoute);
 
 app.use(errorHandler);
 
-app.listen(8080, (error?: Error) => {
-  if (error) {
-    throw error;
-  }
-  console.log(`Server is running on port: ${PORT}`);
-});
+app.listen(PORT, () => console.log("health up"));
 
 startTelegramBot();
