@@ -1,9 +1,8 @@
-node_modules
-dist
 .git
-.gitignore
-Dockerfile
-docker-compose.yml
-npm-debug.log
-.vscode
+node_modules
+npm-debug.log*
+pnpm-debug.log*
+.DS_Store
+dist/*.map
 .env
+.env.*
