@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:latest
 
 # Create work directory
 WORKDIR /app
@@ -14,7 +14,6 @@ COPY . .
 
 # Set environment
 ENV NODE_ENV=production
-ENV PORT=8080
 
 # Expose port for App Runner / local docker run
 EXPOSE 8080
