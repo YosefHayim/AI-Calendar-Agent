@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.get("/", whatsAppController.getWhatsAppNotifications);
 
-router.post("/", whatsAppController.WhatsAppMessagesCreated);
+// router.post("/", whatsAppController.WhatsAppMessagesCreated);
 
 export default router;
